@@ -1,0 +1,96 @@
+package com.nagaja.the330.base
+
+import android.app.ProgressDialog
+import android.content.Context
+import android.text.TextUtils
+import android.util.Log
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
+
+abstract class BaseFragment : Fragment() {
+    private var mProgressDialog: ProgressDialog? = null
+
+    private var mActivity: BaseActivity? = null
+    var viewController: ViewController? = null
+    var childViewController: ViewController? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is BaseActivity) {
+            this.mActivity = context
+//            context.onFragmentAttached()
+        }
+    }
+
+//    fun getViewModelProvider(): ViewModelProvider {
+//        return ViewModelProviders.of(this,
+//            context?.let {
+//                LoginRetrofitBuilder.getInstance(it)?.create(ApiService::class.java)
+//                    ?.let { apiService ->
+//                        ViewModelFactory(apiService, Application())
+//                    }
+//            }
+//        )
+//    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        hideLoading()
+    }
+
+    open fun hideKeyboard() {
+        if (mActivity != null) {
+            mActivity!!.hideKeyboard()
+        }
+    }
+
+    open fun showKeyboard() {
+        val inputMethodManager: InputMethodManager =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+    }
+
+//    open fun showLoading() {
+//        hideLoading()
+//        mProgressDialog = CommonUtils.showLoadingDialog(this.context)
+//    }
+
+    open fun hideLoading() {
+        if (mProgressDialog != null && mProgressDialog!!.isShowing) {
+            mProgressDialog!!.cancel()
+        }
+    }
+
+    open fun showMess(str: String?) {
+        Toast.makeText(context, str ?: "", Toast.LENGTH_LONG).show()
+    }
+
+    open fun showMessDEBUG(str: String?) {
+        Toast.makeText(context, str ?: "", Toast.LENGTH_LONG).show()
+    }
+
+//    open fun getAccessToken(): String {
+//        return try {
+//            formatToken(AppPreferencesHelper(context).authToken.accessToken)
+//        } catch (e: Exception) {
+//            ""
+//        }
+//    }
+
+    open fun formatToken(token: String?): String {
+        if (TextUtils.isEmpty(token)) {
+//            showMess("Token Empty!")
+            return ""
+        }
+        return "Bearer $token"
+    }
+
+    val callbackPermission =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach {
+                Log.e("DEBUG", "${it.key} = ${it.value}")
+            }
+        }
+}

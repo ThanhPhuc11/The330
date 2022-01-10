@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="android:statusBarColor">@color/purple_700</item>
+    </style>
+
+<!--    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">-->
+<!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+<!--        <item name="colorPrimary">@color/gray_CACBCB</item>-->
+<!--        <item name="colorPrimaryDark">@color/transparent</item>-->
+<!--        <item name="colorAccent">@color/gray_CACBCB</item>-->
+<!--        <item name="android:windowBackground">@drawable/splash_background</item>-->
+<!--        <item name="android:windowFullscreen">true</item>-->
+<!--    </style>-->
+</resources>
