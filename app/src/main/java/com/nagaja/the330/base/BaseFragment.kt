@@ -2,11 +2,17 @@ package com.nagaja.the330.base
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 
 abstract class BaseFragment : Fragment() {
@@ -22,6 +28,23 @@ abstract class BaseFragment : Fragment() {
             this.mActivity = context
 //            context.onFragmentAttached()
         }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                UIData()
+            }
+        }
+    }
+
+    @Composable
+    open fun UIData() {
+
     }
 
 //    fun getViewModelProvider(): ViewModelProvider {
