@@ -8,11 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.fontResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 
@@ -40,16 +46,29 @@ fun PreviewUI() {
         Modifier
             .padding(48.dp)
             .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            text = "NAGAJA",
-            color = colorResource(R.color.blue_2177E4)
-        )
-        selectLang("한국어")
-        selectLang("한국어")
-        selectLang("한국어")
-        selectLang("한국어")
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize(),
+            contentAlignment = Center
+        ) {
+            Text(
+                text = "NAGAJA",
+                color = colorResource(R.color.blue_2177E4),
+                fontSize = 36.sp,
+//                fontWeight = FontWeight.Black,
+                fontFamily = FontFamily(Font(R.font.gmarketsansttfbold))
+            )
+        }
+        Column(modifier = Modifier.weight(1.2f)) {
+            selectLang("한국어")
+            selectLang("필리핀어")
+            selectLang("영어")
+            selectLang("중국어")
+            selectLang("일본어")
+        }
     }
 }
 
