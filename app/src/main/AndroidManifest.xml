@@ -17,6 +17,7 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
@@ -55,7 +56,7 @@
 
                 <data
                     android:host="oauth"
-                    android:scheme="kakao8ea2bd2df4b74f45dc572e98ebd22903" />
+                    android:scheme="kakaoa1a9aaac7ab844f2d427fa32bff4fc14" />
             </intent-filter>
         </activity>
     </application>

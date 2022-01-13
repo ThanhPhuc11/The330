@@ -1,12 +1,12 @@
 package com.nagaja.the330.view.login
 
-import android.app.Application
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.AuthRequest
 import com.nagaja.the330.model.AuthTokenModel
-import com.nagaja.the330.view.login.LoginRepository
+import com.nagaja.the330.utils.AppConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -36,10 +36,11 @@ class LoginViewModel(
                 .onCompletion { }
                 .catch {
 //                    handleError(it)
+                    Log.e("handleError", it.message.toString())
                 }
                 .collect {
                     callbackLoginKaKaoSuccess.value = it
-//                    snsType = AppConstants.SNS_TYPE_KAKAO
+                    snsType = AppConstants.SNS_TYPE_KAKAO
                     tokenTemp = token
                     userTypeTemp = userType
                 }
@@ -55,6 +56,7 @@ class LoginViewModel(
                 .onCompletion { }
                 .catch {
 //                    handleError(it)
+                    Log.e("handleError", it.message.toString())
                 }
                 .collect {
                     callbackLoginNaverSuccess.value = it

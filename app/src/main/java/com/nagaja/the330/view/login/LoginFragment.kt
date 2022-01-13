@@ -264,8 +264,7 @@ class LoginFragment : BaseFragment() {
 
     private val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
         if (token != null) {
-//            viewModel.loginWithKakao(token.accessToken, userType)
-            showMessDEBUG(token.accessToken)
+            viewModel.loginWithKakao(token.accessToken, userType)
         }
         Log.e("ERROR", error.toString())
     }
