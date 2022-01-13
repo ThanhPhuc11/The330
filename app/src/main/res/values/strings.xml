@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">The330</string>
+    <string name="kakao_native_app_key">a1a9aaac7ab844f2d427fa32bff4fc14</string>
     <string name="confirm">확인</string>
 </resources>

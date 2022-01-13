@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.language
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.permission.PermissionFragment
 
@@ -29,10 +31,16 @@ class LangFragment : BaseFragment() {
     }
 
     @Composable
+    override fun setupViewModel() {
+//        TODO("Not yet implemented")
+    }
+
+    @Composable
     override fun UIData() {
         viewController = (activity as MainActivity).viewController
         Column(
             Modifier
+                .background(color = ColorUtils.white_FFFFFF)
                 .padding(48.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,

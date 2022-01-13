@@ -22,4 +22,8 @@ object ColorUtils {
 
     val white_FFFFFF = Color(0xFFFFFFFF)
     val black_000000 = Color(0xFF000000)
+
+    val yellow_FFCD00 = Color(0xFFFFCD00)
+    val green_1EC800 = Color(0xFF1EC800)
+    val blue_3B5998 = Color(0xFF3B5998)
 }

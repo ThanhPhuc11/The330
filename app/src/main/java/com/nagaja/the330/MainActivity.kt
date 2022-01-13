@@ -2,9 +2,12 @@ package com.nagaja.the330
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.utils.ScreenId
-import com.nagaja.the330.view.language.LangFragment
+import com.nagaja.the330.view.login.LoginFragment
 
 class MainActivity : AppCompatActivity() {
     lateinit var viewController: ViewController
@@ -14,8 +17,16 @@ class MainActivity : AppCompatActivity() {
         viewController = ViewController(R.id.flContainer, supportFragmentManager, this)
 
         viewController.pushFragment(
-            ScreenId.SCREEN_LANGUAGE_FIRST,
-            LangFragment.newInstance()
+            ScreenId.SCREEN_LOGIN,
+            LoginFragment.newInstance()
         )
+
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
+            controller.isAppearanceLightStatusBars = true
+            controller.show(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
     }
 }

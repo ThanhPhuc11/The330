@@ -14,6 +14,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
+import com.nagaja.the330.network.ApiService
+import com.nagaja.the330.network.RetrofitBuilder
 
 abstract class BaseFragment : Fragment() {
     private var mProgressDialog: ProgressDialog? = null
@@ -30,6 +34,10 @@ abstract class BaseFragment : Fragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,26 +45,29 @@ abstract class BaseFragment : Fragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setContent {
+                setupViewModel()
                 UIData()
             }
         }
     }
 
     @Composable
+    abstract fun setupViewModel()
+
+    @Composable
     open fun UIData() {
 
     }
 
-//    fun getViewModelProvider(): ViewModelProvider {
-//        return ViewModelProviders.of(this,
-//            context?.let {
-//                LoginRetrofitBuilder.getInstance(it)?.create(ApiService::class.java)
-//                    ?.let { apiService ->
-//                        ViewModelFactory(apiService, Application())
-//                    }
-//            }
-//        )
-//    }
+    fun getViewModelProvider(owner: ViewModelStoreOwner): ViewModelProvider {
+        return ViewModelProvider(
+            owner,
+            ViewModelFactory(
+                RetrofitBuilder.getInstance(requireContext())
+                    ?.create(ApiService::class.java)!!
+            )
+        )
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

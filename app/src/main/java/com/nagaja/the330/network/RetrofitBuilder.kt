@@ -1,6 +1,7 @@
 package com.nagaja.the330.network
 
 import android.content.Context
+import com.nagaja.the330.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -24,8 +25,7 @@ import javax.net.ssl.X509TrustManager
 object RetrofitBuilder {
     private var retrofit: Retrofit? = null
 
-//    private const val BASE_URL = BuildConfig.BASE_URL
-    private const val BASE_URL = ""
+    private const val BASE_URL = BuildConfig.BASE_URL
 
     private var httpClientBuilder: OkHttpClient.Builder? = null
     fun getInstance(context: Context): Retrofit? {

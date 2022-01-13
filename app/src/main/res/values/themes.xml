@@ -2,15 +2,19 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
-        <item name="android:statusBarColor">@color/purple_700</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="colorPrimary">#CACBCB</item>
+        <item name="colorPrimaryDark">#00ffffff</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
-<!--    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">-->
-<!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
-<!--        <item name="colorPrimary">@color/gray_CACBCB</item>-->
-<!--        <item name="colorPrimaryDark">@color/transparent</item>-->
-<!--        <item name="colorAccent">@color/gray_CACBCB</item>-->
-<!--        <item name="android:windowBackground">@drawable/splash_background</item>-->
-<!--        <item name="android:windowFullscreen">true</item>-->
-<!--    </style>-->
+    <style name="AppTheme1" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#CACBCB</item>
+        <item name="colorPrimaryDark">#00ffffff</item>
+        <item name="colorAccent">#CACBCB</item>
+        <item name="android:windowBackground">#2177E4</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
 </resources>
