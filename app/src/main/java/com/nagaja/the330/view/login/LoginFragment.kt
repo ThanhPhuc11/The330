@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.login
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -38,9 +40,16 @@ import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nhn.android.naverlogin.OAuthLogin
+import com.nhn.android.naverlogin.OAuthLoginHandler
+import com.nhn.android.naverlogin.data.OAuthLoginState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class LoginFragment : BaseFragment() {
     private lateinit var viewModel: LoginViewModel
+    private lateinit var mOAuthLoginModule: OAuthLogin
     private var userType = AppConstants.GENERAL
 
     companion object {
@@ -192,20 +201,20 @@ class LoginFragment : BaseFragment() {
         textAlign = TextAlign.Center
     )
 
-    //    @Preview(showBackground = true)
     @Composable
     fun LoginSocial() {
         //KaKao
         val context = LocalContext.current
-        val keyHash = Utility.getKeyHash(context)
-        Log.e("Phucdz", "Keyhash: $keyHash")
         KakaoSdk.init(context, getString(R.string.kakao_native_app_key))
 
         //Naver
-//        mOAuthLoginModule = OAuthLogin.getInstance()
-//        mOAuthLoginModule.init(
-//            activity, "JEUnpkBzyhSPKGnDlcUu", "XTJ5eBJwdl", "bomcook"
-//        )
+        mOAuthLoginModule = OAuthLogin.getInstance()
+        mOAuthLoginModule.init(
+            activity,
+            stringResource(R.string.naver_client_id),
+            stringResource(R.string.naver_client_secret),
+            "나가자 nagaja"
+        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
@@ -219,7 +228,9 @@ class LoginFragment : BaseFragment() {
                 IconLogin(ColorUtils.yellow_FFCD00, R.drawable.ic_kakao) {
                     snsKakaoLogin()
                 }
-                IconLogin(ColorUtils.green_1EC800, R.drawable.ic_naver, null)
+                IconLogin(ColorUtils.green_1EC800, R.drawable.ic_naver) {
+                    newSnsNaverLogin(true)
+                }
                 Image(
                     painter = painterResource(R.drawable.ic_google_login),
                     contentDescription = "",
@@ -266,6 +277,53 @@ class LoginFragment : BaseFragment() {
         if (token != null) {
             viewModel.loginWithKakao(token.accessToken, userType)
         }
-        Log.e("ERROR", error.toString())
+    }
+
+    private fun newSnsNaverLogin(otherAcc: Boolean) {
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                if (otherAcc) {
+                    mOAuthLoginModule.logoutAndDeleteToken(context)
+                }
+                Log.e("PHUC", mOAuthLoginModule.getState(activity).toString())
+                when (mOAuthLoginModule.getState(activity)) {
+                    OAuthLoginState.OK -> {
+                        snsNaverLogin()
+                    }
+                    OAuthLoginState.NEED_LOGIN -> {
+                        snsNaverLogin()
+                    }
+                    OAuthLoginState.NEED_REFRESH_TOKEN -> {
+                        snsNaverLogin()
+                    }
+                    else -> {
+                        Log.e("PHUC", "ERROR")
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun snsNaverLogin() {
+        mOAuthLoginModule.startOauthLoginActivity(activity, mNaverOAuthLoginHandler)
+    }
+
+    private val mNaverOAuthLoginHandler: OAuthLoginHandler = @SuppressLint("HandlerLeak")
+    object : OAuthLoginHandler() {
+        override fun run(success: Boolean) {
+            if (success) {
+                val accessToken = mOAuthLoginModule.getAccessToken(context)
+                val refreshToken = mOAuthLoginModule.getRefreshToken(context)
+                val expiresAt = mOAuthLoginModule.getExpiresAt(context)
+                val tokenType = mOAuthLoginModule.getTokenType(context)
+
+                viewModel.loginWithNaver(accessToken, userType)
+            } else {
+                val errorCode = mOAuthLoginModule.getLastErrorCode(context).code
+                val errorDesc = mOAuthLoginModule.getLastErrorDesc(context)
+            }
+        }
     }
 }

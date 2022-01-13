@@ -60,9 +60,10 @@ class LoginViewModel(
                 }
                 .collect {
                     callbackLoginNaverSuccess.value = it
-//                    snsType = AppConstants.SNS_TYPE_NAVER
+                    snsType = AppConstants.SNS_TYPE_NAVER
                     tokenTemp = token
                     userTypeTemp = userType
+                    Log.e("token", it.accessToken.toString())
                 }
         }
     }

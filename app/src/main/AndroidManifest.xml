@@ -39,7 +39,7 @@
 
         <activity
             android:name="com.nhn.android.naverlogin.ui.OAuthCustomTabActivity"
-            android:exported="false">
+            android:exported="true">
 
         </activity>
         <activity
