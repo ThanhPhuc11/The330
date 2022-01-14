@@ -17,8 +17,10 @@ import kotlinx.coroutines.launch
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "THE330")
 
 class DataStorePref(val context: Context) {
-    val AUTH_TOKEN = stringPreferencesKey("AUTH_TOKEN")
-    val USER_DETAIL = stringPreferencesKey("USER_DETAIL")
+    companion object {
+        val AUTH_TOKEN = stringPreferencesKey("AUTH_TOKEN")
+        val USER_DETAIL = stringPreferencesKey("USER_DETAIL")
+    }
 
     fun setUserDetail(obj: UserDetail?) {
         CoroutineScope(Dispatchers.IO).launch {

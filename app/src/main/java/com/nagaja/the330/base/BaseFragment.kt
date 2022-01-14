@@ -16,11 +16,21 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import com.google.gson.Gson
+import com.nagaja.the330.data.DataStorePref.Companion.AUTH_TOKEN
+import com.nagaja.the330.data.dataStore
+import com.nagaja.the330.model.AuthTokenModel
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 abstract class BaseFragment : Fragment() {
     private var mProgressDialog: ProgressDialog? = null
+    var accessToken: String? = null
 
     private var mActivity: BaseActivity? = null
     var viewController: ViewController? = null
@@ -36,6 +46,7 @@ abstract class BaseFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        getAccessToken()
     }
 
     override fun onCreateView(
@@ -51,20 +62,12 @@ abstract class BaseFragment : Fragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initObserver()
-    }
-
     @Composable
     abstract fun setupViewModel()
 
     @Composable
     open fun UIData() {
-
     }
-
-    abstract fun initObserver()
 
     fun getViewModelProvider(owner: ViewModelStoreOwner): ViewModelProvider {
         return ViewModelProvider(
@@ -112,13 +115,16 @@ abstract class BaseFragment : Fragment() {
         Toast.makeText(context, str ?: "", Toast.LENGTH_LONG).show()
     }
 
-//    open fun getAccessToken(): String {
-//        return try {
-//            formatToken(AppPreferencesHelper(context).authToken.accessToken)
-//        } catch (e: Exception) {
-//            ""
-//        }
-//    }
+    open fun getAccessToken() {
+        CoroutineScope(Dispatchers.IO).launch {
+            requireContext().dataStore.data.map { get ->
+                get[AUTH_TOKEN] ?: ""
+            }.collect {
+                val tokenModel = Gson().fromJson(it, AuthTokenModel::class.java)
+                accessToken = formatToken(tokenModel.accessToken)
+            }
+        }
+    }
 
     open fun formatToken(token: String?): String {
         if (TextUtils.isEmpty(token)) {

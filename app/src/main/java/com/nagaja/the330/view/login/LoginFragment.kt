@@ -69,6 +69,14 @@ class LoginFragment : BaseFragment() {
             }
         viewModel = getViewModelProvider(viewModelStoreOwner)[LoginViewModel::class.java]
         generalViewModel = getViewModelProvider(viewModelStoreOwner)[GeneralViewModel::class.java]
+
+        viewModel.callbackLoginKaKaoSuccess.observe(viewLifecycleOwner) {
+            DataStorePref(requireContext()).setToken(it)
+            it.accessToken?.let { generalViewModel.getUserDetails(accessToken!!) }
+        }
+        generalViewModel.callbackUserDetails.observe(viewLifecycleOwner) {
+            DataStorePref(requireContext()).setUserDetail(it)
+        }
     }
 
     @Preview(showBackground = true)
@@ -195,16 +203,6 @@ class LoginFragment : BaseFragment() {
             Spacer(modifier = Modifier.weight(1f))
             LoginSocial()
         }
-    }
-
-    override fun initObserver() {
-//        viewModel.callbackLoginKaKaoSuccess.observe(viewLifecycleOwner) {
-//            DataStorePref(requireContext()).setToken(it)
-//            it.accessToken?.let { it1 -> generalViewModel.getUserDetails(it1) }
-//        }
-//        generalViewModel.callbackUserDetails.observe(viewLifecycleOwner) {
-//            showMess(it.name)
-//        }
     }
 
     val text1 = TextStyle(

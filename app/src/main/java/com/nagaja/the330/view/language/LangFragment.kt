@@ -73,10 +73,6 @@ class LangFragment : BaseFragment() {
             }
         }
     }
-
-    override fun initObserver() {
-
-    }
 }
 
 @Composable

@@ -39,10 +39,6 @@ class PermissionFragment : BaseFragment() {
         PreviewUI()
     }
 
-    override fun initObserver() {
-
-    }
-
     private fun askPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!CommonUtils.hasPermissions(context, CommonUtils.askFirstAppPermission)) {
