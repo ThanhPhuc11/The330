@@ -51,6 +51,11 @@ abstract class BaseFragment : Fragment() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initObserver()
+    }
+
     @Composable
     abstract fun setupViewModel()
 
@@ -58,6 +63,8 @@ abstract class BaseFragment : Fragment() {
     open fun UIData() {
 
     }
+
+    abstract fun initObserver()
 
     fun getViewModelProvider(owner: ViewModelStoreOwner): ViewModelProvider {
         return ViewModelProvider(

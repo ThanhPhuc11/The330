@@ -2,10 +2,8 @@ package com.nagaja.the330.network
 
 import com.nagaja.the330.model.AuthRequest
 import com.nagaja.the330.model.AuthTokenModel
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import com.nagaja.the330.model.UserDetail
+import retrofit2.http.*
 
 interface ApiService {
     @GET("auth/accessToken")
@@ -16,4 +14,9 @@ interface ApiService {
 
     @POST("auth/naver")
     suspend fun authWithNaver(@Body body: AuthRequest): AuthTokenModel
+
+    @GET("users")
+    suspend fun getUserDetails(
+        @Header("Authorization") token: String
+    ): UserDetail
 }

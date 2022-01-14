@@ -38,8 +38,11 @@ import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.data.DataStorePref
+import com.nagaja.the330.data.dataStore
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.view.general.GeneralViewModel
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.data.OAuthLoginState
@@ -49,6 +52,7 @@ import kotlinx.coroutines.launch
 
 class LoginFragment : BaseFragment() {
     private lateinit var viewModel: LoginViewModel
+    private lateinit var generalViewModel: GeneralViewModel
     private lateinit var mOAuthLoginModule: OAuthLogin
     private var userType = AppConstants.GENERAL
 
@@ -63,8 +67,8 @@ class LoginFragment : BaseFragment() {
             checkNotNull(LocalViewModelStoreOwner.current) {
                 "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
             }
-        viewModel =
-            getViewModelProvider(viewModelStoreOwner)[LoginViewModel::class.java]
+        viewModel = getViewModelProvider(viewModelStoreOwner)[LoginViewModel::class.java]
+        generalViewModel = getViewModelProvider(viewModelStoreOwner)[GeneralViewModel::class.java]
     }
 
     @Preview(showBackground = true)
@@ -191,6 +195,16 @@ class LoginFragment : BaseFragment() {
             Spacer(modifier = Modifier.weight(1f))
             LoginSocial()
         }
+    }
+
+    override fun initObserver() {
+//        viewModel.callbackLoginKaKaoSuccess.observe(viewLifecycleOwner) {
+//            DataStorePref(requireContext()).setToken(it)
+//            it.accessToken?.let { it1 -> generalViewModel.getUserDetails(it1) }
+//        }
+//        generalViewModel.callbackUserDetails.observe(viewLifecycleOwner) {
+//            showMess(it.name)
+//        }
     }
 
     val text1 = TextStyle(
