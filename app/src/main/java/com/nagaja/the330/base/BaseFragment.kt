@@ -56,18 +56,17 @@ abstract class BaseFragment : Fragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setContent {
-                setupViewModel()
+                SetupViewModel()
                 UIData()
             }
         }
     }
 
     @Composable
-    abstract fun setupViewModel()
+    abstract fun SetupViewModel()
 
     @Composable
-    open fun UIData() {
-    }
+    abstract fun UIData()
 
     fun getViewModelProvider(owner: ViewModelStoreOwner): ViewModelProvider {
         return ViewModelProvider(

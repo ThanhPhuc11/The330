@@ -62,7 +62,7 @@ class LoginFragment : BaseFragment() {
     }
 
     @Composable
-    override fun setupViewModel() {
+    override fun SetupViewModel() {
         val viewModelStoreOwner: ViewModelStoreOwner =
             checkNotNull(LocalViewModelStoreOwner.current) {
                 "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"

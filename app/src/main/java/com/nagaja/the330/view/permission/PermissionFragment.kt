@@ -30,7 +30,7 @@ class PermissionFragment : BaseFragment() {
     }
 
     @Composable
-    override fun setupViewModel() {
+    override fun SetupViewModel() {
         TODO("Not yet implemented")
     }
 
