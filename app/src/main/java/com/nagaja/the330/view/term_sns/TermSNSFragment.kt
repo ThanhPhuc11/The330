@@ -1,11 +1,8 @@
 package com.nagaja.the330.view.term_sns
 
 import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -130,10 +127,11 @@ class TermSNSFragment : BaseFragment() {
                 }
             }
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { Log.e("PHUC", "click dc") },
                 colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = ColorUtils.gray_E1E1E1
+                    backgroundColor = if (checkedAll.value) ColorUtils.blue_2177E4 else ColorUtils.gray_E1E1E1
                 ),
+                enabled = checkedAll.value,
                 modifier = Modifier
                     .padding(bottom = 40.dp)
                     .padding(horizontal = 16.dp)
