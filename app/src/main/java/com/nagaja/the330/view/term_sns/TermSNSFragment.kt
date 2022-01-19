@@ -1,8 +1,11 @@
 package com.nagaja.the330.view.term_sns
 
 import android.util.Log
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +23,11 @@ import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.noRippleClickable
 
 class TermSNSFragment : BaseFragment() {
+    companion object {
+        @JvmStatic
+        fun newInstance() = TermSNSFragment()
+    }
+
     @Composable
     override fun SetupViewModel() {
 

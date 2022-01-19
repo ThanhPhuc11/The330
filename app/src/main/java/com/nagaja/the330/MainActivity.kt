@@ -8,6 +8,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.login.LoginFragment
+import com.nagaja.the330.view.signupinfo.SignupInfoFragment
 
 class MainActivity : AppCompatActivity() {
     lateinit var viewController: ViewController
@@ -18,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         viewController.pushFragment(
             ScreenId.SCREEN_LOGIN,
-            LoginFragment.newInstance()
+            SignupInfoFragment.newInstance()
         )
 
         WindowCompat.setDecorFitsSystemWindows(window, true)

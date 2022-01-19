@@ -1,7 +1,29 @@
 <resources>
-    <string name="app_name">The330</string>
-    <string name="kakao_native_app_key">a1a9aaac7ab844f2d427fa32bff4fc14</string>
-    <string name="naver_client_id">VOvlcYMktVhQETBCWWUy</string>
-    <string name="naver_client_secret">u_v__E6r0m</string>
+    <string name="app_name" translatable="false">The330</string>
+    <string name="kakao_native_app_key" translatable="false">a1a9aaac7ab844f2d427fa32bff4fc14</string>
+    <string name="naver_client_id" translatable="false">VOvlcYMktVhQETBCWWUy</string>
+    <string name="naver_client_secret" translatable="false">u_v__E6r0m</string>
     <string name="confirm">확인</string>
+    <string name="signup">회원가입</string>
+    <string name="enter_member_infomation">회원 정보 입력</string>
+    <string name="name">이름</string>
+    <string name="input_your_name_please">이름을 입력해 주세요.</string>
+    <string name="user_id">아이디</string>
+    <string name="guide_input_id">5~20자의 영문 소문자, 숫자 조합으로 입력해 주세요.</string>
+    <string name="please_enter_id">아이디를 입력해 주세요.</string>
+    <string name="password">비밀번호</string>
+    <string name="guide_input_password">8~15자의 영어 대소문자, 숫자, 특수문자 조합으로 입력해 주세요.</string>
+    <string name="hint_input_password">아이디를 입력하세요.</string>
+    <string name="confirm_password">비밀번호 확인</string>
+    <string name="hint_input_confirm_password">비밀번호를 다시 입력하세요.</string>
+    <string name="phone_label">휴대폰 번호</string>
+    <string name="hint_input_phone">휴대폰 번호를 입력하세요.</string>
+    <string name="authen_request">인증요청</string>
+    <string name="cer_number_input">인증 번호 입력</string>
+    <string name="hint_input_otp">문자로 전송 받은 인증번호를 입력하세요.</string>
+    <string name="certification">인증</string>
+    <string name="address">주소</string>
+    <string name="hint_input_address">지번/도로명 주소를 입력하세요.</string>
+    <string name="label_agree_term_to_use">회원 정보 입력 및 이용약관 동의</string>
+    <string name="agree_all_term">이용약관 전체동의</string>
 </resources>

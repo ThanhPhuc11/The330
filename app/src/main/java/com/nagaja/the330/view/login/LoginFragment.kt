@@ -23,10 +23,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,14 +33,13 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.kakao.sdk.auth.LoginClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.KakaoSdk
-import com.kakao.sdk.common.util.Utility
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.DataStorePref
-import com.nagaja.the330.data.dataStore
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.general.GeneralViewModel
+import com.nagaja.the330.view.text14_62
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.data.OAuthLoginState
@@ -184,34 +181,26 @@ class LoginFragment : BaseFragment() {
                 )
             }
             Row(Modifier.padding(top = 20.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("아이디 찾기", style = text1, modifier = Modifier.weight(1f))
+                Text("아이디 찾기", style = text14_62, modifier = Modifier.weight(1f))
                 Box(
                     modifier = Modifier
                         .height(8.dp)
                         .width(1.dp)
                         .background(ColorUtils.gray_E1E1E1)
                 )
-                Text("비밀번호 찾기", style = text1, modifier = Modifier.weight(1f))
+                Text("비밀번호 찾기", style = text14_62, modifier = Modifier.weight(1f))
                 Box(
                     modifier = Modifier
                         .height(8.dp)
                         .width(1.dp)
                         .background(ColorUtils.gray_E1E1E1)
                 )
-                Text("회원가입", style = text1, modifier = Modifier.weight(1f))
+                Text("회원가입", style = text14_62, modifier = Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.weight(1f))
             LoginSocial()
         }
     }
-
-    val text1 = TextStyle(
-//    fontFamily = FontFamily.Default,
-//    fontWeight = FontWeight.Light,
-        color = ColorUtils.gray_626262,
-        fontSize = 14.sp,
-        textAlign = TextAlign.Center
-    )
 
     @Composable
     fun LoginSocial() {
