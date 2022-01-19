@@ -8,6 +8,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -16,8 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,6 +29,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nagaja.the330.R
 import com.nagaja.the330.utils.ColorUtils
+
+@Composable
+fun LayoutTheme330(layout: @Composable ColumnScope.() -> Unit) {
+    val focusManager = LocalFocusManager.current
+    Column(
+        modifier = Modifier
+            .background(ColorUtils.white_FFFFFF)
+            .fillMaxSize()
+            .noRippleClickable { focusManager.clearFocus() }
+    ) {
+        layout(this)
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -66,8 +83,9 @@ fun Test() {
 }
 
 @Composable
-fun TextFieldCustom(modifier: Modifier = Modifier, hint: String = "") {
+fun TextFieldCustom(modifier: Modifier = Modifier, hint: String = "", maxLength: Int = 1000) {
     val textStateId = remember { mutableStateOf(TextFieldValue("")) }
+    val focusManager = LocalFocusManager.current
     Box(
         modifier = modifier
             .background(ColorUtils.white_FFFFFF)
@@ -83,10 +101,12 @@ fun TextFieldCustom(modifier: Modifier = Modifier, hint: String = "") {
     ) {
         BasicTextField(
             value = textStateId.value,
-            onValueChange = { if (it.text.length <= 20) textStateId.value = it },
+            onValueChange = { if (it.text.length <= maxLength) textStateId.value = it },
             Modifier
                 .fillMaxWidth(),
             singleLine = true,
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = TextStyle(
                 color = ColorUtils.black_000000
             ),
