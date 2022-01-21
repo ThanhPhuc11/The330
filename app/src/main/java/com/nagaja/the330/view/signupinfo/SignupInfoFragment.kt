@@ -3,9 +3,9 @@ package com.nagaja.the330.view.signupinfo
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -13,21 +13,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.*
 
 class SignupInfoFragment : BaseFragment() {
+    private lateinit var viewModel: SignupInfoVM
+
     companion object {
         @JvmStatic
         fun newInstance() = SignupInfoFragment()
@@ -35,10 +43,15 @@ class SignupInfoFragment : BaseFragment() {
 
     @Composable
     override fun SetupViewModel() {
-//        TODO("Not yet implemented")
+        val viewModelStoreOwner: ViewModelStoreOwner =
+            checkNotNull(LocalViewModelStoreOwner.current) {
+                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+            }
+        viewModel = getViewModelProvider(viewModelStoreOwner)[SignupInfoVM::class.java]
+        viewController = (activity as MainActivity).viewController
     }
 
-    @Preview
+    @Preview(showBackground = true)
     @Composable
     override fun UIData() {
         DisposableEffect(key1 = Unit, effect = {
@@ -55,7 +68,6 @@ class SignupInfoFragment : BaseFragment() {
         val check5 = remember { mutableStateOf(false) }
         val check6 = remember { mutableStateOf(false) }
 
-        val focusManager = LocalFocusManager.current
         LaunchedEffect(
             check1.value,
             check2.value,
@@ -68,7 +80,10 @@ class SignupInfoFragment : BaseFragment() {
                 check1.value && check2.value && check3.value && check4.value && check5.value && check6.value
         }
         LayoutTheme330 {
-            Header(title = "", clickBack = { Log.e("HAHA", "Back!") })
+            //TODO: Header
+            Header(title = "", clickBack = {
+                viewController?.popFragment()
+            })
             Column(
                 modifier = Modifier
                     .padding(16.dp)
@@ -92,6 +107,7 @@ class SignupInfoFragment : BaseFragment() {
                     modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
                 )
 
+                //TODO: Name
                 Text(
                     stringResource(R.string.name),
                     style = text14_222,
@@ -102,6 +118,7 @@ class SignupInfoFragment : BaseFragment() {
                     modifier = Modifier.padding(top = 4.dp)
                 )
 
+                //TODO: ID
                 Text(
                     stringResource(R.string.user_id),
                     fontWeight = FontWeight.Black,
@@ -114,12 +131,21 @@ class SignupInfoFragment : BaseFragment() {
                     color = ColorUtils.gray_222222,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
-                TextFieldCustom(
-                    hint = stringResource(R.string.please_enter_id),
-                    modifier = Modifier.padding(top = 4.dp),
-                    maxLength = 15
-                )
+                val textStateId = remember { mutableStateOf(TextFieldValue("")) }
+                HandleInputId(textStateId)
+                AnimatedVisibility(
+                    visible = (viewModel.stateErrorId.value != null &&
+                            viewModel.stateErrorId.value!!.isNotEmpty())
+                ) {
+                    Text(
+                        text = viewModel.stateErrorId.value ?: "",
+                        modifier = Modifier.padding(top = 4.dp),
+                        fontSize = 12.sp,
+                        color = ColorUtils.pink_FF1E54
+                    )
+                }
 
+                //TODO: Password
                 Text(
                     stringResource(R.string.password),
                     fontWeight = FontWeight.Black,
@@ -132,22 +158,40 @@ class SignupInfoFragment : BaseFragment() {
                     color = ColorUtils.gray_222222,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
-                TextFieldCustom(
-                    hint = stringResource(R.string.hint_input_password),
-                    modifier = Modifier.padding(top = 4.dp)
-                )
+                val textStatePw = remember { viewModel.pw }
+                HandleInputPassword(textStatePw)
+                AnimatedVisibility(
+                    visible = (viewModel.stateErrorPw.value != null &&
+                            viewModel.stateErrorPw.value!!.isNotEmpty())
+                ) {
+                    Text(
+                        text = viewModel.stateErrorPw.value ?: "",
+                        modifier = Modifier.padding(top = 4.dp),
+                        fontSize = 12.sp,
+                        color = ColorUtils.pink_FF1E54
+                    )
+                }
 
+                //TODO: Re-password
                 Text(
                     stringResource(R.string.confirm_password),
                     style = text14_222,
                     fontWeight = FontWeight.Black,
                     modifier = Modifier.padding(top = 20.dp)
                 )
-                TextFieldCustom(
-                    hint = stringResource(R.string.hint_input_confirm_password),
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-
+                val textStateRePw = remember { mutableStateOf(TextFieldValue("")) }
+                HandleInputConfirmPassword(textStateRePw)
+                AnimatedVisibility(
+                    visible = (viewModel.stateErrorRePw.value != null &&
+                            viewModel.stateErrorRePw.value!!.isNotEmpty())
+                ) {
+                    Text(
+                        text = viewModel.stateErrorRePw.value ?: "",
+                        modifier = Modifier.padding(top = 4.dp),
+                        fontSize = 12.sp,
+                        color = ColorUtils.pink_FF1E54
+                    )
+                }
                 Text(
                     stringResource(R.string.phone_label),
                     style = text14_222,
@@ -425,5 +469,122 @@ class SignupInfoFragment : BaseFragment() {
                 fontSize = 12.sp
             )
         }
+    }
+
+    @Composable
+    fun TextFieldSignUp(
+        modifier: Modifier = Modifier,
+        textStateId: MutableState<TextFieldValue> = remember {
+            mutableStateOf(TextFieldValue(""))
+        },
+        hint: String = "",
+        maxLength: Int = 1000,
+        inputType: KeyboardType = KeyboardType.Text,
+        isPw: Boolean = false
+    ) {
+        Box(
+            modifier = modifier
+                .background(ColorUtils.white_FFFFFF)
+                .fillMaxWidth()
+                .height(44.dp)
+                .border(
+                    width = 1.dp,
+                    color = ColorUtils.gray_E1E1E1,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .padding(horizontal = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            BasicTextField(
+                value = textStateId.value,
+                onValueChange = {
+                    if (it.text.length <= maxLength) textStateId.value = it
+                },
+                Modifier
+                    .fillMaxWidth(),
+                singleLine = true,
+//            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                visualTransformation = if (isPw) PasswordVisualTransformation() else VisualTransformation.None,
+                keyboardOptions = KeyboardOptions(keyboardType = inputType),
+                textStyle = TextStyle(
+                    color = ColorUtils.black_000000
+                ),
+                decorationBox = { innerTextField ->
+                    Row {
+                        if (textStateId.value.text.isEmpty()) {
+                            Text(
+                                text = hint,
+                                color = ColorUtils.gray_BEBEBE,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                    innerTextField()
+                }
+            )
+        }
+    }
+
+    @Composable
+    private fun HandleInputId(textStateId: MutableState<TextFieldValue>) {
+        val focused = remember { mutableStateOf(false) }
+        TextFieldSignUp(
+            hint = stringResource(R.string.please_enter_id),
+            textStateId = textStateId,
+            modifier = Modifier
+                .padding(top = 4.dp)
+                .onFocusChanged {
+                    if (!it.hasFocus && focused.value) {
+                        viewModel.checkInputId(textStateId.value.text)
+                    } else {
+                        focused.value = true
+                    }
+                },
+            maxLength = 20
+        )
+    }
+
+    @Composable
+    private fun HandleInputPassword(textFieldValue: MutableState<TextFieldValue>) {
+        val focused = remember { mutableStateOf(false) }
+        TextFieldSignUp(
+            hint = stringResource(R.string.hint_input_password),
+            textStateId = textFieldValue,
+            modifier = Modifier
+                .padding(top = 4.dp)
+                .onFocusChanged {
+                    if (!it.hasFocus && focused.value) {
+                        viewModel.checkInputPw(textFieldValue.value.text)
+                        viewModel.checkInputRePw()
+                    } else {
+                        focused.value = true
+                    }
+                },
+            maxLength = 15,
+            isPw = true
+        )
+    }
+
+    @Composable
+    private fun HandleInputConfirmPassword(
+        textFieldValue: MutableState<TextFieldValue>
+    ) {
+        val focused = remember { mutableStateOf(false) }
+        TextFieldSignUp(
+            hint = stringResource(R.string.hint_input_confirm_password),
+            textStateId = textFieldValue,
+            modifier = Modifier
+                .padding(top = 4.dp)
+                .onFocusChanged {
+                    if (!it.hasFocus && focused.value) {
+                        viewModel.confirmPw = textFieldValue.value.text
+                        viewModel.checkInputRePw()
+                    } else {
+                        focused.value = true
+                    }
+                },
+            maxLength = 15,
+            isPw = true
+        )
     }
 }

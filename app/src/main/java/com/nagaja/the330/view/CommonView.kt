@@ -85,7 +85,7 @@ fun Test() {
 @Composable
 fun TextFieldCustom(modifier: Modifier = Modifier, hint: String = "", maxLength: Int = 1000) {
     val textStateId = remember { mutableStateOf(TextFieldValue("")) }
-    val focusManager = LocalFocusManager.current
+//    val focusManager = LocalFocusManager.current
     Box(
         modifier = modifier
             .background(ColorUtils.white_FFFFFF)
@@ -105,7 +105,7 @@ fun TextFieldCustom(modifier: Modifier = Modifier, hint: String = "", maxLength:
             Modifier
                 .fillMaxWidth(),
             singleLine = true,
-            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+//            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
 //            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = TextStyle(
                 color = ColorUtils.black_000000

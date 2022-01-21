@@ -7,6 +7,8 @@ import com.nagaja.the330.view.general.GeneralRepository
 import com.nagaja.the330.view.general.GeneralViewModel
 import com.nagaja.the330.view.login.LoginRepository
 import com.nagaja.the330.view.login.LoginViewModel
+import com.nagaja.the330.view.signupinfo.SignupInfoRepo
+import com.nagaja.the330.view.signupinfo.SignupInfoVM
 
 
 class ViewModelFactory(apiService: ApiService) :
@@ -20,6 +22,8 @@ class ViewModelFactory(apiService: ApiService) :
             GeneralViewModel(GeneralRepository(apiService))
         creators[LoginViewModel::class.java] =
             LoginViewModel(LoginRepository(apiService))
+        creators[SignupInfoVM::class.java] =
+            SignupInfoVM(SignupInfoRepo(apiService))
     }
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {

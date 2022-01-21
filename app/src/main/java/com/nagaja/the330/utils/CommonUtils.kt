@@ -2,18 +2,14 @@ package com.nagaja.the330.utils
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.projection.MediaProjectionManager
 import android.provider.Settings
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -93,8 +89,8 @@ object CommonUtils {
 
     fun isPasswordValid(email: String?): Boolean {
         val pattern: Pattern
-        val EMAIL_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{10,15}$"
-        pattern = Pattern.compile(EMAIL_PATTERN)
+        val regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,15}$"
+        pattern = Pattern.compile(regex)
         val matcher: Matcher = pattern.matcher(email)
         return matcher.matches()
     }

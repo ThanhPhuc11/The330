@@ -33,12 +33,17 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.kakao.sdk.auth.LoginClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.KakaoSdk
+import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.general.GeneralViewModel
+import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.signupinfo.SignupInfoFragment
+import com.nagaja.the330.view.signupinfo.SignupInfoRepo
 import com.nagaja.the330.view.text14_62
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
@@ -66,6 +71,8 @@ class LoginFragment : BaseFragment() {
             }
         viewModel = getViewModelProvider(viewModelStoreOwner)[LoginViewModel::class.java]
         generalViewModel = getViewModelProvider(viewModelStoreOwner)[GeneralViewModel::class.java]
+
+        viewController = (activity as MainActivity).viewController
 
         viewModel.callbackLoginKaKaoSuccess.observe(viewLifecycleOwner) {
             DataStorePref(requireContext()).setToken(it)
@@ -195,7 +202,17 @@ class LoginFragment : BaseFragment() {
                         .width(1.dp)
                         .background(ColorUtils.gray_E1E1E1)
                 )
-                Text("회원가입", style = text14_62, modifier = Modifier.weight(1f))
+                Text(
+                    "회원가입",
+                    style = text14_62,
+                    modifier = Modifier
+                        .weight(1f)
+                        .noRippleClickable {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_SIGNUP_MAIL,
+                                SignupInfoFragment.newInstance()
+                            )
+                        })
             }
             Spacer(modifier = Modifier.weight(1f))
             LoginSocial()

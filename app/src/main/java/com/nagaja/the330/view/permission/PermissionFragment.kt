@@ -15,13 +15,18 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.CommonUtils
+import com.nagaja.the330.utils.ScreenId
+import com.nagaja.the330.view.login.LoginFragment
+import com.nagaja.the330.view.noRippleClickable
 
 class PermissionFragment : BaseFragment() {
     companion object {
@@ -31,7 +36,7 @@ class PermissionFragment : BaseFragment() {
 
     @Composable
     override fun SetupViewModel() {
-        TODO("Not yet implemented")
+        viewController = (activity as MainActivity).viewController
     }
 
     @Composable
@@ -46,10 +51,11 @@ class PermissionFragment : BaseFragment() {
                 return
             }
             //TODO: next screen
-//        viewController?.pushFragment(ScreenId.SCREEN_GALLERY_IMAGE, galleryFragment)
+            viewController?.pushFragment(ScreenId.SCREEN_LOGIN, LoginFragment.newInstance())
         }
     }
 
+    @Preview
     @Composable
     fun PreviewUI() {
         Column(
@@ -230,7 +236,7 @@ class PermissionFragment : BaseFragment() {
                     .fillMaxWidth()
                     .height(52.dp)
                     .background(ColorUtils.blue_2177E4)
-                    .clickable {
+                    .noRippleClickable {
                         askPermission()
                     },
                 contentAlignment = Alignment.Center
