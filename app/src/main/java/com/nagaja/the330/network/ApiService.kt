@@ -2,6 +2,7 @@ package com.nagaja.the330.network
 
 import com.nagaja.the330.model.AuthRequest
 import com.nagaja.the330.model.AuthTokenModel
+import com.nagaja.the330.model.PhoneAvailableModel
 import com.nagaja.the330.model.UserDetail
 import retrofit2.http.*
 
@@ -19,4 +20,14 @@ interface ApiService {
     suspend fun getUserDetails(
         @Header("Authorization") token: String
     ): UserDetail
+
+    @POST("users/existByPhone")
+    suspend fun checkExistPhone(
+        @Body phone: PhoneAvailableModel
+    ): PhoneAvailableModel
+
+    @POST("users/phoneVerify")
+    suspend fun sendPhone(
+        @Body phone: PhoneAvailableModel
+    ): PhoneAvailableModel
 }

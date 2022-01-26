@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.signupinfo
 
+import android.os.CountDownTimer
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
@@ -35,6 +36,7 @@ import com.nagaja.the330.view.*
 
 class SignupInfoFragment : BaseFragment() {
     private lateinit var viewModel: SignupInfoVM
+    private var countDownTimer: CountDownTimer? = null
 
     companion object {
         @JvmStatic
@@ -78,6 +80,35 @@ class SignupInfoFragment : BaseFragment() {
         ) {
             checkedAll.value =
                 check1.value && check2.value && check3.value && check4.value && check5.value && check6.value
+        }
+
+        LaunchedEffect(viewModel.statePhone.value.text.length) {
+            viewModel.checkPhone()
+        }
+        LaunchedEffect(viewModel.stateOTP.value.text.length) {
+            viewModel.checkOTP()
+        }
+        countDownTimer = object : android.os.CountDownTimer(10000, 1000) {
+            override fun onFinish() {
+                viewModel.stateSendPhone.value = true
+                viewModel.stateEnableFocusPhone.value = true
+                viewModel.cbActivePhoneButtonTimer.value = false
+            }
+
+            override fun onTick(millisUntilFinished: Long) {
+                "${numberFormat2Digit((millisUntilFinished / 60000).toInt())}:${
+                    numberFormat2Digit(
+                        ((millisUntilFinished % (60000)) / 1000).toInt()
+                    )
+                }".also {
+                    viewModel.cbNumberCoundown.value = it
+                }
+            }
+        }
+        LaunchedEffect(viewModel.cbActivePhoneButtonTimer.value) {
+            if (viewModel.cbActivePhoneButtonTimer.value) {
+                countDownTimer?.start()
+            }
         }
         LayoutTheme330 {
             //TODO: Header
@@ -192,6 +223,8 @@ class SignupInfoFragment : BaseFragment() {
                         color = ColorUtils.pink_FF1E54
                     )
                 }
+
+                //TODO: Phone
                 Text(
                     stringResource(R.string.phone_label),
                     style = text14_222,
@@ -213,40 +246,52 @@ class SignupInfoFragment : BaseFragment() {
                                 shape = RoundedCornerShape(4.dp)
                             )
                     )
-                    TextFieldCustom(
-                        hint = stringResource(R.string.hint_input_phone),
-                        modifier = Modifier.weight(1f)
-                    )
+                    HandleInputPhoneNumber(viewModel.statePhone, modifier = Modifier.weight(1f))
                 }
 
-                val enable = remember { mutableStateOf(false) }
-                Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .fillMaxWidth()
-                        .height(44.dp)
-                        .clip(RoundedCornerShape(4.dp)),
-                    colors = ButtonDefaults.textButtonColors(
-                        backgroundColor = if (enable.value) ColorUtils.blue_2177E4 else ColorUtils.gray_E1E1E1
-                    )
-                ) {
-                    Text(
-                        stringResource(R.string.authen_request),
-                        fontSize = 14.sp,
-                        color = ColorUtils.gray_BEBEBE
-                    )
+//                Button(
+//                    onClick = { /*TODO*/ },
+//                    modifier = Modifier
+//                        .padding(top = 8.dp)
+//                        .fillMaxWidth()
+//                        .height(44.dp)
+//                        .clip(RoundedCornerShape(4.dp)),
+//                    colors = ButtonDefaults.textButtonColors(
+//                        backgroundColor = if (viewModel.stateSendPhone.value) ColorUtils.white_FFFFFF else ColorUtils.gray_E1E1E1
+//                    ),
+//                    border = BorderStroke(
+//                        1.dp,
+//                        if (viewModel.stateSendPhone.value) ColorUtils.gray_222222 else ColorUtils.gray_E1E1E1
+//                    )
+//                ) {
+//                    Text(
+//                        stringResource(R.string.authen_request),
+//                        fontSize = 14.sp,
+//                        color = ColorUtils.gray_BEBEBE
+//                    )
+//                }
+                DrawRequestPhoneButton(viewModel.stateSendPhone.value) {
+                    viewModel.checkExistByPhone()
                 }
 
+                //TODO: OTP
                 Text(
                     stringResource(R.string.cer_number_input),
                     style = text14_222,
                     fontWeight = FontWeight.Black,
                     modifier = Modifier.padding(top = 24.dp)
                 )
-                TextFieldCustom(
+//                TextFieldCustom(
+//                    hint = stringResource(R.string.hint_input_otp),
+//                    modifier = Modifier.padding(top = 4.dp)
+//                )
+
+                TextFieldSignUp(
                     hint = stringResource(R.string.hint_input_otp),
-                    modifier = Modifier.padding(top = 4.dp)
+                    textStateId = viewModel.stateOTP,
+                    modifier = Modifier.padding(top = 4.dp),
+                    maxLength = 6,
+                    focusable = viewModel.stateEnableFocusOTP.value
                 )
 
                 Button(
@@ -257,7 +302,7 @@ class SignupInfoFragment : BaseFragment() {
                         .height(44.dp)
                         .clip(RoundedCornerShape(4.dp)),
                     colors = ButtonDefaults.textButtonColors(
-                        backgroundColor = if (enable.value) ColorUtils.blue_2177E4 else ColorUtils.gray_E1E1E1
+                        backgroundColor = if (viewModel.stateSendOTP.value) ColorUtils.blue_2177E4 else ColorUtils.gray_E1E1E1
                     )
                 ) {
                     Text(
@@ -480,7 +525,8 @@ class SignupInfoFragment : BaseFragment() {
         hint: String = "",
         maxLength: Int = 1000,
         inputType: KeyboardType = KeyboardType.Text,
-        isPw: Boolean = false
+        isPw: Boolean = false,
+        focusable: Boolean = true
     ) {
         Box(
             modifier = modifier
@@ -503,6 +549,7 @@ class SignupInfoFragment : BaseFragment() {
                 Modifier
                     .fillMaxWidth(),
                 singleLine = true,
+                enabled = focusable,
 //            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 visualTransformation = if (isPw) PasswordVisualTransformation() else VisualTransformation.None,
                 keyboardOptions = KeyboardOptions(keyboardType = inputType),
@@ -586,5 +633,69 @@ class SignupInfoFragment : BaseFragment() {
             maxLength = 15,
             isPw = true
         )
+    }
+
+    @Composable
+    private fun HandleInputPhoneNumber(
+        textFieldValue: MutableState<TextFieldValue>,
+        modifier: Modifier = Modifier
+    ) {
+        TextFieldSignUp(
+            hint = stringResource(R.string.hint_input_phone),
+            textStateId = textFieldValue,
+            modifier = modifier,
+            maxLength = 11,
+            focusable = viewModel.stateEnableFocusPhone.value
+        )
+    }
+
+    @Composable
+    private fun DrawRequestPhoneButton(isActived: Boolean, onClick: () -> Unit) {
+        if (isActived) {
+            Button(
+                onClick = { onClick() },
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                colors = ButtonDefaults.textButtonColors(
+                    backgroundColor = ColorUtils.white_FFFFFF
+                ),
+                border = BorderStroke(
+                    1.dp,
+                    ColorUtils.gray_222222
+                )
+            ) {
+                Text(
+                    viewModel.cbNumberCoundown.value,
+                    fontSize = 14.sp,
+                    color = ColorUtils.gray_222222
+                )
+            }
+        } else {
+            Button(
+                onClick = { },
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                colors = ButtonDefaults.textButtonColors(
+                    backgroundColor = ColorUtils.gray_E1E1E1
+                ),
+                enabled = false
+            ) {
+                Text(
+                    viewModel.cbNumberCoundown.value,
+                    fontSize = 14.sp,
+                    color = ColorUtils.gray_BEBEBE
+                )
+            }
+        }
+    }
+
+    fun numberFormat2Digit(number: Int): String {
+        return if (number < 10) "0$number" else number.toString() + ""
     }
 }
