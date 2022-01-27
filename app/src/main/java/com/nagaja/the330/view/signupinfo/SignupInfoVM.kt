@@ -2,11 +2,11 @@ package com.nagaja.the330.view.signupinfo
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.PhoneAvailableModel
+import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.CommonUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -21,7 +21,8 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     val stateErrorRePw: MutableState<String?> = mutableStateOf(null)
     val pw = mutableStateOf(TextFieldValue(""))
     var confirmPw: String? = null
-    var nationalNumber: String? = "82"
+    var _nationalNumber: String? = "82"
+    var _otp: Int? = null
 
     // Phone
     val stateEdtPhone = mutableStateOf(TextFieldValue(""))
@@ -39,7 +40,7 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     val validateId = mutableStateOf(false)
     val validatePass = mutableStateOf(false)
     val validatePhone = mutableStateOf(false)
-    val validateAddress = mutableStateOf(false)
+    val validateAddress = mutableStateOf(true)
 
 
     //    이미 가입된 아이디입니다.
@@ -105,7 +106,7 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     private fun sendPhone() {
         val phone = stateEdtPhone.value.text
         viewModelScope.launch(Dispatchers.IO) {
-            repo.sendPhone(PhoneAvailableModel(phone = phone, nationNumber = nationalNumber))
+            repo.sendPhone(PhoneAvailableModel(phone = phone, nationNumber = _nationalNumber))
                 .onStart {
                     stateEnableFocusPhone.value = false
                     stateBtnSendPhone.value = false
@@ -130,7 +131,7 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
                 PhoneAvailableModel(
                     phone = phone,
                     otp = otp.toInt(),
-                    nationNumber = nationalNumber
+                    nationNumber = _nationalNumber
                 )
             )
                 .onStart {
@@ -144,9 +145,31 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
                 .collect {
                     if (it.raw().isSuccessful && it.raw().code == 202) {
                         cbActivePhoneButtonTimer.value = false
+                        validatePhone.value = true
+                        _otp = it.body()?.otp
                     }
                 }
 
+        }
+    }
+
+    fun authWithId(userDetail: UserDetail) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.authWithId(UserDetail().apply {
+                name = userDetail.name
+                password = pw.value.text
+                nation = "KOREA"
+                nationNumber = _nationalNumber
+                phone = stateEdtPhone.value.text
+                agreePolicy = true
+                otp = _otp
+            })
+                .onStart { }
+                .onCompletion { }
+                .catch { }
+                .collect {
+
+                }
         }
     }
 }

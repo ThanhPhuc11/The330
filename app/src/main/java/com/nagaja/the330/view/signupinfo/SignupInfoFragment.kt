@@ -32,6 +32,7 @@ import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.*
 
@@ -63,6 +64,8 @@ class SignupInfoFragment : BaseFragment() {
                 Log.e("PHUC", "onStop")
             }
         })
+        val textStateId = remember { mutableStateOf(TextFieldValue("")) }
+
         val checkedAll = remember { mutableStateOf(false) }
         val check1 = remember { mutableStateOf(false) }
         val check2 = remember { mutableStateOf(false) }
@@ -134,19 +137,21 @@ class SignupInfoFragment : BaseFragment() {
             Header(title = "", clickBack = {
                 viewController?.popFragment()
             })
-            Box(
+            Column(
                 Modifier
                     .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.BottomCenter
+                    .weight(1f)
+                    .verticalScroll(
+                        state = rememberScrollState()
+                    ),
+//                contentAlignment = Alignment.BottomCenter
             ) {
                 Column(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
-                        .fillMaxSize()
-                        .verticalScroll(
-                            state = rememberScrollState()
-                        )
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+
                 ) {
                     Text(
                         stringResource(R.string.signup),
@@ -186,7 +191,7 @@ class SignupInfoFragment : BaseFragment() {
                         color = ColorUtils.gray_222222,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
-                    val textStateId = remember { mutableStateOf(TextFieldValue("")) }
+
                     HandleInputId(textStateId)
                     AnimatedVisibility(
                         visible = (viewModel.stateErrorId.value != null &&
@@ -403,7 +408,11 @@ class SignupInfoFragment : BaseFragment() {
                     )
                 }
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        viewModel.authWithId(UserDetail().apply {
+                            name = textStateId.value.text
+                        })
+                    },
                     modifier = Modifier
                         .padding(bottom = 20.dp)
                         .fillMaxWidth()
@@ -414,6 +423,7 @@ class SignupInfoFragment : BaseFragment() {
                     Text(
                         "가입완료",
                         fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
                         color = if (btnSignupState.value) ColorUtils.white_FFFFFF else ColorUtils.gray_C4C4C4
                     )
                 }
@@ -715,6 +725,8 @@ class SignupInfoFragment : BaseFragment() {
             fontWeight = FontWeight.Black,
             modifier = Modifier.padding(top = 20.dp)
         )
+        val edtAddress = remember { mutableStateOf(TextFieldValue("")) }
+        val edtFullAddress = remember { mutableStateOf(TextFieldValue("")) }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -770,7 +782,6 @@ class SignupInfoFragment : BaseFragment() {
                 ) {
                     TextFieldCustom(
                         hint = stringResource(R.string.hint_input_address),
-//                    modifier = Modifier.weight(4f)
                     )
                 }
                 Image(
@@ -783,10 +794,10 @@ class SignupInfoFragment : BaseFragment() {
             }
 
         }
-        TextFieldCustom(
-            hint = stringResource(R.string.hint_input_address),
+        TextFieldSignUp(
+            textStateId = edtAddress,
+            hint = stringResource(R.string.hint_input_full_address),
             modifier = Modifier
-//                .weight(4f)
                 .padding(top = 8.dp)
         )
     }

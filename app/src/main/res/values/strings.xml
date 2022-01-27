@@ -24,6 +24,7 @@
     <string name="certification">인증</string>
     <string name="address">주소</string>
     <string name="hint_input_address">지번/도로명 주소를 입력하세요.</string>
+    <string name="hint_input_full_address">상세주소를 입력하세요.</string>
     <string name="label_agree_term_to_use">회원 정보 입력 및 이용약관 동의</string>
     <string name="agree_all_term">이용약관 전체동의</string>
 </resources>

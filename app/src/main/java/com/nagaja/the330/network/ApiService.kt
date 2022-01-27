@@ -14,10 +14,10 @@ interface ApiService {
     @POST("auth/naver")
     suspend fun authWithNaver(@Body body: AuthRequest): AuthTokenModel
 
-    @GET("users")
-    suspend fun getUserDetails(
-        @Header("Authorization") token: String
-    ): UserDetail
+    @POST("auth/registration/userId")
+    suspend fun authWithId(
+        @Body body: UserDetail
+    ): AuthTokenModel //201
 
     @POST("users/existByPhone")
     suspend fun checkExistPhone(
@@ -33,4 +33,15 @@ interface ApiService {
     suspend fun sendOTP(
         @Body phone: PhoneAvailableModel
     ): Response<PhoneAvailableModel>
+
+    @GET("users")
+    suspend fun getUserDetails(
+        @Header("Authorization") token: String
+    ): UserDetail
+
+    @PATCH("users")
+    suspend fun editUser(
+        @Header("Authorization") token: String,
+        @Body body: UserDetail
+    ): Response<Unit> //204
 }

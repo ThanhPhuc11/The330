@@ -1,6 +1,7 @@
 package com.nagaja.the330.view.signupinfo
 
 import com.nagaja.the330.model.PhoneAvailableModel
+import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.network.ApiService
 import kotlinx.coroutines.flow.flow
 
@@ -15,5 +16,9 @@ class SignupInfoRepo(private val apiService: ApiService) {
 
     suspend fun sendOTP(body: PhoneAvailableModel) = flow {
         emit(apiService.sendOTP(body))
+    }
+
+    suspend fun authWithId(user: UserDetail) = flow {
+        emit(apiService.authWithId(user))
     }
 }

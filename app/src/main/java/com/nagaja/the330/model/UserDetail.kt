@@ -4,6 +4,7 @@ class UserDetail {
     var id: Int? = null
     var name: String? = null
     var realName: String? = null
+    var password: String? = null
     var email: String? = null
     var nationNumber: String? = null
     var phone: String? = null
@@ -12,6 +13,7 @@ class UserDetail {
     var createdOn: String? = null
     var updatedOn: String? = null
     var snsType: String? = null
+    var otp: Int? = null
     var userType: String? = null
     var noticeSettings: List<Int>? = null
     var agreePolicy: Boolean? = null
