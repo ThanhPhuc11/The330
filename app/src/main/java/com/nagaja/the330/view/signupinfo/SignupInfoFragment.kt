@@ -31,6 +31,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.*
 
@@ -273,52 +274,8 @@ class SignupInfoFragment : BaseFragment() {
                     viewModel.sendOTP()
                 }
 
-                Text(
-                    stringResource(R.string.address),
-                    style = text14_222,
-                    fontWeight = FontWeight.Black,
-                    modifier = Modifier.padding(top = 20.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .border(
-                                width = 1.dp,
-                                color = ColorUtils.gray_E1E1E1,
-                                shape = RoundedCornerShape(4.dp)
-                            )
-                            .weight(2f)
-                            .height(44.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "대한민국",
-                            style = text14_222
-                        )
-                    }
-                    TextFieldCustom(
-                        hint = stringResource(R.string.hint_input_address),
-                        modifier = Modifier.weight(4f)
-                    )
-                    Image(
-                        painter = painterResource(R.drawable.ic_mark),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .weight(1f)
-                    )
-                }
-                TextFieldCustom(
-                    hint = stringResource(R.string.hint_input_address),
-                    modifier = Modifier
-                        .weight(4f)
-                        .padding(top = 8.dp)
-                )
+                //TODO: Address
+                HandleChooseAddress()
 
                 //term
                 Text(
@@ -700,6 +657,90 @@ class SignupInfoFragment : BaseFragment() {
                 )
             }
         }
+    }
+
+    @Composable
+    private fun HandleChooseAddress() {
+        Text(
+            stringResource(R.string.address),
+            style = text14_222,
+            fontWeight = FontWeight.Black,
+            modifier = Modifier.padding(top = 20.dp)
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val options = GetDummyData.getCoutryAdrressSignup()
+            var expanded by remember { mutableStateOf(false) }
+            var selectedOptionText by remember { mutableStateOf(options[0]) }
+            Box(
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .noRippleClickable {
+                        expanded = !expanded
+                    }
+                    .border(
+                        width = 1.dp,
+                        color = ColorUtils.gray_E1E1E1,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .weight(2f)
+                    .height(44.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    selectedOptionText.name!!,
+                    style = text14_222
+                )
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = {
+                        expanded = false
+                    }
+                ) {
+                    options.forEach { selectionOption ->
+                        DropdownMenuItem(
+                            onClick = {
+                                selectedOptionText = selectionOption
+                                expanded = false
+                            }
+                        ) {
+                            Text(text = selectionOption.name!!)
+                        }
+                    }
+                }
+            }
+
+
+            Row(modifier = Modifier.weight(5f), verticalAlignment = Alignment.CenterVertically) {
+                AnimatedVisibility(
+                    visible = selectedOptionText.id == "KOREA",
+                    modifier = Modifier.weight(1f)
+                ) {
+                    TextFieldCustom(
+                        hint = stringResource(R.string.hint_input_address),
+//                    modifier = Modifier.weight(4f)
+                    )
+                }
+                Image(
+                    painter = painterResource(R.drawable.ic_mark),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(horizontal = 8.dp)
+                )
+            }
+
+        }
+        TextFieldCustom(
+            hint = stringResource(R.string.hint_input_address),
+            modifier = Modifier
+//                .weight(4f)
+                .padding(top = 8.dp)
+        )
     }
 
     fun numberFormat2Digit(number: Int): String {
