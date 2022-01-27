@@ -2,6 +2,7 @@ package com.nagaja.the330.view.signupinfo
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
@@ -34,15 +35,24 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     val stateBtnSendOTP = mutableStateOf(false)
     val cbActivePhoneButtonTimer = mutableStateOf(false)
 
+    //check validate input
+    val validateId = mutableStateOf(false)
+    val validatePass = mutableStateOf(false)
+    val validatePhone = mutableStateOf(false)
+    val validateAddress = mutableStateOf(false)
+
 
     //    이미 가입된 아이디입니다.
     fun checkInputId(it: String?) {
         if (it.isNullOrBlank()) {
             stateErrorId.value = "아이디를 입력해 주세요."
+            validateId.value = false
         } else if (it.length < 5) {
             stateErrorId.value = "아이디는 5~20자의 영문 소문자, 숫자 조합으로 입력해 주세요."
+            validateId.value = false
         } else {
             stateErrorId.value = ""
+            validateId.value = true
         }
     }
 
@@ -54,6 +64,7 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
         } else {
             stateErrorPw.value = ""
         }
+        checkValidatePw()
     }
 
     fun checkInputRePw() {
@@ -63,6 +74,11 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
         } else {
             stateErrorRePw.value = ""
         }
+        checkValidatePw()
+    }
+
+    private fun checkValidatePw() {
+        validatePass.value = stateErrorPw.value == "" && stateErrorRePw.value == ""
     }
 
     fun checkPhone() {

@@ -71,6 +71,8 @@ class SignupInfoFragment : BaseFragment() {
         val check5 = remember { mutableStateOf(false) }
         val check6 = remember { mutableStateOf(false) }
 
+        val btnSignupState = remember { mutableStateOf(false) }
+
         LaunchedEffect(
             check1.value,
             check2.value,
@@ -88,6 +90,21 @@ class SignupInfoFragment : BaseFragment() {
         }
         LaunchedEffect(viewModel.stateEdtOTP.value.text.length) {
             viewModel.checkOTP()
+        }
+
+        LaunchedEffect(
+            viewModel.validateId.value,
+            viewModel.validatePass.value,
+            viewModel.validatePhone.value,
+            viewModel.validateAddress.value,
+            checkedAll.value
+        ) {
+            btnSignupState.value =
+                viewModel.validateId.value &&
+                        viewModel.validatePass.value &&
+                        viewModel.validatePhone.value &&
+                        viewModel.validateAddress.value &&
+                        checkedAll.value
         }
         countDownTimer = object : android.os.CountDownTimer(20000, 1000) {
             override fun onFinish() {
@@ -117,260 +134,291 @@ class SignupInfoFragment : BaseFragment() {
             Header(title = "", clickBack = {
                 viewController?.popFragment()
             })
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
+            Box(
+                Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-                    .verticalScroll(
-                        state = rememberScrollState()
-                    )
+                    .weight(1f),
+                contentAlignment = Alignment.BottomCenter
             ) {
-                Text(
-                    stringResource(R.string.signup),
-                    color = ColorUtils.gray_222222,
-                    fontSize = 24.sp,
+                Column(
                     modifier = Modifier
-                        .padding(top = 20.dp)
-                )
-                Text(
-                    stringResource(R.string.enter_member_infomation),
-                    fontSize = 16.sp,
-                    color = ColorUtils.gray_9F9F9F,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
-                )
-
-                //TODO: Name
-                Text(
-                    stringResource(R.string.name),
-                    style = text14_222,
-                    fontWeight = FontWeight.Black,
-                )
-                TextFieldCustom(
-                    hint = stringResource(R.string.input_your_name_please),
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-
-                //TODO: ID
-                Text(
-                    stringResource(R.string.user_id),
-                    fontWeight = FontWeight.Black,
-                    style = text14_222,
-                    modifier = Modifier.padding(top = 20.dp)
-                )
-                Text(
-                    stringResource(R.string.guide_input_id),
-                    fontSize = 10.sp,
-                    color = ColorUtils.gray_222222,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
-                val textStateId = remember { mutableStateOf(TextFieldValue("")) }
-                HandleInputId(textStateId)
-                AnimatedVisibility(
-                    visible = (viewModel.stateErrorId.value != null &&
-                            viewModel.stateErrorId.value!!.isNotEmpty())
+                        .padding(horizontal = 16.dp)
+                        .fillMaxSize()
+                        .verticalScroll(
+                            state = rememberScrollState()
+                        )
                 ) {
                     Text(
-                        text = viewModel.stateErrorId.value ?: "",
-                        modifier = Modifier.padding(top = 4.dp),
-                        fontSize = 12.sp,
-                        color = ColorUtils.pink_FF1E54
+                        stringResource(R.string.signup),
+                        color = ColorUtils.gray_222222,
+                        fontSize = 24.sp,
+                        modifier = Modifier
+                            .padding(top = 20.dp)
                     )
-                }
-
-                //TODO: Password
-                Text(
-                    stringResource(R.string.password),
-                    fontWeight = FontWeight.Black,
-                    style = text14_222,
-                    modifier = Modifier.padding(top = 20.dp)
-                )
-                Text(
-                    stringResource(R.string.guide_input_password),
-                    fontSize = 10.sp,
-                    color = ColorUtils.gray_222222,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
-                val textStatePw = remember { viewModel.pw }
-                HandleInputPassword(textStatePw)
-                AnimatedVisibility(
-                    visible = (viewModel.stateErrorPw.value != null &&
-                            viewModel.stateErrorPw.value!!.isNotEmpty())
-                ) {
                     Text(
-                        text = viewModel.stateErrorPw.value ?: "",
-                        modifier = Modifier.padding(top = 4.dp),
-                        fontSize = 12.sp,
-                        color = ColorUtils.pink_FF1E54
+                        stringResource(R.string.enter_member_infomation),
+                        fontSize = 16.sp,
+                        color = ColorUtils.gray_9F9F9F,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
                     )
-                }
 
-                //TODO: Re-password
-                Text(
-                    stringResource(R.string.confirm_password),
-                    style = text14_222,
-                    fontWeight = FontWeight.Black,
-                    modifier = Modifier.padding(top = 20.dp)
-                )
-                val textStateRePw = remember { mutableStateOf(TextFieldValue("")) }
-                HandleInputConfirmPassword(textStateRePw)
-                AnimatedVisibility(
-                    visible = (viewModel.stateErrorRePw.value != null &&
-                            viewModel.stateErrorRePw.value!!.isNotEmpty())
-                ) {
+                    //TODO: Name
                     Text(
-                        text = viewModel.stateErrorRePw.value ?: "",
-                        modifier = Modifier.padding(top = 4.dp),
-                        fontSize = 12.sp,
-                        color = ColorUtils.pink_FF1E54
+                        stringResource(R.string.name),
+                        style = text14_222,
+                        fontWeight = FontWeight.Black,
                     )
-                }
+                    TextFieldCustom(
+                        hint = stringResource(R.string.input_your_name_please),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
 
-                //TODO: Phone
-                Text(
-                    stringResource(R.string.phone_label),
-                    style = text14_222,
-                    fontWeight = FontWeight.Black,
-                    modifier = Modifier.padding(top = 20.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp)
-                ) {
+                    //TODO: ID
+                    Text(
+                        stringResource(R.string.user_id),
+                        fontWeight = FontWeight.Black,
+                        style = text14_222,
+                        modifier = Modifier.padding(top = 20.dp)
+                    )
+                    Text(
+                        stringResource(R.string.guide_input_id),
+                        fontSize = 10.sp,
+                        color = ColorUtils.gray_222222,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    val textStateId = remember { mutableStateOf(TextFieldValue("")) }
+                    HandleInputId(textStateId)
+                    AnimatedVisibility(
+                        visible = (viewModel.stateErrorId.value != null &&
+                                viewModel.stateErrorId.value!!.isNotEmpty())
+                    ) {
+                        Text(
+                            text = viewModel.stateErrorId.value ?: "",
+                            modifier = Modifier.padding(top = 4.dp),
+                            fontSize = 12.sp,
+                            color = ColorUtils.pink_FF1E54
+                        )
+                    }
+
+                    //TODO: Password
+                    Text(
+                        stringResource(R.string.password),
+                        fontWeight = FontWeight.Black,
+                        style = text14_222,
+                        modifier = Modifier.padding(top = 20.dp)
+                    )
+                    Text(
+                        stringResource(R.string.guide_input_password),
+                        fontSize = 10.sp,
+                        color = ColorUtils.gray_222222,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    val textStatePw = remember { viewModel.pw }
+                    HandleInputPassword(textStatePw)
+                    AnimatedVisibility(
+                        visible = (viewModel.stateErrorPw.value != null &&
+                                viewModel.stateErrorPw.value!!.isNotEmpty())
+                    ) {
+                        Text(
+                            text = viewModel.stateErrorPw.value ?: "",
+                            modifier = Modifier.padding(top = 4.dp),
+                            fontSize = 12.sp,
+                            color = ColorUtils.pink_FF1E54
+                        )
+                    }
+
+                    //TODO: Re-password
+                    Text(
+                        stringResource(R.string.confirm_password),
+                        style = text14_222,
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.padding(top = 20.dp)
+                    )
+                    val textStateRePw = remember { mutableStateOf(TextFieldValue("")) }
+                    HandleInputConfirmPassword(textStateRePw)
+                    AnimatedVisibility(
+                        visible = (viewModel.stateErrorRePw.value != null &&
+                                viewModel.stateErrorRePw.value!!.isNotEmpty())
+                    ) {
+                        Text(
+                            text = viewModel.stateErrorRePw.value ?: "",
+                            modifier = Modifier.padding(top = 4.dp),
+                            fontSize = 12.sp,
+                            color = ColorUtils.pink_FF1E54
+                        )
+                    }
+
+                    //TODO: Phone
+                    Text(
+                        stringResource(R.string.phone_label),
+                        style = text14_222,
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.padding(top = 20.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp)
+                    ) {
+                        Box(
+                            Modifier
+                                .padding(end = 4.dp)
+                                .size(44.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = ColorUtils.gray_E1E1E1,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                        )
+                        HandleInputPhoneNumber(
+                            viewModel.stateEdtPhone,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    DrawRequestPhoneButton(viewModel.stateBtnSendPhone.value) {
+                        viewModel.checkExistByPhone()
+                    }
+
+                    //TODO: OTP
+                    Text(
+                        stringResource(R.string.cer_number_input),
+                        style = text14_222,
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.padding(top = 24.dp)
+                    )
+
+                    TextFieldSignUp(
+                        hint = stringResource(R.string.hint_input_otp),
+                        textStateId = viewModel.stateEdtOTP,
+                        modifier = Modifier.padding(top = 4.dp),
+                        maxLength = 6,
+                        focusable = viewModel.stateEnableFocusOTP.value
+                    )
+
+                    DrawRequestOTPButton(viewModel.stateBtnSendOTP.value) {
+                        viewModel.sendOTP()
+                    }
+
+                    //TODO: Address
+                    HandleChooseAddress()
+
+                    //term
+                    Text(
+                        stringResource(R.string.label_agree_term_to_use),
+                        fontSize = 16.sp,
+                        color = ColorUtils.gray_222222,
+                        modifier = Modifier.padding(top = 40.dp, bottom = 17.dp)
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(vertical = 12.dp)
+                            .padding(top = 20.dp)
+                    ) {
+                        Checkbox(
+                            checked = checkedAll.value,
+                            onCheckedChange = {
+                                checkedAll.value = !checkedAll.value
+                                if (checkedAll.value) {
+                                    check1.value = true
+                                    check2.value = true
+                                    check3.value = true
+                                    check4.value = true
+                                    check5.value = true
+                                    check6.value = true
+                                } else {
+                                    check1.value = false
+                                    check2.value = false
+                                    check3.value = false
+                                    check4.value = false
+                                    check5.value = false
+                                    check6.value = false
+                                }
+                            },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = ColorUtils.blue_2177E4,
+//                        checkmarkColor = ColorUtils.white_FFFFFF
+                            ),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            stringResource(R.string.agree_all_term),
+                            fontSize = 14.sp,
+                            color = ColorUtils.gray_222222,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier
+                                .padding(start = 10.5.dp)
+                                .weight(1f)
+                        )
+                    }
+
                     Box(
                         Modifier
-                            .padding(end = 4.dp)
-                            .size(44.dp)
-                            .border(
-                                width = 1.dp,
-                                color = ColorUtils.gray_E1E1E1,
-                                shape = RoundedCornerShape(4.dp)
-                            )
+                            .padding(vertical = 12.dp)
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .background(ColorUtils.gray_F5F5F5)
                     )
-                    HandleInputPhoneNumber(viewModel.stateEdtPhone, modifier = Modifier.weight(1f))
-                }
-                DrawRequestPhoneButton(viewModel.stateBtnSendPhone.value) {
-                    viewModel.checkExistByPhone()
-                }
 
-                //TODO: OTP
-                Text(
-                    stringResource(R.string.cer_number_input),
-                    style = text14_222,
-                    fontWeight = FontWeight.Black,
-                    modifier = Modifier.padding(top = 24.dp)
-                )
+                    val collapsed1 = remember { mutableStateOf(true) }
+                    val collapsed2 = remember { mutableStateOf(true) }
+                    val collapsed3 = remember { mutableStateOf(true) }
+                    val collapsed4 = remember { mutableStateOf(true) }
+                    val collapsed5 = remember { mutableStateOf(true) }
+                    val collapsed6 = remember { mutableStateOf(true) }
+                    CheckPolicy(text = "[필수] 이용약관 동의", check1, collapsed1)
+                    AnimatedVisibility(visible = !collapsed1.value) {
+                        ContentPolicy(content = "content1")
+                    }
 
-                TextFieldSignUp(
-                    hint = stringResource(R.string.hint_input_otp),
-                    textStateId = viewModel.stateEdtOTP,
-                    modifier = Modifier.padding(top = 4.dp),
-                    maxLength = 6,
-                    focusable = viewModel.stateEnableFocusOTP.value
-                )
+                    CheckPolicy(text = "[필수] 개인정보 이용 수집 방침", check2, collapsed2)
+                    AnimatedVisibility(visible = !collapsed2.value) {
+                        ContentPolicy(content = "content2")
+                    }
 
-                DrawRequestOTPButton(viewModel.stateBtnSendOTP.value) {
-                    viewModel.sendOTP()
-                }
+                    CheckPolicy(text = "[필수] 개인정보 제 3자 제공 동의", check3, collapsed3)
+                    AnimatedVisibility(visible = !collapsed3.value) {
+                        ContentPolicy(content = "content3")
+                    }
 
-                //TODO: Address
-                HandleChooseAddress()
+                    CheckPolicy(text = "[필수] 위치정보 동의 약관", check4, collapsed4)
+                    AnimatedVisibility(visible = !collapsed4.value) {
+                        ContentPolicy(content = "content4")
+                    }
 
-                //term
-                Text(
-                    stringResource(R.string.label_agree_term_to_use),
-                    fontSize = 16.sp,
-                    color = ColorUtils.gray_222222,
-                    modifier = Modifier.padding(top = 40.dp, bottom = 17.dp)
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .padding(top = 20.dp)
-                ) {
-                    Checkbox(
-                        checked = checkedAll.value,
-                        onCheckedChange = {
-                            checkedAll.value = !checkedAll.value
-                            if (checkedAll.value) {
-                                check1.value = true
-                                check2.value = true
-                                check3.value = true
-                                check4.value = true
-                                check5.value = true
-                                check6.value = true
-                            } else {
-                                check1.value = false
-                                check2.value = false
-                                check3.value = false
-                                check4.value = false
-                                check5.value = false
-                                check6.value = false
-                            }
-                        },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = ColorUtils.blue_2177E4,
-//                        checkmarkColor = ColorUtils.white_FFFFFF
-                        ),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Text(
-                        stringResource(R.string.agree_all_term),
-                        fontSize = 14.sp,
-                        color = ColorUtils.gray_222222,
-                        fontWeight = FontWeight.Black,
+                    CheckPolicy(text = "[선택] 이벤트 및 혜택 알림 수신 동의", check5, collapsed5)
+                    AnimatedVisibility(visible = !collapsed5.value) {
+                        ContentPolicy(content = "content5")
+                    }
+
+                    CheckPolicy(text = "[선택] 서비스 알림 수신 동의", check6, collapsed6)
+                    AnimatedVisibility(visible = !collapsed6.value) {
+                        ContentPolicy(content = "content6")
+                    }
+
+                    Spacer(
                         modifier = Modifier
-                            .padding(start = 10.5.dp)
-                            .weight(1f)
+                            .fillMaxWidth()
+                            .height(110.dp)
                     )
                 }
-
-                Box(
-                    Modifier
-                        .padding(vertical = 12.dp)
+                Button(
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier
+                        .padding(bottom = 20.dp)
                         .fillMaxWidth()
-                        .height(1.dp)
-                        .background(ColorUtils.gray_F5F5F5)
-                )
-
-                val collapsed1 = remember { mutableStateOf(true) }
-                val collapsed2 = remember { mutableStateOf(true) }
-                val collapsed3 = remember { mutableStateOf(true) }
-                val collapsed4 = remember { mutableStateOf(true) }
-                val collapsed5 = remember { mutableStateOf(true) }
-                val collapsed6 = remember { mutableStateOf(true) }
-                CheckPolicy(text = "[필수] 이용약관 동의", check1, collapsed1)
-                AnimatedVisibility(visible = !collapsed1.value) {
-                    ContentPolicy(content = "content1")
-                }
-
-                CheckPolicy(text = "[필수] 개인정보 이용 수집 방침", check2, collapsed2)
-                AnimatedVisibility(visible = !collapsed2.value) {
-                    ContentPolicy(content = "content2")
-                }
-
-                CheckPolicy(text = "[필수] 개인정보 제 3자 제공 동의", check3, collapsed3)
-                AnimatedVisibility(visible = !collapsed3.value) {
-                    ContentPolicy(content = "content3")
-                }
-
-                CheckPolicy(text = "[필수] 위치정보 동의 약관", check4, collapsed4)
-                AnimatedVisibility(visible = !collapsed4.value) {
-                    ContentPolicy(content = "content4")
-                }
-
-                CheckPolicy(text = "[선택] 이벤트 및 혜택 알림 수신 동의", check5, collapsed5)
-                AnimatedVisibility(visible = !collapsed5.value) {
-                    ContentPolicy(content = "content5")
-                }
-
-                CheckPolicy(text = "[선택] 서비스 알림 수신 동의", check6, collapsed6)
-                AnimatedVisibility(visible = !collapsed6.value) {
-                    ContentPolicy(content = "content6")
+                        .height(52.dp)
+                        .background(if (btnSignupState.value) ColorUtils.blue_2177E4 else ColorUtils.gray_E1E1E1),
+                    enabled = btnSignupState.value
+                ) {
+                    Text(
+                        "가입완료",
+                        fontSize = 18.sp,
+                        color = if (btnSignupState.value) ColorUtils.white_FFFFFF else ColorUtils.gray_C4C4C4
+                    )
                 }
             }
+
         }
     }
 
