@@ -1,9 +1,7 @@
 package com.nagaja.the330.network
 
-import com.nagaja.the330.model.AuthRequest
-import com.nagaja.the330.model.AuthTokenModel
-import com.nagaja.the330.model.PhoneAvailableModel
-import com.nagaja.the330.model.UserDetail
+import com.nagaja.the330.model.*
+import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
@@ -30,4 +28,9 @@ interface ApiService {
     suspend fun sendPhone(
         @Body phone: PhoneAvailableModel
     ): PhoneAvailableModel
+
+    @POST("users/phoneOtpValidate")
+    suspend fun sendOTP(
+        @Body phone: PhoneAvailableModel
+    ): Response<PhoneAvailableModel>
 }

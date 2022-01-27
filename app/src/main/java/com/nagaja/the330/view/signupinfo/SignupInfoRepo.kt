@@ -12,4 +12,8 @@ class SignupInfoRepo(private val apiService: ApiService) {
     suspend fun sendPhone(body: PhoneAvailableModel) = flow {
         emit(apiService.sendPhone(body))
     }
+
+    suspend fun sendOTP(body: PhoneAvailableModel) = flow {
+        emit(apiService.sendOTP(body))
+    }
 }

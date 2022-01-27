@@ -21,13 +21,17 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     val pw = mutableStateOf(TextFieldValue(""))
     var confirmPw: String? = null
     var nationalNumber: String? = "82"
-    val statePhone = mutableStateOf(TextFieldValue(""))
+
+    // Phone
+    val stateEdtPhone = mutableStateOf(TextFieldValue(""))
     val stateEnableFocusPhone = mutableStateOf(true)
-    val stateSendPhone = mutableStateOf(false)
+    val stateBtnSendPhone = mutableStateOf(false)
     val cbNumberCoundown = mutableStateOf("인증요청")
-    val stateOTP = mutableStateOf(TextFieldValue(""))
+
+    // OTP
+    val stateEdtOTP = mutableStateOf(TextFieldValue(""))
     val stateEnableFocusOTP = mutableStateOf(false)
-    val stateSendOTP = mutableStateOf(false)
+    val stateBtnSendOTP = mutableStateOf(false)
     val cbActivePhoneButtonTimer = mutableStateOf(false)
 
 
@@ -62,15 +66,15 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     }
 
     fun checkPhone() {
-        stateSendPhone.value = statePhone.value.text.length >= 10
+        stateBtnSendPhone.value = stateEdtPhone.value.text.length >= 10
     }
 
     fun checkOTP() {
-        stateSendOTP.value = stateOTP.value.text.isNotBlank()
+        stateBtnSendOTP.value = stateEdtOTP.value.text.isNotBlank()
     }
 
     fun checkExistByPhone() {
-        val phone = statePhone.value.text
+        val phone = stateEdtPhone.value.text
         viewModelScope.launch(Dispatchers.IO) {
             repo.checkExistPhone(PhoneAvailableModel(phone = phone))
                 .onStart { }
@@ -83,22 +87,50 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     }
 
     private fun sendPhone() {
-        val phone = statePhone.value.text
+        val phone = stateEdtPhone.value.text
         viewModelScope.launch(Dispatchers.IO) {
             repo.sendPhone(PhoneAvailableModel(phone = phone, nationNumber = nationalNumber))
                 .onStart {
                     stateEnableFocusPhone.value = false
-                    stateSendPhone.value = false
+                    stateBtnSendPhone.value = false
                 }
                 .onCompletion { }
                 .catch {
-                    stateSendPhone.value = true
+                    stateBtnSendPhone.value = true
                     stateEnableFocusPhone.value = true
                 }
                 .collect {
                     cbActivePhoneButtonTimer.value = true
                     stateEnableFocusOTP.value = true
                 }
+        }
+    }
+
+    fun sendOTP() {
+        val otp = stateEdtOTP.value.text
+        val phone = stateEdtPhone.value.text
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.sendOTP(
+                PhoneAvailableModel(
+                    phone = phone,
+                    otp = otp.toInt(),
+                    nationNumber = nationalNumber
+                )
+            )
+                .onStart {
+                    stateEnableFocusOTP.value = false
+                    stateBtnSendOTP.value = false
+                }
+                .onCompletion { }
+                .catch {
+
+                }
+                .collect {
+                    if (it.raw().isSuccessful && it.raw().code == 202) {
+                        cbActivePhoneButtonTimer.value = false
+                    }
+                }
+
         }
     }
 }

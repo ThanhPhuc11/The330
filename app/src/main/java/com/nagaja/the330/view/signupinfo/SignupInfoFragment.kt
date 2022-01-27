@@ -82,17 +82,18 @@ class SignupInfoFragment : BaseFragment() {
                 check1.value && check2.value && check3.value && check4.value && check5.value && check6.value
         }
 
-        LaunchedEffect(viewModel.statePhone.value.text.length) {
+        LaunchedEffect(viewModel.stateEdtPhone.value.text.length) {
             viewModel.checkPhone()
         }
-        LaunchedEffect(viewModel.stateOTP.value.text.length) {
+        LaunchedEffect(viewModel.stateEdtOTP.value.text.length) {
             viewModel.checkOTP()
         }
-        countDownTimer = object : android.os.CountDownTimer(10000, 1000) {
+        countDownTimer = object : android.os.CountDownTimer(20000, 1000) {
             override fun onFinish() {
-                viewModel.stateSendPhone.value = true
+                viewModel.stateBtnSendPhone.value = true
                 viewModel.stateEnableFocusPhone.value = true
                 viewModel.cbActivePhoneButtonTimer.value = false
+                viewModel.cbNumberCoundown.value = getString(R.string.authen_request)
             }
 
             override fun onTick(millisUntilFinished: Long) {
@@ -246,31 +247,9 @@ class SignupInfoFragment : BaseFragment() {
                                 shape = RoundedCornerShape(4.dp)
                             )
                     )
-                    HandleInputPhoneNumber(viewModel.statePhone, modifier = Modifier.weight(1f))
+                    HandleInputPhoneNumber(viewModel.stateEdtPhone, modifier = Modifier.weight(1f))
                 }
-
-//                Button(
-//                    onClick = { /*TODO*/ },
-//                    modifier = Modifier
-//                        .padding(top = 8.dp)
-//                        .fillMaxWidth()
-//                        .height(44.dp)
-//                        .clip(RoundedCornerShape(4.dp)),
-//                    colors = ButtonDefaults.textButtonColors(
-//                        backgroundColor = if (viewModel.stateSendPhone.value) ColorUtils.white_FFFFFF else ColorUtils.gray_E1E1E1
-//                    ),
-//                    border = BorderStroke(
-//                        1.dp,
-//                        if (viewModel.stateSendPhone.value) ColorUtils.gray_222222 else ColorUtils.gray_E1E1E1
-//                    )
-//                ) {
-//                    Text(
-//                        stringResource(R.string.authen_request),
-//                        fontSize = 14.sp,
-//                        color = ColorUtils.gray_BEBEBE
-//                    )
-//                }
-                DrawRequestPhoneButton(viewModel.stateSendPhone.value) {
+                DrawRequestPhoneButton(viewModel.stateBtnSendPhone.value) {
                     viewModel.checkExistByPhone()
                 }
 
@@ -281,35 +260,17 @@ class SignupInfoFragment : BaseFragment() {
                     fontWeight = FontWeight.Black,
                     modifier = Modifier.padding(top = 24.dp)
                 )
-//                TextFieldCustom(
-//                    hint = stringResource(R.string.hint_input_otp),
-//                    modifier = Modifier.padding(top = 4.dp)
-//                )
 
                 TextFieldSignUp(
                     hint = stringResource(R.string.hint_input_otp),
-                    textStateId = viewModel.stateOTP,
+                    textStateId = viewModel.stateEdtOTP,
                     modifier = Modifier.padding(top = 4.dp),
                     maxLength = 6,
                     focusable = viewModel.stateEnableFocusOTP.value
                 )
 
-                Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .fillMaxWidth()
-                        .height(44.dp)
-                        .clip(RoundedCornerShape(4.dp)),
-                    colors = ButtonDefaults.textButtonColors(
-                        backgroundColor = if (viewModel.stateSendOTP.value) ColorUtils.blue_2177E4 else ColorUtils.gray_E1E1E1
-                    )
-                ) {
-                    Text(
-                        stringResource(R.string.certification),
-                        fontSize = 14.sp,
-                        color = ColorUtils.gray_BEBEBE
-                    )
+                DrawRequestOTPButton(viewModel.stateBtnSendOTP.value) {
+                    viewModel.sendOTP()
                 }
 
                 Text(
@@ -688,6 +649,52 @@ class SignupInfoFragment : BaseFragment() {
             ) {
                 Text(
                     viewModel.cbNumberCoundown.value,
+                    fontSize = 14.sp,
+                    color = ColorUtils.gray_BEBEBE
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun DrawRequestOTPButton(isActived: Boolean, onClick: () -> Unit) {
+        if (isActived) {
+            Button(
+                onClick = { onClick() },
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                colors = ButtonDefaults.textButtonColors(
+                    backgroundColor = ColorUtils.white_FFFFFF
+                ),
+                border = BorderStroke(
+                    1.dp,
+                    ColorUtils.gray_222222
+                )
+            ) {
+                Text(
+                    stringResource(R.string.certification),
+                    fontSize = 14.sp,
+                    color = ColorUtils.gray_222222
+                )
+            }
+        } else {
+            Button(
+                onClick = { },
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                colors = ButtonDefaults.textButtonColors(
+                    backgroundColor = ColorUtils.gray_E1E1E1
+                ),
+                enabled = false
+            ) {
+                Text(
+                    stringResource(R.string.certification),
                     fontSize = 14.sp,
                     color = ColorUtils.gray_BEBEBE
                 )
