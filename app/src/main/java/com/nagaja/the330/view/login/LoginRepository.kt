@@ -12,4 +12,8 @@ class LoginRepository(private val apiService: ApiService) {
     suspend fun authWithNaver(obj: AuthRequest) = flow {
         emit(apiService.authWithNaver(obj))
     }
+
+    suspend fun loginWithId(obj: AuthRequest) = flow {
+        emit(apiService.loginWithId(obj))
+    }
 }

@@ -2,11 +2,11 @@ package com.nagaja.the330.view.login
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -40,10 +41,10 @@ import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
+import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.general.GeneralViewModel
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.signupinfo.SignupInfoFragment
-import com.nagaja.the330.view.signupinfo.SignupInfoRepo
 import com.nagaja.the330.view.text14_62
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
@@ -78,6 +79,10 @@ class LoginFragment : BaseFragment() {
             DataStorePref(requireContext()).setToken(it)
             it.accessToken?.let { generalViewModel.getUserDetails(accessToken!!) }
         }
+        viewModel.callbackLoginIdSuccess.observe(viewLifecycleOwner) {
+            DataStorePref(requireContext()).setToken(it)
+            it.accessToken?.let { generalViewModel.getUserDetails(accessToken!!) }
+        }
         generalViewModel.callbackUserDetails.observe(viewLifecycleOwner) {
             DataStorePref(requireContext()).setUserDetail(it)
         }
@@ -86,37 +91,35 @@ class LoginFragment : BaseFragment() {
     @Preview(showBackground = true)
     @Composable
     override fun UIData() {
-        Column(
+        LayoutTheme330(
             Modifier
                 .background(ColorUtils.white_FFFFFF)
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {}) {
+                .padding(16.dp)
+        ) {
             val configuration = LocalConfiguration.current
             val screenHeight = configuration.screenHeightDp.dp
             Text(
-                "로그인",
+                stringResource(R.string.login),
                 color = ColorUtils.gray_222222,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(top = screenHeight / 10)
             )
+
+            //TODO: login
             Text(
-                "아이디",
+                stringResource(R.string.user_id),
                 color = ColorUtils.gray_222222,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(top = 44.dp),
                 fontWeight = FontWeight.SemiBold
             )
-            val textStateId = remember { mutableStateOf(TextFieldValue("")) }
+//            val textStateId = remember { mutableStateOf(TextFieldValue("")) }
             TextField(
-                value = textStateId.value,
-                onValueChange = { if (it.text.length <= 20) textStateId.value = it },
+                value = viewModel.edtId.value,
+                onValueChange = { if (it.text.length <= 20) viewModel.edtId.value = it },
                 placeholder = {
                     Text(
-                        text = "아이디를 입력해 주세요.",
+                        text = stringResource(R.string.please_enter_id),
                         fontSize = 14.sp,
                         color = ColorUtils.gray_BEBEBE
                     )
@@ -138,20 +141,20 @@ class LoginFragment : BaseFragment() {
                 ),
             )
 
+            //TODO: password
             Text(
-                "비밀번호",
+                stringResource(R.string.password),
                 color = ColorUtils.gray_222222,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(top = 24.dp),
                 fontWeight = FontWeight.SemiBold
             )
-            val textStatePass = remember { mutableStateOf(TextFieldValue("")) }
             TextField(
-                value = textStatePass.value,
-                onValueChange = { if (it.text.length <= 15) textStatePass.value = it },
+                value = viewModel.edtPw.value,
+                onValueChange = { if (it.text.length <= 15) viewModel.edtPw.value = it },
                 placeholder = {
                     Text(
-                        text = "비밀번호를 입력해주세요.",
+                        text = stringResource(R.string.please_enter_password),
                         fontSize = 14.sp,
                         color = ColorUtils.gray_BEBEBE
                     )
@@ -173,6 +176,20 @@ class LoginFragment : BaseFragment() {
                 ),
             )
 
+            AnimatedVisibility(
+                visible = viewModel.textError.value != null,
+                Modifier.padding(top = 20.dp)
+            ) {
+                viewModel.textError.value?.let {
+                    Text(
+                        stringResource(it),
+                        fontSize = 12.sp,
+                        color = ColorUtils.pink_FF1E54
+                    )
+                }
+            }
+
+            //TODO: Button Login
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -180,9 +197,12 @@ class LoginFragment : BaseFragment() {
                     .fillMaxWidth()
                     .height(48.dp)
                     .background(ColorUtils.blue_2177E4)
+                    .noRippleClickable {
+                        viewModel.checkLogin()
+                    }
             ) {
                 Text(
-                    "로그인",
+                    stringResource(R.string.login),
                     color = ColorUtils.white_FFFFFF,
                     fontSize = 18.sp
                 )

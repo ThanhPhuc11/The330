@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
         viewController.pushFragment(
             ScreenId.SCREEN_LOGIN,
-            SignupInfoFragment.newInstance()
+            LoginFragment.newInstance()
         )
 
         WindowCompat.setDecorFitsSystemWindows(window, true)

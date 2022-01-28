@@ -31,10 +31,10 @@ import com.nagaja.the330.R
 import com.nagaja.the330.utils.ColorUtils
 
 @Composable
-fun LayoutTheme330(layout: @Composable ColumnScope.() -> Unit) {
+fun LayoutTheme330(modifier: Modifier = Modifier, layout: @Composable ColumnScope.() -> Unit) {
     val focusManager = LocalFocusManager.current
     Column(
-        modifier = Modifier
+        modifier = modifier
             .background(ColorUtils.white_FFFFFF)
             .fillMaxSize()
             .noRippleClickable { focusManager.clearFocus() }

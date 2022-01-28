@@ -371,32 +371,32 @@ class SignupInfoFragment : BaseFragment() {
                     val collapsed4 = remember { mutableStateOf(true) }
                     val collapsed5 = remember { mutableStateOf(true) }
                     val collapsed6 = remember { mutableStateOf(true) }
-                    CheckPolicy(text = "[필수] 이용약관 동의", check1, collapsed1)
+                    CheckPolicy(text = stringResource(R.string.term_line_1_accept_term_of_use), check1, collapsed1)
                     AnimatedVisibility(visible = !collapsed1.value) {
                         ContentPolicy(content = "content1")
                     }
 
-                    CheckPolicy(text = "[필수] 개인정보 이용 수집 방침", check2, collapsed2)
+                    CheckPolicy(text = stringResource(R.string.term_line_2_privacy_policy), check2, collapsed2)
                     AnimatedVisibility(visible = !collapsed2.value) {
                         ContentPolicy(content = "content2")
                     }
 
-                    CheckPolicy(text = "[필수] 개인정보 제 3자 제공 동의", check3, collapsed3)
+                    CheckPolicy(text = stringResource(R.string.term_line_3), check3, collapsed3)
                     AnimatedVisibility(visible = !collapsed3.value) {
                         ContentPolicy(content = "content3")
                     }
 
-                    CheckPolicy(text = "[필수] 위치정보 동의 약관", check4, collapsed4)
+                    CheckPolicy(text = stringResource(R.string.term_line_4_location), check4, collapsed4)
                     AnimatedVisibility(visible = !collapsed4.value) {
                         ContentPolicy(content = "content4")
                     }
 
-                    CheckPolicy(text = "[선택] 이벤트 및 혜택 알림 수신 동의", check5, collapsed5)
+                    CheckPolicy(text = stringResource(R.string.term_line_5_event_benefit), check5, collapsed5)
                     AnimatedVisibility(visible = !collapsed5.value) {
                         ContentPolicy(content = "content5")
                     }
 
-                    CheckPolicy(text = "[선택] 서비스 알림 수신 동의", check6, collapsed6)
+                    CheckPolicy(text = stringResource(R.string.term_line_6_notification), check6, collapsed6)
                     AnimatedVisibility(visible = !collapsed6.value) {
                         ContentPolicy(content = "content6")
                     }
@@ -421,7 +421,7 @@ class SignupInfoFragment : BaseFragment() {
                     enabled = btnSignupState.value
                 ) {
                     Text(
-                        "가입완료",
+                        stringResource(R.string.btn_register),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (btnSignupState.value) ColorUtils.white_FFFFFF else ColorUtils.gray_C4C4C4

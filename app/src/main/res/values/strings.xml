@@ -27,4 +27,17 @@
     <string name="hint_input_full_address">상세주소를 입력하세요.</string>
     <string name="label_agree_term_to_use">회원 정보 입력 및 이용약관 동의</string>
     <string name="agree_all_term">이용약관 전체동의</string>
+    <string name="btn_register">가입완료</string>
+    <string name="term_line_1_accept_term_of_use">[필수] 이용약관 동의</string>
+    <string name="term_line_2_privacy_policy">[필수] 개인정보 이용 수집 방침</string>
+    <string name="term_line_3">[필수] 개인정보 제 3자 제공 동의</string>
+    <string name="term_line_4_location">[필수] 위치정보 동의 약관</string>
+    <string name="term_line_5_event_benefit">[선택] 이벤트 및 혜택 알림 수신 동의</string>
+    <string name="term_line_6_notification">[선택] 서비스 알림 수신 동의</string>
+
+    <!--2-1-3-->
+    <string name="login">로그인</string>
+    <string name="please_enter_password">비밀번호를 입력해주세요.</string>
+    <string name="id_pw_not_matches">입력하신 아이디 또는 비밀번호가 일치하지 않습니다.\n다시 한 번 확인해 주세요. </string>
+    <string name="please_enter_both_id_pw">아이디와 비밀번호를 모두 입력해 주세요.</string>
 </resources>

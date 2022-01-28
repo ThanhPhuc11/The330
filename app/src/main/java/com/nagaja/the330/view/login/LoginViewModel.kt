@@ -1,8 +1,12 @@
 package com.nagaja.the330.view.login
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.AuthRequest
 import com.nagaja.the330.model.AuthTokenModel
@@ -15,21 +19,50 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val loginSNSRepository: LoginRepository
+    private val repo: LoginRepository
 ) : BaseViewModel() {
 
     val callbackLoginKaKaoSuccess = MutableLiveData<AuthTokenModel>()
     val callbackLoginNaverSuccess = MutableLiveData<AuthTokenModel>()
+    val callbackLoginIdSuccess = MutableLiveData<AuthTokenModel>()
     var snsType = ""
     var tokenTemp = ""
     var userTypeTemp = ""
+
+    val edtId = mutableStateOf(TextFieldValue(""))
+    val edtPw = mutableStateOf(TextFieldValue(""))
+    val textError: MutableState<Int?> = mutableStateOf(null)
+    val btnLogin = mutableStateOf(false)
+
+    fun checkLogin() {
+        if (edtId.value.text.isBlank() || edtPw.value.text.isBlank()) {
+            textError.value = R.string.please_enter_both_id_pw
+        } else {
+            loginWithId()
+        }
+    }
+
+    private fun loginWithId() {
+        viewModelScope.launch {
+            repo.loginWithId(AuthRequest(username = edtId.value.text, password = edtPw.value.text))
+                .onStart { }
+                .onCompletion { }
+                .catch {
+                    textError.value = R.string.id_pw_not_matches
+                }
+                .collect {
+                    textError.value = null
+                    callbackLoginIdSuccess.value = it
+                }
+        }
+    }
 
     fun loginWithKakao(token: String, userType: String) {
         viewModelScope.launch(Dispatchers.Main) {
 //            AuthRequest().apply {
 //                token = "a"
 //            }
-            loginSNSRepository.loginWithKakao(AuthRequest(token, userType))
+            repo.loginWithKakao(AuthRequest(token, userType))
                 .onStart {
                     callbackStart.value = Unit
                 }
@@ -49,7 +82,7 @@ class LoginViewModel(
 
     fun loginWithNaver(token: String, userType: String) {
         viewModelScope.launch(Dispatchers.Main) {
-            loginSNSRepository.authWithNaver(AuthRequest(token, userType))
+            repo.authWithNaver(AuthRequest(token, userType))
                 .onStart {
                     callbackStart.value = Unit
                 }
