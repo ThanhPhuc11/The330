@@ -40,4 +40,10 @@
     <string name="please_enter_password">비밀번호를 입력해주세요.</string>
     <string name="id_pw_not_matches">입력하신 아이디 또는 비밀번호가 일치하지 않습니다.\n다시 한 번 확인해 주세요. </string>
     <string name="please_enter_both_id_pw">아이디와 비밀번호를 모두 입력해 주세요.</string>
+
+    <!--bottom navigation-->
+    <string name="home_tab">홈</string>
+    <string name="reservation_tab">예약</string>
+    <string name="chat_tab">채팅</string>
+    <string name="mypage_tab">마이페이지</string>
 </resources>
