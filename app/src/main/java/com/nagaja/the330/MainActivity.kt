@@ -2,6 +2,7 @@ package com.nagaja.the330
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -25,11 +26,17 @@ class MainActivity : AppCompatActivity() {
         )
 
         WindowCompat.setDecorFitsSystemWindows(window, true)
-        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
-            controller.isAppearanceLightStatusBars = true
-            controller.show(WindowInsetsCompat.Type.systemBars())
-            controller.systemBarsBehavior =
+        ViewCompat.getWindowInsetsController(window.decorView).let { controller->
+            controller?.isAppearanceLightStatusBars = true
+            controller?.show(WindowInsetsCompat.Type.systemBars())
+            controller?.systemBarsBehavior =
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
+//        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
+//            controller.isAppearanceLightStatusBars = true
+//            controller.show(WindowInsetsCompat.Type.systemBars())
+//            controller.systemBarsBehavior =
+//                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+//        }
     }
 }

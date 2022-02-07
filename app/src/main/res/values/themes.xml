@@ -2,11 +2,11 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
-        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:statusBarColor">#2177E4</item>
         <item name="colorPrimary">#CACBCB</item>
         <item name="colorPrimaryDark">#00ffffff</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowFullscreen">false</item>
     </style>
 
     <style name="AppTheme1" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">

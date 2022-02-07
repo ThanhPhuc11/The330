@@ -26,7 +26,7 @@ class ViewModelFactory(apiService: ApiService) :
             SignupInfoVM(SignupInfoRepo(apiService))
     }
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         for (a in creators.entries) {
             if (modelClass.isAssignableFrom(a.key)) {
                 return a.value as T

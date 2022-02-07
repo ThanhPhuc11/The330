@@ -27,12 +27,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.nagaja.the330.R
 import com.nagaja.the330.utils.ColorUtils
 
 @Composable
 fun LayoutTheme330(modifier: Modifier = Modifier, layout: @Composable ColumnScope.() -> Unit) {
     val focusManager = LocalFocusManager.current
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setSystemBarsColor(
+        color = Color.White
+    )
     Column(
         modifier = modifier
             .background(ColorUtils.white_FFFFFF)
