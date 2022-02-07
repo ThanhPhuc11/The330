@@ -4,6 +4,8 @@ import androidx.compose.ui.graphics.Color
 
 object ColorUtils {
     val blue_2177E4 = Color(0xFF2177E4)
+    val blue_2177E4_opacity_10 = Color(0x1A2177E4)
+    val blue_2177E4_opacity_5 = Color(0x0D2177E4)
     val blue_A6C9F4 = Color(0xFFA6C9F4)
     val blue_D3E4FA = Color(0xFFD3E4FA)
     val blue_E9F1FC = Color(0xFFE9F1FC)

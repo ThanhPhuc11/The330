@@ -113,4 +113,7 @@ dependencies {
 
     //System Bar
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.17.0"
+
+    //Image
+    implementation "com.github.skydoves:landscapist-glide:1.4.6"
 }

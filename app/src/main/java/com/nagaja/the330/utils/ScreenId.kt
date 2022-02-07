@@ -5,4 +5,5 @@ object ScreenId {
     const val SCREEN_PERMISSION = "SCREEN_PERMISSION"
     const val SCREEN_LOGIN = "SCREEN_LOGIN"
     const val SCREEN_SIGNUP_MAIL = "SCREEN_SIGNUP_MAIL"
+    const val SCREEN_MAIN = "SCREEN_MAIN"
 }

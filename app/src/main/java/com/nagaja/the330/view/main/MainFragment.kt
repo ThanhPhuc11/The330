@@ -27,6 +27,7 @@ import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.ui.theme.The330Theme
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.home.HomeScreen
 
 class MainFragment : BaseFragment() {
 
@@ -37,7 +38,6 @@ class MainFragment : BaseFragment() {
 
     @Composable
     override fun SetupViewModel() {
-        TODO("Not yet implemented")
     }
 
     @Preview
@@ -135,13 +135,14 @@ class MainFragment : BaseFragment() {
 
     @Composable
     fun Page1() {
-        Column(
-            Modifier
-                .fillMaxSize()
-                .background(ColorUtils.green_1EC800)
-        ) {
-
-        }
+//        Column(
+//            Modifier
+//                .fillMaxSize()
+//                .background(ColorUtils.green_1EC800)
+//        ) {
+//
+//        }
+        HomeScreen()
     }
 
     @Composable

@@ -43,6 +43,7 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.general.GeneralViewModel
+import com.nagaja.the330.view.main.MainFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.signupinfo.SignupInfoFragment
 import com.nagaja.the330.view.text14_62
@@ -85,6 +86,10 @@ class LoginFragment : BaseFragment() {
         }
         generalViewModel.callbackUserDetails.observe(viewLifecycleOwner) {
             DataStorePref(requireContext()).setUserDetail(it)
+            viewController?.pushFragment(
+                ScreenId.SCREEN_MAIN,
+                MainFragment.newInstance()
+            )
         }
     }
 
