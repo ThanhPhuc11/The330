@@ -1,14 +1,15 @@
 package com.nagaja.the330.view.home
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import android.util.Log
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -78,34 +79,45 @@ fun HomeScreen() {
                     homeVM.getCategory(accessToken, "MAIN")
                 }
             }
-            onDispose { }
+            onDispose {
+                Log.e("onDispose", "home")
+            }
         }
 
         LogoAndSearch()
         SearchFilter()
-        CategoryMain(homeVM)
-        ExchangeDollar()
-        BannerEvent()
-        Row(
+        Column(
             Modifier
-                .padding(top = 22.dp, bottom = 8.dp)
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(state = rememberScrollState())
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_splash_png),
-                contentDescription = "",
-                colorFilter = ColorFilter.tint(ColorUtils.blue_2177E4),
-                modifier = Modifier.height(20.dp)
-            )
-            Text(
-                text = "추천 업체",
-                modifier = Modifier.padding(start = 8.dp),
-                color = ColorUtils.black_000000,
-                fontSize = 19.sp,
-                fontWeight = FontWeight.Black
-            )
+            CategoryMain(homeVM)
+            ExchangeDollar()
+            BannerEvent()
+            Row(
+                Modifier
+                    .padding(top = 22.dp, bottom = 8.dp)
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_splash_png),
+                    contentDescription = "",
+                    colorFilter = ColorFilter.tint(ColorUtils.blue_2177E4),
+                    modifier = Modifier.height(20.dp)
+                )
+                Text(
+                    text = "추천 업체",
+                    modifier = Modifier.padding(start = 8.dp),
+                    color = ColorUtils.black_000000,
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Black
+                )
+            }
+            ListCompanyRecommended()
         }
+
     }
 }
 
@@ -113,7 +125,7 @@ fun HomeScreen() {
 private fun LogoAndSearch() {
     Row(
         Modifier
-            .padding(vertical = 7.dp)
+            .padding(top = 7.dp, bottom = 3.dp)
             .padding(horizontal = 16.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -150,7 +162,7 @@ private fun LogoAndSearch() {
 @Composable
 private fun SearchFilter() {
     Row(
-        Modifier.padding(horizontal = 16.dp)
+        Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         BoxSearch(
             modifier = Modifier
@@ -220,15 +232,26 @@ private fun BoxSearch(modifier: Modifier = Modifier, options: MutableList<KeyVal
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CategoryMain(homeVM: HomeScreenVM) {
-    LazyVerticalGrid(
-//            state = rememberLazyListState(),
-        cells = GridCells.Fixed(5),
-        contentPadding = PaddingValues(8.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(0.dp, 1000.dp)
+            .wrapContentHeight()
     ) {
-        items(homeVM.listCategoryState.value) { obj ->
-            IconCategory(url = obj.image ?: "", title = obj.name ?: "")
+        LazyVerticalGrid(
+//        state = rememberLazyListState(),
+            cells = GridCells.Fixed(5),
+            contentPadding = PaddingValues(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
+            items(homeVM.listCategoryState.value) { obj ->
+                IconCategory(url = obj.image ?: "", title = obj.name ?: "")
+            }
         }
     }
+
 }
 
 @Composable
@@ -242,8 +265,8 @@ fun IconCategory(url: String, title: String) {
             // Crop, Fit, Inside, FillHeight, FillWidth, None
             contentScale = ContentScale.Fit,
 //            circularReveal = CircularReveal(duration = 250),
-            placeHolder = painterResource(R.drawable.ic_default_nagaja_png),
-            error = painterResource(R.drawable.ic_default_nagaja_png),
+            placeHolder = painterResource(R.drawable.ic_default_nagaja),
+            error = painterResource(R.drawable.ic_default_nagaja),
             modifier = Modifier.size(36.dp)
         )
         Text(
@@ -328,4 +351,77 @@ private fun BannerEvent() {
             .fillMaxWidth()
             .height(180.dp)
     )
+}
+
+@Composable
+private fun ListCompanyRecommended() {
+    val listData = mutableListOf<KeyValueModel>().apply {
+        add(KeyValueModel())
+        add(KeyValueModel())
+        add(KeyValueModel())
+        add(KeyValueModel())
+    }
+    LazyRow(state = rememberLazyListState()) {
+        items(listData) { obj ->
+            CompanyItemView()
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun CompanyItemView() {
+    Column(
+        Modifier
+            .padding(bottom = 6.dp, start = 16.dp, end = 4.dp)
+            .background(ColorUtils.white_FFFFFF)
+    ) {
+        Box(
+            Modifier
+                .padding(bottom = 6.dp)
+                .size(240.dp)
+                .clip(RoundedCornerShape(4.dp)),
+            contentAlignment = Alignment.BottomStart
+        ) {
+            GlideImage(
+                imageModel = "",
+                contentScale = ContentScale.Fit,
+                placeHolder = painterResource(R.drawable.ic_default_nagaja),
+                error = painterResource(R.drawable.ic_default_nagaja),
+                modifier = Modifier.size(240.dp)
+            )
+            Image(
+                painter = painterResource(R.drawable.ic_cover),
+                contentDescription = null,
+                modifier = Modifier.size(240.dp)
+            )
+            Text(
+                "톡톡누들타이",
+                color = ColorUtils.white_FFFFFF,
+                fontSize = 18.sp,
+                modifier = Modifier.padding(start = 8.dp, bottom = 12.dp),
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Text("주소: 세부시어딘가세부시어딘가", color = ColorUtils.gray_222222, fontSize = 13.sp)
+        Text("영업시간: am10:00~pm11:00", color = ColorUtils.gray_222222, fontSize = 13.sp)
+        Text(
+            "픽업/드랍: 불가능/가능",
+            color = ColorUtils.gray_767676,
+            fontSize = 13.sp,
+            modifier = Modifier.padding(top = 7.dp)
+        )
+        Text("배달여부: 가능, 12:00~18:00", color = ColorUtils.gray_767676, fontSize = 13.sp)
+        Text("예약여부: 가능, 12:00~18:00, 최대 5인", color = ColorUtils.gray_767676, fontSize = 13.sp)
+
+        Row(Modifier.padding(top = 11.dp), verticalAlignment = Alignment.CenterVertically) {
+            Image(painter = painterResource(R.drawable.ic_loa), contentDescription = null)
+            Text(
+                "지금 예약하면 7% 할인쿠폰 지급",
+                color = ColorUtils.blue_2177E4,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(start = 4.dp)
+            )
+        }
+    }
 }
