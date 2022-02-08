@@ -46,4 +46,14 @@
     <string name="reservation_tab">예약</string>
     <string name="chat_tab">채팅</string>
     <string name="mypage_tab">마이페이지</string>
+
+    <!--mypage-->
+    <string name="option_favorite_store_list">단골내역</string>
+    <string name="option_consultation_history">상담 현황</string>
+    <string name="option_reservation_status">예약 현황</string>
+    <string name="option_usage_list">이용 목록</string>
+    <string name="option_secondhand_purchase_list">중고 판매 목록</string>
+    <string name="option_recruitment_list">구직 목록</string>
+    <string name="option_report_list">신고 목록</string>
+    <string name="option_other_setting">기타 설정</string>
 </resources>

@@ -24,6 +24,7 @@ import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.home.HomeScreen
+import com.nagaja.the330.view.mypage.MyPageScreen
 
 class MainFragment : BaseFragment() {
 
@@ -124,7 +125,7 @@ class MainFragment : BaseFragment() {
                 Page2()
             }
             composable(NavigationItem.MyPage.route) {
-                Page2()
+                MypageTab()
             }
         }
     }
@@ -132,6 +133,11 @@ class MainFragment : BaseFragment() {
     @Composable
     fun HomeTab() {
         HomeScreen()
+    }
+
+    @Composable
+    fun MypageTab() {
+        MyPageScreen()
     }
 
     @Composable
