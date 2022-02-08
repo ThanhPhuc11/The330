@@ -13,7 +13,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -82,6 +84,28 @@ fun HomeScreen() {
         LogoAndSearch()
         SearchFilter()
         CategoryMain(homeVM)
+        ExchangeDollar()
+        BannerEvent()
+        Row(
+            Modifier
+                .padding(top = 22.dp, bottom = 8.dp)
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_splash_png),
+                contentDescription = "",
+                colorFilter = ColorFilter.tint(ColorUtils.blue_2177E4),
+                modifier = Modifier.height(20.dp)
+            )
+            Text(
+                text = "추천 업체",
+                modifier = Modifier.padding(start = 8.dp),
+                color = ColorUtils.black_000000,
+                fontSize = 19.sp,
+                fontWeight = FontWeight.Black
+            )
+        }
     }
 }
 
@@ -97,7 +121,7 @@ private fun LogoAndSearch() {
             painter = painterResource(id = R.drawable.ic_splash_png),
             contentDescription = "",
             colorFilter = ColorFilter.tint(ColorUtils.blue_2177E4),
-            modifier = Modifier.height(16.dp)
+            modifier = Modifier.height(18.dp)
         )
         Row(
             Modifier
@@ -193,6 +217,20 @@ private fun BoxSearch(modifier: Modifier = Modifier, options: MutableList<KeyVal
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun CategoryMain(homeVM: HomeScreenVM) {
+    LazyVerticalGrid(
+//            state = rememberLazyListState(),
+        cells = GridCells.Fixed(5),
+        contentPadding = PaddingValues(8.dp)
+    ) {
+        items(homeVM.listCategoryState.value) { obj ->
+            IconCategory(url = obj.image ?: "", title = obj.name ?: "")
+        }
+    }
+}
+
 @Composable
 fun IconCategory(url: String, title: String) {
     Column(
@@ -204,8 +242,8 @@ fun IconCategory(url: String, title: String) {
             // Crop, Fit, Inside, FillHeight, FillWidth, None
             contentScale = ContentScale.Fit,
 //            circularReveal = CircularReveal(duration = 250),
-            placeHolder = painterResource(R.drawable.ic_arrow_filter),
-            error = painterResource(R.drawable.ic_arrow_filter),
+            placeHolder = painterResource(R.drawable.ic_default_nagaja_png),
+            error = painterResource(R.drawable.ic_default_nagaja_png),
             modifier = Modifier.size(36.dp)
         )
         Text(
@@ -219,16 +257,75 @@ fun IconCategory(url: String, title: String) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@Preview
 @Composable
-private fun CategoryMain(homeVM: HomeScreenVM) {
-    LazyVerticalGrid(
-//            state = rememberLazyListState(),
-        cells = GridCells.Fixed(5),
-        contentPadding = PaddingValues(8.dp)
+private fun ExchangeDollar() {
+    Row(
+        Modifier
+            .padding(horizontal = 16.dp, vertical = 20.dp)
+            .fillMaxWidth()
+            .height(32.dp)
+            .clip(
+                shape = RoundedCornerShape(16.dp)
+            )
+            .background(ColorUtils.blue_2177E4),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        items(homeVM.listCategoryState.value) { obj ->
-            IconCategory(url = obj.image ?: "", title = obj.name ?: "")
-        }
+        Text(
+            "오늘의 환율",
+            fontSize = 12.sp,
+            color = ColorUtils.white_FFFFFF,
+            modifier = Modifier.padding(horizontal = 15.dp)
+        )
+
+        MoneyValue(nation = "USD", value = "1", symbol = "$", modifier = Modifier.weight(1f))
+        MoneyValue(nation = "KRW", value = "1,200", symbol = "￦", modifier = Modifier.weight(1f))
+        MoneyValue(nation = "PHP", value = "49.87", symbol = "₱", modifier = Modifier.weight(1f))
     }
+}
+
+
+@Composable
+private fun MoneyValue(
+    modifier: Modifier = Modifier,
+    nation: String,
+    value: String,
+    symbol: String
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            "$nation ",
+            fontSize = 12.sp,
+            color = ColorUtils.white_FFFFFF,
+        )
+        Text(
+            value,
+            fontSize = 12.sp,
+            color = ColorUtils.white_FFFFFF,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            symbol,
+            fontSize = 12.sp,
+            color = ColorUtils.white_FFFFFF,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun BannerEvent() {
+    Image(
+        painter = painterResource(R.drawable.banner_ads),
+        contentDescription = null,
+        contentScale = ContentScale.FillWidth,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp)
+    )
 }
