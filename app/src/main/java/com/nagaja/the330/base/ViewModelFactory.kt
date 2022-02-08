@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.view.general.GeneralRepository
 import com.nagaja.the330.view.general.GeneralViewModel
+import com.nagaja.the330.view.home.HomeScreenRepo
+import com.nagaja.the330.view.home.HomeScreenVM
 import com.nagaja.the330.view.login.LoginRepository
 import com.nagaja.the330.view.login.LoginViewModel
 import com.nagaja.the330.view.signupinfo.SignupInfoRepo
@@ -24,6 +26,8 @@ class ViewModelFactory(apiService: ApiService) :
             LoginViewModel(LoginRepository(apiService))
         creators[SignupInfoVM::class.java] =
             SignupInfoVM(SignupInfoRepo(apiService))
+        creators[HomeScreenVM::class.java] =
+            HomeScreenVM(HomeScreenRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

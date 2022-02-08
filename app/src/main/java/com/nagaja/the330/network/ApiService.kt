@@ -49,4 +49,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body body: UserDetail
     ): Response<Unit> //204
+
+    @GET("main_categories")
+    suspend fun getCategory(
+        @Header("Authorization") token: String,
+        @Query("group") group: String
+    ): ResponseModel<MutableList<CategoryModel>>
 }

@@ -1,9 +1,11 @@
 package com.nagaja.the330.view.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -13,31 +15,73 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.google.gson.Gson
+import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
+import com.nagaja.the330.base.ViewModelFactory
+import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.data.dataStore
+import com.nagaja.the330.model.AuthTokenModel
 import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.network.ApiService
+import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
-import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 @Preview
 @Composable
 fun HomeScreen() {
+    val context = LocalContext.current
+    val viewModelStoreOwner: ViewModelStoreOwner =
+        checkNotNull(LocalViewModelStoreOwner.current) {
+            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+        }
+    val homeVM = ViewModelProvider(
+        viewModelStoreOwner,
+        ViewModelFactory(
+            RetrofitBuilder.getInstance(context)
+                ?.create(ApiService::class.java)!!
+        )
+    )[HomeScreenVM::class.java]
+
     LayoutTheme330 {
+        DisposableEffect(Unit) {
+            var accessToken: String
+            CoroutineScope(Dispatchers.IO).launch {
+                context.dataStore.data.map { get ->
+                    get[DataStorePref.AUTH_TOKEN] ?: ""
+                }.collect {
+                    val tokenModel = Gson().fromJson(it, AuthTokenModel::class.java)
+                    accessToken = "Bearer ${tokenModel?.accessToken}"
+                    homeVM.getCategory(accessToken, "MAIN")
+                }
+            }
+            onDispose { }
+        }
+
         LogoAndSearch()
         SearchFilter()
-        IconCategory()
+        CategoryMain(homeVM)
     }
 }
 
@@ -149,23 +193,42 @@ private fun BoxSearch(modifier: Modifier = Modifier, options: MutableList<KeyVal
     }
 }
 
-@Preview
 @Composable
-fun IconCategory() {
-    Column() {
+fun IconCategory(url: String, title: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(top = 20.dp)
+    ) {
         GlideImage(
-            imageModel = "https://bomcook.s3.ap-northeast-2.amazonaws.com/banner/th1.jpg",
+            imageModel = "${BuildConfig.BASE_S3}$url",
             // Crop, Fit, Inside, FillHeight, FillWidth, None
-            contentScale = ContentScale.None,
+            contentScale = ContentScale.Fit,
 //            circularReveal = CircularReveal(duration = 250),
-            placeHolder = ImageBitmap.imageResource(R.drawable.ic_google),
-            error = ImageBitmap.imageResource(R.drawable.ic_google),
-            modifier = Modifier.height(100.dp).background(ColorUtils.pink_FF1E54)
+            placeHolder = painterResource(R.drawable.ic_arrow_filter),
+            error = painterResource(R.drawable.ic_arrow_filter),
+            modifier = Modifier.size(36.dp)
         )
         Text(
-            "HAHA",
+            title,
             fontSize = 12.sp,
-            color = ColorUtils.gray_222222
+            color = ColorUtils.gray_222222,
+            fontWeight = FontWeight(700),
+            modifier = Modifier.padding(top = 10.dp),
+            maxLines = 2
         )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun CategoryMain(homeVM: HomeScreenVM) {
+    LazyVerticalGrid(
+//            state = rememberLazyListState(),
+        cells = GridCells.Fixed(5),
+        contentPadding = PaddingValues(8.dp)
+    ) {
+        items(homeVM.listCategoryState.value) { obj ->
+            IconCategory(url = obj.image ?: "", title = obj.name ?: "")
+        }
     }
 }
