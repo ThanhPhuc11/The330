@@ -9,6 +9,8 @@ import com.nagaja.the330.view.home.HomeScreenRepo
 import com.nagaja.the330.view.home.HomeScreenVM
 import com.nagaja.the330.view.login.LoginRepository
 import com.nagaja.the330.view.login.LoginViewModel
+import com.nagaja.the330.view.mypage.MyPageScreenRepo
+import com.nagaja.the330.view.mypage.MyPageScreenVM
 import com.nagaja.the330.view.signupinfo.SignupInfoRepo
 import com.nagaja.the330.view.signupinfo.SignupInfoVM
 
@@ -28,6 +30,8 @@ class ViewModelFactory(apiService: ApiService) :
             SignupInfoVM(SignupInfoRepo(apiService))
         creators[HomeScreenVM::class.java] =
             HomeScreenVM(HomeScreenRepo(apiService))
+        creators[MyPageScreenVM::class.java] =
+            MyPageScreenVM(MyPageScreenRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

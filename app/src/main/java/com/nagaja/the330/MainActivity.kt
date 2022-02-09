@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun formatToken(token: String?): String {
+    private fun formatToken(token: String?): String {
         if (TextUtils.isEmpty(token)) {
 //            showMess("Token Empty!")
             return ""

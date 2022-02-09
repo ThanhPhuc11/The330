@@ -132,12 +132,12 @@ class MainFragment : BaseFragment() {
 
     @Composable
     fun HomeTab() {
-        HomeScreen()
+        accessToken?.let { HomeScreen(it) }
     }
 
     @Composable
     fun MypageTab() {
-        MyPageScreen()
+        accessToken?.let { MyPageScreen(it) }
     }
 
     @Composable

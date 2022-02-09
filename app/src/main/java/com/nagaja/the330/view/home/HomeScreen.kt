@@ -47,9 +47,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-@Preview
 @Composable
-fun HomeScreen() {
+fun HomeScreen(accessToken: String) {
     val context = LocalContext.current
     val viewModelStoreOwner: ViewModelStoreOwner =
         checkNotNull(LocalViewModelStoreOwner.current) {
@@ -65,16 +64,17 @@ fun HomeScreen() {
 
     LayoutTheme330 {
         DisposableEffect(Unit) {
-            var accessToken: String
-            CoroutineScope(Dispatchers.IO).launch {
-                context.dataStore.data.map { get ->
-                    get[DataStorePref.AUTH_TOKEN] ?: ""
-                }.collect {
-                    val tokenModel = Gson().fromJson(it, AuthTokenModel::class.java)
-                    accessToken = "Bearer ${tokenModel?.accessToken}"
-                    homeVM.getCategory(accessToken, "MAIN")
-                }
-            }
+//            var accessToken: String
+//            CoroutineScope(Dispatchers.IO).launch {
+//                context.dataStore.data.map { get ->
+//                    get[DataStorePref.AUTH_TOKEN] ?: ""
+//                }.collect {
+//                    val tokenModel = Gson().fromJson(it, AuthTokenModel::class.java)
+//                    accessToken = "Bearer ${tokenModel?.accessToken}"
+//                    homeVM.getCategory(accessToken, "MAIN")
+//                }
+//            }
+            homeVM.getCategory(accessToken, "MAIN")
             onDispose {
                 Log.e("onDispose", "home")
             }

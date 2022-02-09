@@ -1,9 +1,11 @@
 package com.nagaja.the330.model
 
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
+
 class UserDetail {
     var id: Int? = null
     var name: String? = null
-    var realName: String? = null
     var password: String? = null
     var email: String? = null
     var nationNumber: String? = null
@@ -32,4 +34,8 @@ class UserDetail {
 //    var district: Any? = null
 //    var companyRequest: Any? = null
     var follow: Boolean? = null
+
+    @SerializedName("real_name")
+    @Expose
+    var realName: String? = null
 }
