@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -26,6 +27,7 @@ import com.nagaja.the330.view.text14_222
 @Preview
 @Composable
 fun MyPageScreen() {
+    val context = LocalContext.current
     val clickFavorite: (()-> Unit) = {
         Log.e("PHUCDZ", "CLICK")
     }
