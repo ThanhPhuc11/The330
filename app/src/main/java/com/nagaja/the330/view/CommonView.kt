@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -22,7 +23,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -88,9 +91,17 @@ fun Test() {
 }
 
 @Composable
-fun TextFieldCustom(modifier: Modifier = Modifier, hint: String = "", maxLength: Int = 1000) {
-    val textStateId = remember { mutableStateOf(TextFieldValue("")) }
-//    val focusManager = LocalFocusManager.current
+fun TextFieldCustom(
+    modifier: Modifier = Modifier,
+    textStateId: MutableState<TextFieldValue> = remember {
+        mutableStateOf(TextFieldValue(""))
+    },
+    hint: String = "",
+    maxLength: Int = 1000,
+    inputType: KeyboardType = KeyboardType.Text,
+    isPw: Boolean = false,
+    focusable: Boolean = true
+) {
     Box(
         modifier = modifier
             .background(ColorUtils.white_FFFFFF)
@@ -106,12 +117,16 @@ fun TextFieldCustom(modifier: Modifier = Modifier, hint: String = "", maxLength:
     ) {
         BasicTextField(
             value = textStateId.value,
-            onValueChange = { if (it.text.length <= maxLength) textStateId.value = it },
+            onValueChange = {
+                if (it.text.length <= maxLength) textStateId.value = it
+            },
             Modifier
                 .fillMaxWidth(),
             singleLine = true,
+            enabled = focusable,
 //            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            visualTransformation = if (isPw) PasswordVisualTransformation() else VisualTransformation.None,
+            keyboardOptions = KeyboardOptions(keyboardType = inputType),
             textStyle = TextStyle(
                 color = ColorUtils.black_000000
             ),

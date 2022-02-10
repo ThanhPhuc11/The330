@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.google.gson.Gson
 import com.nagaja.the330.R
+import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
 import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.dataStore
@@ -32,8 +33,10 @@ import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.edit_profile.EditProfileFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
 import kotlinx.coroutines.*
@@ -43,7 +46,7 @@ import kotlinx.coroutines.flow.map
 private lateinit var mypageVM: MyPageScreenVM
 
 @Composable
-fun MyPageScreen(accessToken: String) {
+fun MyPageScreen(accessToken: String, viewController: ViewController?) {
     val context = LocalContext.current
     val clickFavorite: (() -> Unit) = {
         Log.e("PHUCDZ", "CLICK")
@@ -65,7 +68,7 @@ fun MyPageScreen(accessToken: String) {
         onDispose { }
     }
     LayoutTheme330 {
-        Header(title = "마이페이지", clickBack = null)
+        Header(title = stringResource(R.string.mypage_tab), clickBack = null)
         Column(
             Modifier
                 .weight(1f)
@@ -84,7 +87,11 @@ fun MyPageScreen(accessToken: String) {
                         .height(32.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = ColorUtils.gray_222222)
                 ) {
-                    Text("기업 회원 신청", color = ColorUtils.white_FFFFFF, fontSize = 12.sp)
+                    Text(
+                        stringResource(R.string.apply_company_member),
+                        color = ColorUtils.white_FFFFFF,
+                        fontSize = 12.sp
+                    )
                 }
             }
             Spacer(
@@ -93,7 +100,7 @@ fun MyPageScreen(accessToken: String) {
                     .fillMaxWidth()
                     .height(8.dp)
             )
-            MyInfo()
+            MyInfo(viewController)
             Spacer(
                 modifier = Modifier
                     .background(ColorUtils.gray_F5F5F5)
@@ -146,9 +153,8 @@ fun MyPageScreen(accessToken: String) {
     }
 }
 
-@Preview
 @Composable
-private fun MyInfo() {
+private fun MyInfo(viewController: ViewController?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -160,11 +166,14 @@ private fun MyInfo() {
                 .padding(end = 10.dp)
         ) {
             val userDetail = mypageVM.userDetailState.value
-            Text("아이디: ${userDetail?.name}", style = text14_222)
-            Text("이름: ${userDetail?.realName}", style = text14_222)
-            Text("전화번호: ${userDetail?.phone}", style = text14_222)
+            Text("${stringResource(R.string.user_id)}: ${userDetail?.name}", style = text14_222)
+            Text("${stringResource(R.string.name)}: ${userDetail?.realName}", style = text14_222)
+            Text(
+                "${stringResource(R.string.phone_number)}: ${userDetail?.phone}",
+                style = text14_222
+            )
             Row() {
-                Text("서비스 이용 주소: ", style = text14_222)
+                Text("${stringResource(R.string.service_use_address)}: ", style = text14_222)
                 Text("${userDetail?.address}", style = text14_222, textAlign = TextAlign.Start)
             }
         }
@@ -176,10 +185,16 @@ private fun MyInfo() {
                     width = 1.dp,
                     color = ColorUtils.gray_222222,
                     shape = RoundedCornerShape(99.dp)
-                ),
+                )
+                .noRippleClickable {
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_EDIT_PROFILE,
+                        EditProfileFragment.newInstance()
+                    )
+                },
             contentAlignment = Alignment.Center
         ) {
-            Text("수정", color = ColorUtils.gray_222222, fontSize = 12.sp)
+            Text(stringResource(R.string.edit), color = ColorUtils.gray_222222, fontSize = 12.sp)
         }
     }
 }

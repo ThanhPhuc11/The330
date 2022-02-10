@@ -20,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.nagaja.the330.MainActivity
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.LayoutTheme330
@@ -35,6 +36,7 @@ class MainFragment : BaseFragment() {
 
     @Composable
     override fun SetupViewModel() {
+        viewController = (activity as MainActivity).viewController
     }
 
     @Preview
@@ -137,7 +139,7 @@ class MainFragment : BaseFragment() {
 
     @Composable
     fun MypageTab() {
-        accessToken?.let { MyPageScreen(it) }
+        accessToken?.let { MyPageScreen(it, viewController) }
     }
 
     @Composable
