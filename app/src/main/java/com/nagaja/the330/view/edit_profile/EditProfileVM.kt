@@ -17,8 +17,6 @@ class EditProfileVM(
 ) : BaseViewModel() {
     val userDetailState: MutableState<UserDetail?> = mutableStateOf(null)
 
-    val stateEdtPhone = mutableStateOf(TextFieldValue(""))
-
     fun getUserDetails(token: String) {
         viewModelScope.launch {
             repo.getUserDetails(token)
