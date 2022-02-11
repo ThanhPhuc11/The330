@@ -1,7 +1,9 @@
 package com.nagaja.the330.view.mypage
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.UserDetail
@@ -15,7 +17,7 @@ class MyPageScreenVM(
     private val repo: MyPageScreenRepo
 ) : BaseViewModel() {
     val userDetailState: MutableState<UserDetail?> = mutableStateOf(null)
-
+    val cbUpdateUserDataStore = MutableLiveData<Unit>()
     fun getUserDetails(token: String) {
         viewModelScope.launch {
             repo.getUserDetails(token)
@@ -30,7 +32,13 @@ class MyPageScreenVM(
                 .collect {
                     callbackSuccess.value = Unit
                     userDetailState.value = it
+                    cbUpdateUserDataStore.value = Unit
                 }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.e("MYPAGE", "onCleared")
     }
 }

@@ -76,7 +76,7 @@ fun HomeScreen(accessToken: String) {
 //            }
             homeVM.getCategory(accessToken, "MAIN")
             onDispose {
-                Log.e("onDispose", "home")
+
             }
         }
 

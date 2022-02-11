@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -26,6 +27,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.google.gson.Gson
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
@@ -35,7 +38,10 @@ import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.data.dataStore
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
-import com.nagaja.the330.view.*
+import com.nagaja.the330.view.Header
+import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.text14_222
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -60,26 +66,43 @@ class EditProfileFragment : BaseFragment() {
     @Composable
     override fun UIData() {
         val context = LocalContext.current
-        LaunchedEffect(Unit) {
-            getUserDetailFromDataStore(context)
-        }
-        val stateEdtName = remember { mutableStateOf("") }
-        val stateEdtNationPhone =
-            remember {
-                mutableStateOf(vm.userDetailState.value?.nationNumber ?: "")
-            }
-        val stateEdtPhone =
-            remember { mutableStateOf(vm.userDetailState.value?.phone ?: "") }
-        val stateEdtNation = remember {
-            mutableStateOf(vm.userDetailState.value?.nation ?: "")
-        }
-        val stateEdtAddress =
-            remember { mutableStateOf(vm.userDetailState.value?.address ?: "") }
+        val owner = LocalLifecycleOwner.current
+
         LaunchedEffect(vm.userDetailState.value) {
-            stateEdtName.value = vm.userDetailState.value?.realName ?: ""
-            stateEdtPhone.value = vm.userDetailState.value?.phone ?: ""
+            vm.stateEdtName.value = vm.userDetailState.value?.realName ?: ""
+            vm.stateEdtPhone.value = vm.userDetailState.value?.phone ?: ""
+            vm.stateEdtAddress.value = vm.userDetailState.value?.address ?: ""
             Log.e("User Local", vm.userDetailState.value?.id.toString())
         }
+
+
+        DisposableEffect(owner) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_START -> {
+                        Log.e("EDIT", "onStart")
+
+                        getUserDetailFromDataStore(context)
+                        vm.cbNextScreen.observe(viewLifecycleOwner) {
+                            viewController?.popFragment()
+                        }
+                    }
+                    Lifecycle.Event.ON_STOP -> {
+                        Log.e("EDIT", "onStop")
+                    }
+                    Lifecycle.Event.ON_DESTROY -> {
+                        Log.e("EDIT", "onDestroy")
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                Log.e("EDIT", "onDispose")
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
+
         LayoutTheme330 {
             Header(title = "") {
                 viewController?.popFragment()
@@ -123,7 +146,7 @@ class EditProfileFragment : BaseFragment() {
                     modifier = Modifier.padding(top = 20.dp)
                 )
                 TextFieldCustom(
-                    textStateId = stateEdtName,
+                    textStateId = vm.stateEdtName,
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 //TODO: PhoneNumber
@@ -148,12 +171,12 @@ class EditProfileFragment : BaseFragment() {
                             )
                     )
                     HandleInputPhoneNumber(
-                        stateEdtPhone,
+                        vm.stateEdtPhone,
                         modifier = Modifier.weight(1f)
                     )
                 }
 
-                HandleChooseAddress(stateEdtAddress)
+                HandleChooseAddress(vm.stateEdtAddress)
 
                 Spacer(
                     modifier = Modifier
@@ -167,7 +190,10 @@ class EditProfileFragment : BaseFragment() {
                 Modifier
                     .fillMaxWidth()
                     .height(52.dp)
-                    .background(ColorUtils.blue_2177E4),
+                    .background(ColorUtils.blue_2177E4)
+                    .noRippleClickable {
+                        accessToken?.let { vm.checkChangePhone(it) }
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -189,6 +215,7 @@ class EditProfileFragment : BaseFragment() {
             textStateId = textFieldValue,
             modifier = modifier,
             maxLength = 11,
+            inputType = KeyboardType.Number,
 //            focusable = viewModel.stateEnableFocusPhone.value
         )
     }

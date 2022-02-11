@@ -621,6 +621,7 @@ class SignupInfoFragment : BaseFragment() {
             textStateId = textFieldValue,
             modifier = modifier,
             maxLength = 11,
+            inputType = KeyboardType.Number,
             focusable = viewModel.stateEnableFocusPhone.value
         )
     }

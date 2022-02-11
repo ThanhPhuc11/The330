@@ -11,17 +11,18 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.google.gson.Gson
 import com.nagaja.the330.R
@@ -48,6 +49,7 @@ private lateinit var mypageVM: MyPageScreenVM
 @Composable
 fun MyPageScreen(accessToken: String, viewController: ViewController?) {
     val context = LocalContext.current
+    val owner = LocalLifecycleOwner.current
     val clickFavorite: (() -> Unit) = {
         Log.e("PHUCDZ", "CLICK")
     }
@@ -62,10 +64,24 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
                 ?.create(ApiService::class.java)!!
         )
     )[MyPageScreenVM::class.java]
-    DisposableEffect(Unit) {
-        getUserDetailFromDataStore(context)
-        mypageVM.getUserDetails(accessToken)
-        onDispose { }
+
+    DisposableEffect(owner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> {
+                    getUserDetailFromDataStore(context)
+                    mypageVM.getUserDetails(accessToken)
+                }
+                Lifecycle.Event.ON_STOP -> {
+
+                }
+                else -> {}
+            }
+        }
+        owner.lifecycle.addObserver(observer)
+        onDispose {
+            owner.lifecycle.removeObserver(observer)
+        }
     }
     LayoutTheme330 {
         Header(title = stringResource(R.string.mypage_tab), clickBack = null)
