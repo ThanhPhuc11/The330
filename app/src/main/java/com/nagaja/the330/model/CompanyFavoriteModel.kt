@@ -5,5 +5,7 @@ class CompanyFavoriteModel(
     var actor: UserDetail? = null,
     var target: CompanyModel? = null,
     var bookmark: Int? = null,
-    var useCount: Int? = null
+    var useCount: Int? = null,
+    var usageCount: Int? = null,
+    var createdOn: String? = null,
 )
