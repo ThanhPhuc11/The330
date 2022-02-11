@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                 get[DataStorePref.AUTH_TOKEN] ?: ""
             }.collect {
                 tokenModel = Gson().fromJson(it, AuthTokenModel::class.java)
-                delay(1000)
+                delay(500)
                 withContext(Dispatchers.Main) {
                     if (tokenModel == null) {
                         viewController.pushFragment(

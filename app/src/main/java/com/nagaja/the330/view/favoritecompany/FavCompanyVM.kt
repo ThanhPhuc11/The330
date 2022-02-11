@@ -2,7 +2,6 @@ package com.nagaja.the330.view.favoritecompany
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.CompanyFavoriteModel
@@ -46,10 +45,14 @@ class FavCompanyVM(
                 .collect {
                     if (it.raw().isSuccessful && it.raw().code == 201) {
                         //TODO: update UI to follow
-                        listCompany.firstOrNull { it1 -> it1.target?.id == targetId }?.isFollow =
-                            true
+                        listCompany.forEachIndexed { index, obj ->
+                            if (obj.target?.id == targetId) {
+                                val newObj = listCompany[index].apply { isFollow = true }
+                                updateItem(index, newObj, listCompany)
+                                return@forEachIndexed
+                            }
+                        }
                     }
-                    listCompany
                 }
         }
     }
@@ -65,11 +68,20 @@ class FavCompanyVM(
                 .collect {
                     if (it.raw().isSuccessful && it.raw().code == 204) {
                         //TODO: update UI to unFollow
-                        listCompany.firstOrNull { it1 -> it1.target?.id == targetId }?.isFollow =
-                            false
+                        listCompany.forEachIndexed { index, obj ->
+                            if (obj.target?.id == targetId) {
+                                val newObj = listCompany[index].apply { isFollow = false }
+                                updateItem(index, newObj, listCompany)
+                                return@forEachIndexed
+                            }
+                        }
                     }
-                    listCompany
                 }
         }
+    }
+
+    private fun <T> updateItem(index: Int, newObj: T, list: MutableList<T>) {
+        list.removeAt(index)
+        list.add(index, newObj)
     }
 }
