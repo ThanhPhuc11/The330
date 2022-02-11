@@ -55,4 +55,12 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("group") group: String
     ): ResponseModel<MutableList<CategoryModel>>
+
+    @GET("follows/target")
+    suspend fun getFavoriteCompany(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String
+    ): ResponseModel<MutableList<CompanyFavoriteModel>>
 }

@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.view.edit_profile.EditProfileRepo
 import com.nagaja.the330.view.edit_profile.EditProfileVM
+import com.nagaja.the330.view.favoritecompany.FavCompanyRepo
+import com.nagaja.the330.view.favoritecompany.FavCompanyVM
 import com.nagaja.the330.view.general.GeneralRepository
 import com.nagaja.the330.view.general.GeneralViewModel
 import com.nagaja.the330.view.home.HomeScreenRepo
@@ -36,6 +38,8 @@ class ViewModelFactory(apiService: ApiService) :
             MyPageScreenVM(MyPageScreenRepo(apiService))
         creators[EditProfileVM::class.java] =
             EditProfileVM(EditProfileRepo(apiService))
+        creators[FavCompanyVM::class.java] =
+            FavCompanyVM(FavCompanyRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -38,6 +38,8 @@ import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
+import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
+import com.nagaja.the330.view.favoritecompany.FavCompanyVM
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
 import kotlinx.coroutines.*
@@ -51,7 +53,10 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
     val clickFavorite: (() -> Unit) = {
-        Log.e("PHUCDZ", "CLICK")
+        viewController?.pushFragment(
+            ScreenId.SCREEN_FAV_COMPANY,
+            FavCompanyFragment.newInstance()
+        )
     }
     val viewModelStoreOwner: ViewModelStoreOwner =
         checkNotNull(LocalViewModelStoreOwner.current) {
