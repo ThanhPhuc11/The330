@@ -15,8 +15,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -104,7 +104,7 @@ class FavCompanyFragment : BaseFragment() {
                         .fillMaxWidth()
                         .background(ColorUtils.gray_E1E1E1)
                 ) {
-                    val listCompany = remember { viewModel.listCompany }
+                    val listCompany = viewModel.listCompany
                     LazyColumn(state = rememberLazyListState()) {
                         itemsIndexed(listCompany) { _, obj ->
                             CompanyItem(obj)
@@ -202,7 +202,7 @@ class FavCompanyFragment : BaseFragment() {
                         fontWeight = FontWeight.Black
                     )
                     //TODO: like button
-                    ButtonLike()
+                    ButtonLike(obj)
                 }
                 Text(
                     "단골 등록일: 2021년 10월 26일",
@@ -234,9 +234,8 @@ class FavCompanyFragment : BaseFragment() {
         }
     }
 
-    @Preview
     @Composable
-    private fun ButtonLike() {
+    private fun ButtonLike(obj: CompanyFavoriteModel) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -247,11 +246,15 @@ class FavCompanyFragment : BaseFragment() {
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(horizontal = 7.dp, vertical = 5.dp)
+                .noRippleClickable {
+                    viewModel.followOrNot(accessToken!!, obj.target?.id!!, obj.isFollow)
+                }
         ) {
             Box(Modifier.padding(end = 3.dp)) {
                 Image(
                     painter = painterResource(R.drawable.ic_heart_content),
-                    contentDescription = null
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(if (obj.isFollow) ColorUtils.pink_FF4949 else ColorUtils.white_FFFFFF)
                 )
                 Image(
                     painter = painterResource(R.drawable.ic_heart_empty),

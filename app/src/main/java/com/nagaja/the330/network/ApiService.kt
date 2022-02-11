@@ -63,4 +63,16 @@ interface ApiService {
         @Query("size") size: Int,
         @Query("sort") sort: String
     ): ResponseModel<MutableList<CompanyFavoriteModel>>
+
+    @POST("follows")
+    suspend fun followCompany(
+        @Header("Authorization") token: String,
+        @Query("targetId") targetId: Int
+    ): Response<Unit> //201
+
+    @DELETE("follows")
+    suspend fun unfollowCompany(
+        @Header("Authorization") token: String,
+        @Query("targetId") targetId: Int
+    ): Response<Unit> //204
 }

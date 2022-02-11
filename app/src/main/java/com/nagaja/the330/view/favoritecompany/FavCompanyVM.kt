@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.favoritecompany
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -24,6 +25,50 @@ class FavCompanyVM(
                 .catch { }
                 .collect {
                     it.content?.let { it1 -> listCompany.addAll(it1) }
+                }
+        }
+    }
+
+    fun followOrNot(token: String, targetId: Int, isFollowing: Boolean) {
+        if (!isFollowing) {
+            follow(token, targetId)
+        } else {
+            unfollow(token, targetId)
+        }
+    }
+
+    private fun follow(token: String, targetId: Int) {
+        viewModelScope.launch {
+            repo.followCompany(token, targetId)
+                .onStart { }
+                .onCompletion { }
+                .catch { }
+                .collect {
+                    if (it.raw().isSuccessful && it.raw().code == 201) {
+                        //TODO: update UI to follow
+                        listCompany.firstOrNull { it1 -> it1.target?.id == targetId }?.isFollow =
+                            true
+                    }
+                    listCompany
+                }
+        }
+    }
+
+    private fun unfollow(token: String, targetId: Int) {
+        viewModelScope.launch {
+            repo.unfollowCompany(token, targetId)
+                .onStart { }
+                .onCompletion { }
+                .catch {
+                    Log.e("PHUC", "$this")
+                }
+                .collect {
+                    if (it.raw().isSuccessful && it.raw().code == 204) {
+                        //TODO: update UI to unFollow
+                        listCompany.firstOrNull { it1 -> it1.target?.id == targetId }?.isFollow =
+                            false
+                    }
+                    listCompany
                 }
         }
     }

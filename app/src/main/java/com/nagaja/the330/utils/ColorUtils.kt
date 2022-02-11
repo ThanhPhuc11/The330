@@ -11,6 +11,7 @@ object ColorUtils {
     val blue_E9F1FC = Color(0xFFE9F1FC)
 
     val pink_FF1E54 = Color(0xFFFF1E54)
+    val pink_FF4949 = Color(0xFFFF4949)
 
     val gray_222222 = Color(0xFF222222)
     val gray_D9D9D9 = Color(0xFFD9D9D9)

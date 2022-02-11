@@ -8,4 +8,5 @@ class CompanyFavoriteModel(
     var useCount: Int? = null,
     var usageCount: Int? = null,
     var createdOn: String? = null,
+    var isFollow: Boolean = true
 )
