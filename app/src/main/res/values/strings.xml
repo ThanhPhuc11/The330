@@ -66,4 +66,10 @@
     <string name="complete">완료</string>
     <string name="sort_create_on">등록일</string>
     <string name="sort_frequency">이용횟수</string>
+
+    <!--apply company    -->
+    <string name="apply_company_title">기업 회원 신청</string>
+    <string name="company_info">기업정보</string>
+    <string name="category_selection">카테고리선택</string>
+    <string name="representative_image">대표이미지</string>
 </resources>
