@@ -2,6 +2,7 @@ package com.nagaja.the330
 
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -21,6 +22,7 @@ import com.nagaja.the330.view.general.GeneralViewModel
 import com.nagaja.the330.view.login.LoginFragment
 import com.nagaja.the330.view.main.MainFragment
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 
@@ -105,7 +107,9 @@ class MainActivity : AppCompatActivity() {
                         )
                     } else {
                         val accessToken = formatToken(tokenModel!!.accessToken)
+                        Log.e("PHUCDZ", accessToken)
                         generalViewModel.getUserDetails(accessToken)
+                        this@launch.coroutineContext.job.cancel()
                     }
                 }
             }

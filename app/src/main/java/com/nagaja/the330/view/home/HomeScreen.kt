@@ -1,6 +1,5 @@
 package com.nagaja.the330.view.home
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -16,23 +15,22 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import com.google.gson.Gson
 import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
 import com.nagaja.the330.base.ViewModelFactory
-import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.data.dataStore
-import com.nagaja.the330.model.AuthTokenModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
@@ -41,20 +39,16 @@ import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(accessToken: String) {
     val context = LocalContext.current
+    val owner = LocalLifecycleOwner.current
     val viewModelStoreOwner: ViewModelStoreOwner =
         checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
         }
-    val homeVM = ViewModelProvider(
+    val viewModel = ViewModelProvider(
         viewModelStoreOwner,
         ViewModelFactory(
             RetrofitBuilder.getInstance(context)
@@ -62,24 +56,25 @@ fun HomeScreen(accessToken: String) {
         )
     )[HomeScreenVM::class.java]
 
-    LayoutTheme330 {
-        DisposableEffect(Unit) {
-//            var accessToken: String
-//            CoroutineScope(Dispatchers.IO).launch {
-//                context.dataStore.data.map { get ->
-//                    get[DataStorePref.AUTH_TOKEN] ?: ""
-//                }.collect {
-//                    val tokenModel = Gson().fromJson(it, AuthTokenModel::class.java)
-//                    accessToken = "Bearer ${tokenModel?.accessToken}"
-//                    homeVM.getCategory(accessToken, "MAIN")
-//                }
-//            }
-            homeVM.getCategory(accessToken, "MAIN")
-            onDispose {
+    DisposableEffect(owner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> {
+                    viewModel.getCategory(accessToken, "MAIN")
+                }
+                Lifecycle.Event.ON_STOP -> {
 
+                }
+                else -> {}
             }
         }
+        owner.lifecycle.addObserver(observer)
+        onDispose {
+            owner.lifecycle.removeObserver(observer)
+        }
+    }
 
+    LayoutTheme330 {
         LogoAndSearch()
         SearchFilter()
         Column(
@@ -88,7 +83,7 @@ fun HomeScreen(accessToken: String) {
                 .weight(1f)
                 .verticalScroll(state = rememberScrollState())
         ) {
-            CategoryMain(homeVM)
+            CategoryMain(viewModel)
             ExchangeDollar()
             BannerEvent()
             Row(

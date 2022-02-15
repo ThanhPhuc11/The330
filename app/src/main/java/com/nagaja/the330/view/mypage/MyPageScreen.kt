@@ -1,7 +1,6 @@
 package com.nagaja.the330.view.mypage
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,8 +9,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,10 +16,12 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.google.gson.Gson
 import com.nagaja.the330.R
@@ -40,14 +39,15 @@ import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.applycompany.ApplyCompanyFragment
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
-import com.nagaja.the330.view.favoritecompany.FavCompanyVM
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
-private lateinit var mypageVM: MyPageScreenVM
+private lateinit var viewModel: MyPageScreenVM
 
 @Composable
 fun MyPageScreen(accessToken: String, viewController: ViewController?) {
@@ -63,7 +63,7 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
         checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
         }
-    mypageVM = ViewModelProvider(
+    viewModel = ViewModelProvider(
         viewModelStoreOwner,
         ViewModelFactory(
             RetrofitBuilder.getInstance(context)
@@ -76,7 +76,7 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
             when (event) {
                 Lifecycle.Event.ON_START -> {
                     getUserDetailFromDataStore(context)
-                    mypageVM.getUserDetails(accessToken)
+                    viewModel.getUserDetails(accessToken)
                 }
                 Lifecycle.Event.ON_STOP -> {
 
@@ -192,7 +192,7 @@ private fun MyInfo(viewController: ViewController?) {
                 .weight(1f)
                 .padding(end = 10.dp)
         ) {
-            val userDetail = mypageVM.userDetailState.value
+            val userDetail = viewModel.userDetailState.value
             Text("${stringResource(R.string.user_id)}: ${userDetail?.name}", style = text14_222)
             Text("${stringResource(R.string.name)}: ${userDetail?.realName}", style = text14_222)
             Text(
@@ -251,7 +251,7 @@ private fun getUserDetailFromDataStore(context: Context) {
             get[DataStorePref.USER_DETAIL] ?: ""
         }.collect {
             val userDetail = Gson().fromJson(it, UserDetail::class.java)
-            userDetail?.let { mypageVM.userDetailState.value = userDetail }
+            userDetail?.let { viewModel.userDetailState.value = userDetail }
         }
     }
 }
