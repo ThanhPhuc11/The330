@@ -2,7 +2,10 @@ package com.nagaja.the330.view.applycompany
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -35,6 +38,7 @@ import com.skydoves.landscapist.glide.GlideImage
 class ApplyCompanyFragment : BaseFragment() {
     private lateinit var viewModel: ApplyCompanyVM
     private var onClickRemove: ((Int) -> Unit)? = null
+    private var onClickChoose: ((Int) -> Unit)? = null
 
     companion object {
         fun newInstance() = ApplyCompanyFragment()
@@ -120,6 +124,43 @@ class ApplyCompanyFragment : BaseFragment() {
                 ChooseService()
                 OpenTimeUI()
                 ReservationTime()
+
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .background(ColorUtils.gray_F5F5F5)
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 14.dp, top = 6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(7.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(R.string.button_selection), style = text14_222)
+                    ItemTime(
+                        index = -1,
+                        time = TimeReservation(
+                            time = stringResource(R.string.selectable),
+                            isSelected = false
+                        ),
+                        modifier = Modifier.width(82.dp)
+                    )
+                    ItemTime(
+                        index = -1,
+                        time = TimeReservation(
+                            time = stringResource(R.string.select),
+                            isSelected = true
+                        ),
+                        modifier = Modifier.width(82.dp)
+                    )
+                }
+
+                Text(
+                    "한 타임 당 예약가능 인원",
+                    style = text14_222,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .padding(horizontal = 16.dp)
+                )
             }
         }
     }
@@ -581,7 +622,7 @@ class ApplyCompanyFragment : BaseFragment() {
     private fun ReservationTime() {
         Column(
             Modifier
-                .padding(top = 20.dp)
+                .padding(top = 20.dp, bottom = 12.dp)
                 .padding(horizontal = 16.dp)
         ) {
             Text("예약 가능 시간", style = text14_222, fontWeight = FontWeight.Bold)
@@ -592,33 +633,46 @@ class ApplyCompanyFragment : BaseFragment() {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 8.dp)
             )
+
             val listTime =
-                listOf(
-                    "00:00", "00:30",
-                    "01:00", "01:30",
-                    "02:00", "02:30",
-                    "03:00", "03:30",
-                    "04:00", "04:30",
-                    "05:00", "05:30",
-                    "06:00", "06:30",
-                    "07:00", "07:30",
-                    "08:00", "08:30",
-                    "09:00", "09:30",
-                    "10:00", "10:30",
-                    "11:00", "11:30",
-                    "12:00", "12:30",
-                    "13:00", "13:30",
-                    "14:00", "14:30",
-                    "15:00", "15:30",
-                    "16:00", "16:30",
-                    "17:00", "17:30",
-                    "18:00", "18:30",
-                    "19:00", "19:30",
-                    "20:00", "20:30",
-                    "21:00", "21:30",
-                    "22:00", "22:30",
-                    "23:00", "23:30",
-                )
+                remember {
+                    mutableStateListOf(
+                        TimeReservation("00:00"), TimeReservation("00:30"),
+                        TimeReservation("01:00"), TimeReservation("01:30"),
+                        TimeReservation("02:00"), TimeReservation("02:30"),
+                        TimeReservation("03:00"), TimeReservation("03:30"),
+                        TimeReservation("04:00"), TimeReservation("04:30"),
+                        TimeReservation("05:00"), TimeReservation("05:30"),
+                        TimeReservation("06:00"), TimeReservation("06:30"),
+                        TimeReservation("07:00"), TimeReservation("07:30"),
+                        TimeReservation("08:00"), TimeReservation("08:30"),
+                        TimeReservation("09:00"), TimeReservation("09:30"),
+                        TimeReservation("10:00"), TimeReservation("10:30"),
+                        TimeReservation("11:00"), TimeReservation("11:30"),
+                        TimeReservation("12:00"), TimeReservation("12:30"),
+                        TimeReservation("13:00"), TimeReservation("13:30"),
+                        TimeReservation("14:00"), TimeReservation("14:30"),
+                        TimeReservation("15:00"), TimeReservation("15:30"),
+                        TimeReservation("16:00"), TimeReservation("16:30"),
+                        TimeReservation("17:00"), TimeReservation("17:30"),
+                        TimeReservation("18:00"), TimeReservation("18:30"),
+                        TimeReservation("19:00"), TimeReservation("19:30"),
+                        TimeReservation("20:00"), TimeReservation("20:30"),
+                        TimeReservation("21:00"), TimeReservation("21:30"),
+                        TimeReservation("22:00"), TimeReservation("22:30"),
+                        TimeReservation("23:00"), TimeReservation("23:30"),
+                    )
+                }
+
+            onClickChoose = { index ->
+                if (index >= 0) {
+                    val temp = listTime[index].apply {
+                        isSelected = !isSelected
+                    }
+                    listTime.removeAt(index)
+                    listTime.add(index, temp)
+                }
+            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -634,28 +688,38 @@ class ApplyCompanyFragment : BaseFragment() {
                     horizontalArrangement = Arrangement.spacedBy(5.dp),
 //                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(listTime) { time ->
-                        ItemTime(time)
+                    itemsIndexed(listTime) { index, time ->
+                        ItemTime(index, time)
                     }
                 }
             }
         }
     }
 
+    class TimeReservation(val time: String, var isSelected: Boolean = false)
+
     @Composable
-    private fun ItemTime(time: String) {
+    private fun ItemTime(index: Int, time: TimeReservation, modifier: Modifier = Modifier) {
         Box(
-            Modifier
+            modifier
                 .padding(top = 8.dp)
                 .height(32.dp)
                 .border(
                     width = 1.dp,
-                    color = ColorUtils.gray_E1E1E1,
+                    color = if (time.isSelected) ColorUtils.blue_2177E4 else ColorUtils.gray_E1E1E1,
                     shape = RoundedCornerShape(4.dp)
-                ),
+                )
+                .background(if (time.isSelected) ColorUtils.blue_E9F1FC else ColorUtils.white_FFFFFF)
+                .noRippleClickable {
+                    onClickChoose?.invoke(index)
+                },
             contentAlignment = Alignment.Center
         ) {
-            Text(time, color = ColorUtils.gray_626262, fontSize = 14.sp)
+            Text(
+                time.time,
+                color = if (time.isSelected) ColorUtils.blue_2177E4 else ColorUtils.gray_626262,
+                fontSize = 14.sp
+            )
         }
     }
 }

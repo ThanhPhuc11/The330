@@ -95,4 +95,7 @@
     <string name="please_enter_your_SNS_info_Line">SNS 정보를 입력해 주세요. (라인)</string>
     <string name="choose_service">배달/ 예약/ 픽업,드랍</string>
     <string name="open_time_label">영업 시간</string>
+    <string name="button_selection">버튼선택</string>
+    <string name="selectable">선택가능</string>
+    <string name="select">선택</string>
 </resources>
