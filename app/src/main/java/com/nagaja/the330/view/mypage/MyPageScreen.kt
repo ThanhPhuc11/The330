@@ -37,6 +37,7 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.applycompany.ApplyCompanyFragment
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyVM
@@ -102,7 +103,12 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_APPLY_COMPANY,
+                            ApplyCompanyFragment.newInstance()
+                        )
+                    },
                     modifier = Modifier
                         .width(96.dp)
                         .height(32.dp),

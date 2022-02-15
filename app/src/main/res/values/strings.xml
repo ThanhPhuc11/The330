@@ -72,4 +72,25 @@
     <string name="company_info">기업정보</string>
     <string name="category_selection">카테고리선택</string>
     <string name="representative_image">대표이미지</string>
+
+    <string name="input_name_eng">기업명을 입력해 주세요.(영어)</string>
+    <string name="input_name_phi">기업명을 입력해 주세요.(필리핀어)</string>
+    <string name="input_name_kr">기업명을 입력해 주세요.(한국어)</string>
+    <string name="input_name_china">기업명을 입력해 주세요.(중국어)</string>
+    <string name="input_name_jp">기업명을 입력해 주세요.(일본어)</string>
+
+    <string name="input_des_eng">기업설명을 입력해 주세요.(영어)</string>
+    <string name="input_des_phi">기업설명을 입력해 주세요.(필리핀어)</string>
+    <string name="input_des_kr">기업설명을 입력해 주세요.(한국어)</string>
+    <string name="input_des_china">기업설명을 입력해 주세요.(중국어)</string>
+    <string name="input_des_jp">기업설명을 입력해 주세요.(일본어)</string>
+    <string name="area_selection">지역 선택</string>
+    <string name="input_detail_address">상세 주소를 입력하세요.</string>
+
+    <string name="info_person_in_charge">담당자 정보</string>
+    <string name="please_enter_your_phone_number">전화번호를 입력해 주세요.</string>
+    <string name="please_enter_your_email_address">메일주소를 입력해 주세요.</string>
+    <string name="please_enter_your_SNS_info_FB">SNS 정보를 입력해 주세요. (페이스북)</string>
+    <string name="please_enter_your_SNS_info_Kakaotalk">SNS 정보를 입력해 주세요. (카카오톡)</string>
+    <string name="please_enter_your_SNS_info_Line">SNS 정보를 입력해 주세요. (라인)</string>
 </resources>
