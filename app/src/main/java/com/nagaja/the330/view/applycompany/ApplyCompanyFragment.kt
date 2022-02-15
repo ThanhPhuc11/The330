@@ -2,8 +2,7 @@ package com.nagaja.the330.view.applycompany
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -119,6 +118,8 @@ class ApplyCompanyFragment : BaseFragment() {
                 CompanyDescriptionInput()
                 InfoPersonInCharge()
                 ChooseService()
+                OpenTimeUI()
+                ReservationTime()
             }
         }
     }
@@ -465,7 +466,11 @@ class ApplyCompanyFragment : BaseFragment() {
                 .padding(horizontal = 16.dp)
                 .padding(top = 20.dp)
         ) {
-            Text("배달/ 예약/ 픽업,드랍", style = text14_222, fontWeight = FontWeight.Bold)
+            Text(
+                stringResource(R.string.choose_service),
+                style = text14_222,
+                fontWeight = FontWeight.Bold
+            )
             Row(
                 Modifier
                     .padding(top = 11.dp)
@@ -546,6 +551,111 @@ class ApplyCompanyFragment : BaseFragment() {
                     fontWeight = FontWeight.Bold
                 )
             }
+        }
+    }
+
+    @Preview
+    @Composable
+    private fun OpenTimeUI() {
+        Column(
+            Modifier
+                .padding(top = 20.dp)
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(
+                stringResource(R.string.open_time_label),
+                style = text14_222,
+                fontWeight = FontWeight.Bold
+            )
+            Row(Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                BaseSeletion(modifier = Modifier.width(110.dp))
+                Text("~", modifier = Modifier.padding(horizontal = 4.dp))
+                BaseSeletion(modifier = Modifier.width(110.dp))
+            }
+        }
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    @Preview
+    @Composable
+    private fun ReservationTime() {
+        Column(
+            Modifier
+                .padding(top = 20.dp)
+                .padding(horizontal = 16.dp)
+        ) {
+            Text("예약 가능 시간", style = text14_222, fontWeight = FontWeight.Bold)
+            Text(
+                "예약 가능한 시간을 선택해 주세요.",
+                color = ColorUtils.gray_222222,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            val listTime =
+                listOf(
+                    "00:00", "00:30",
+                    "01:00", "01:30",
+                    "02:00", "02:30",
+                    "03:00", "03:30",
+                    "04:00", "04:30",
+                    "05:00", "05:30",
+                    "06:00", "06:30",
+                    "07:00", "07:30",
+                    "08:00", "08:30",
+                    "09:00", "09:30",
+                    "10:00", "10:30",
+                    "11:00", "11:30",
+                    "12:00", "12:30",
+                    "13:00", "13:30",
+                    "14:00", "14:30",
+                    "15:00", "15:30",
+                    "16:00", "16:30",
+                    "17:00", "17:30",
+                    "18:00", "18:30",
+                    "19:00", "19:30",
+                    "20:00", "20:30",
+                    "21:00", "21:30",
+                    "22:00", "22:30",
+                    "23:00", "23:30",
+                )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(0.dp, 1000.dp)
+                    .wrapContentHeight()
+            ) {
+                LazyVerticalGrid(
+//                    state = rememberLazyListState(),
+                    cells = GridCells.Fixed(4),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+//                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(listTime) { time ->
+                        ItemTime(time)
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun ItemTime(time: String) {
+        Box(
+            Modifier
+                .padding(top = 8.dp)
+                .height(32.dp)
+                .border(
+                    width = 1.dp,
+                    color = ColorUtils.gray_E1E1E1,
+                    shape = RoundedCornerShape(4.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(time, color = ColorUtils.gray_626262, fontSize = 14.sp)
         }
     }
 }
