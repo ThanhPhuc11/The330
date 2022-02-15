@@ -1,13 +1,10 @@
 package com.nagaja.the330.view.applycompany
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
@@ -31,6 +28,7 @@ import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.*
 import com.skydoves.landscapist.glide.GlideImage
@@ -120,6 +118,7 @@ class ApplyCompanyFragment : BaseFragment() {
                 )
                 CompanyDescriptionInput()
                 InfoPersonInCharge()
+                ChooseService()
             }
         }
     }
@@ -449,6 +448,104 @@ class ApplyCompanyFragment : BaseFragment() {
                 hint = stringResource(R.string.please_enter_your_SNS_info_Line),
                 textStateId = viewModel.textStateLine
             )
+        }
+    }
+
+    @Preview
+    @Composable
+    private fun ChooseService() {
+        val listService = listOf(
+            AppConstants.DELIVERY,
+            AppConstants.RESERVATION,
+            AppConstants.PICKUP_DROP
+        )
+        val chooseState = remember { mutableStateOf(listService[0]) }
+        Column(
+            Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 20.dp)
+        ) {
+            Text("배달/ 예약/ 픽업,드랍", style = text14_222, fontWeight = FontWeight.Bold)
+            Row(
+                Modifier
+                    .padding(top = 11.dp)
+                    .height(32.dp)
+                    .border(width = 1.dp, color = ColorUtils.gray_222222),
+            ) {
+                SelectedService(
+                    text = "배달",
+                    modifier = Modifier.weight(1f),
+                    isSelected = chooseState.value == AppConstants.DELIVERY,
+                    onClick = { chooseState.value = AppConstants.DELIVERY }
+                )
+                Spacer(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .fillMaxHeight()
+                        .background(ColorUtils.gray_222222)
+                )
+
+                SelectedService(
+                    text = "예약",
+                    modifier = Modifier.weight(1f),
+                    isSelected = chooseState.value == AppConstants.RESERVATION,
+                    onClick = { chooseState.value = AppConstants.RESERVATION }
+                )
+                Spacer(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .fillMaxHeight()
+                        .background(ColorUtils.gray_222222)
+                )
+                SelectedService(
+                    text = "픽업/드랍",
+                    modifier = Modifier.weight(1f),
+                    isSelected = chooseState.value == AppConstants.PICKUP_DROP,
+                    onClick = { chooseState.value = AppConstants.PICKUP_DROP }
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun SelectedService(
+        text: String,
+        isSelected: Boolean,
+        modifier: Modifier = Modifier,
+        onClick: () -> Unit
+    ) {
+        if (isSelected) {
+            Box(
+                modifier
+                    .fillMaxHeight()
+                    .background(ColorUtils.gray_222222)
+                    .noRippleClickable {
+                        onClick.invoke()
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text,
+                    color = ColorUtils.white_FFFFFF,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        } else {
+            Box(
+                modifier
+                    .fillMaxHeight()
+                    .background(ColorUtils.white_FFFFFF)
+                    .noRippleClickable {
+                        onClick.invoke()
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text,
+                    color = ColorUtils.gray_222222,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
