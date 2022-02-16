@@ -27,4 +27,6 @@ class ApplyCompanyVM(
     val textStateFb = mutableStateOf(TextFieldValue(""))
     val textStateKakao = mutableStateOf(TextFieldValue(""))
     val textStateLine = mutableStateOf(TextFieldValue(""))
+
+    val textStateNumReservation = mutableStateOf(TextFieldValue(""))
 }

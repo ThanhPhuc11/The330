@@ -98,4 +98,15 @@
     <string name="button_selection">버튼선택</string>
     <string name="selectable">선택가능</string>
     <string name="select">선택</string>
+    <string name="number_reservation_per_hour">한 타임 당 예약가능 인원</string>
+    <string name="please_enter_number_people_who_can_make_reservation">예약 가능한 인원을 입력해주세요.</string>
+    <string name="payment_method">결제 수단</string>
+    <string name="please_enter_payment_method">결제수단을 입력해주세요.</string>
+    <string name="attach_document">서류첨부</string>
+    <string name="business_registration">사업자등록증</string>
+    <string name="attach_file_note_1">* 사업자 등록번호가 기재된 ‘사업자등록증’ 파일을 첨부해주세요.</string>
+    <string name="attach_file_note_2">* 기업 회원 신청을 위해 사업자등록증은 필수로 첨부해주세요.</string>
+    <string name="attach_file_note_3">* 문서 파일, 이미지 파일, 압축 파일만 업로드 해주세요.</string>
+    <string name="modifier_completed">수정 완료</string>
+    <string name="edit_prod_info">상품 정보 수정</string>
 </resources>

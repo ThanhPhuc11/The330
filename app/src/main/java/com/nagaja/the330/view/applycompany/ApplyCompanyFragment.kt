@@ -153,14 +153,145 @@ class ApplyCompanyFragment : BaseFragment() {
                     )
                 }
 
+                //TODO: Number Reservation
                 Text(
-                    "한 타임 당 예약가능 인원",
+                    stringResource(R.string.number_reservation_per_hour),
                     style = text14_222,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .padding(top = 20.dp)
                         .padding(horizontal = 16.dp)
                 )
+                TextFieldCustom(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp)
+                        .height(40.dp),
+                    hint = stringResource(R.string.please_enter_number_people_who_can_make_reservation),
+                    textStateId = viewModel.textStateNumReservation
+                )
+
+                //TODO: Payment method
+                Text(
+                    stringResource(R.string.payment_method),
+                    style = text14_222,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .padding(horizontal = 16.dp)
+                )
+                TextFieldCustom(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp)
+                        .height(40.dp),
+                    hint = stringResource(R.string.please_enter_payment_method),
+                    textStateId = viewModel.textStateNumReservation
+                )
+
+                //TODO: attach Ducument
+                Text(
+                    stringResource(R.string.attach_document),
+                    style = text14_222,
+                    modifier = Modifier
+                        .padding(top = 40.dp)
+                        .padding(horizontal = 16.dp)
+                )
+                Text(
+                    stringResource(R.string.business_registration),
+                    style = text14_222,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .padding(horizontal = 16.dp)
+                )
+                Row(
+                    Modifier
+                        .padding(top = 8.dp)
+                        .padding(horizontal = 16.dp)
+                        .height(40.dp)
+                        .border(
+                            width = 1.dp,
+                            color = ColorUtils.gray_E1E1E1,
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .padding(horizontal = 9.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "test.jpg",
+                        style = text14_222,
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Start
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.ic_attach_ghim),
+                        contentDescription = null
+                    )
+                }
+
+                Text(
+                    stringResource(R.string.attach_file_note_1),
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .padding(horizontal = 16.dp),
+                    color = ColorUtils.gray_626262,
+                    fontSize = 12.sp
+                )
+                Text(
+                    stringResource(R.string.attach_file_note_2),
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = ColorUtils.gray_626262,
+                    fontSize = 12.sp
+                )
+                Text(
+                    stringResource(R.string.attach_file_note_3),
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = ColorUtils.gray_626262,
+                    fontSize = 12.sp
+                )
+                Text(
+                    "(.ppt, .pptx, .doc, .docx, .xls, ,xlsx, .pdf, .hwp, .txt .jpg, .png, .gif, . svg, .bmp, zip, 7z)",
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = ColorUtils.gray_626262,
+                    fontSize = 12.sp
+                )
+
+                Row(
+                    Modifier
+                        .padding(top = 77.dp)
+                        .height(52.dp)
+                ) {
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .background(ColorUtils.blue_2177E4),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            stringResource(R.string.modifier_completed),
+                            color = ColorUtils.white_FFFFFF,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .background(ColorUtils.gray_222222),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            stringResource(R.string.edit_prod_info),
+                            color = ColorUtils.white_FFFFFF,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
         }
     }
