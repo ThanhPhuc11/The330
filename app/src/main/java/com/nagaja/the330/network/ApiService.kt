@@ -75,4 +75,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("targetId") targetId: Int
     ): Response<Unit> //204
+
+    @POST("company_requests")
+    suspend fun makeCompany(
+        @Header("Authorization") token: String,
+        @Body body: CompanyModel
+    ): Response<Unit> // 200, chua nhet return
 }

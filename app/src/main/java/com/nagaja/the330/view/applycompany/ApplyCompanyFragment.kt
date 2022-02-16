@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,10 +26,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
@@ -53,6 +57,25 @@ class ApplyCompanyFragment : BaseFragment() {
     @Preview
     @Composable
     override fun UIData() {
+        val owner = LocalLifecycleOwner.current
+        DisposableEffect(owner) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_START -> {
+                        viewModel.getCategory(accessToken!!)
+                    }
+                    Lifecycle.Event.ON_STOP -> {
+
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
+
         LayoutTheme330 {
             Header(title = stringResource(R.string.apply_company_title)) {
                 viewController?.popFragment()
@@ -299,9 +322,13 @@ class ApplyCompanyFragment : BaseFragment() {
     @Preview
     @Composable
     private fun CategorySeletion() {
-        val options = GetDummyData.getSortFavoriteCompany(LocalContext.current)
+        val options = viewModel.listCategoryState
+//        val options = GetDummyData.getSortFavoriteCompany(LocalContext.current)
         var expanded by remember { mutableStateOf(false) }
-        var selectedOptionText by remember { mutableStateOf(options[0]) }
+        val selectedOptionText = remember { mutableStateOf(CategoryModel()) }
+        LaunchedEffect(viewModel.listCategoryState.size) {
+            selectedOptionText.value = if (options.size > 0) options[0] else CategoryModel()
+        }
         Row(
             modifier = Modifier
                 .padding(top = 6.dp, start = 16.dp)
@@ -319,7 +346,7 @@ class ApplyCompanyFragment : BaseFragment() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                selectedOptionText.name ?: "",
+                selectedOptionText.value.name ?: "",
                 modifier = Modifier.weight(1f),
                 style = text14_222,
                 textAlign = TextAlign.Start
@@ -340,7 +367,7 @@ class ApplyCompanyFragment : BaseFragment() {
                 options.forEach { selectionOption ->
                     DropdownMenuItem(
                         onClick = {
-                            selectedOptionText = selectionOption
+                            selectedOptionText.value = selectionOption
                             expanded = false
                         }
                     ) {
