@@ -121,6 +121,7 @@ abstract class BaseFragment : Fragment() {
             }.collect {
                 val tokenModel = Gson().fromJson(it, AuthTokenModel::class.java)
                 accessToken = formatToken(tokenModel?.accessToken)
+                Log.e("TOKEN", accessToken!!)
             }
         }
     }

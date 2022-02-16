@@ -30,6 +30,14 @@ object AppConstants {
         const val MY_REVIEW_HAS_LIKE = "MY_REVIEW_HAS_LIKE"
     }
 
+    object Lang {
+        const val EN = "en"
+        const val PH = "ph"
+        const val KR = "kr"
+        const val CN = "cn"
+        const val JP = "jp"
+    }
+
     object Order {
         const val INIT = "INIT"
         const val PAYMENT_SUCCESS = "PAYMENT_SUCCESS"

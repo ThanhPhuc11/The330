@@ -22,4 +22,5 @@ class CompanyModel {
     var reservationNumber: Int? = null
     var paymentMethod: String? = null
     var ctype: String? = null
+    var file: String? = null
 }

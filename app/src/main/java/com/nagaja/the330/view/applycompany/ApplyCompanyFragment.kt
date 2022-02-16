@@ -140,7 +140,7 @@ class ApplyCompanyFragment : BaseFragment() {
                         .padding(horizontal = 16.dp)
                         .height(40.dp),
                     hint = stringResource(R.string.input_detail_address),
-                    textStateId = viewModel.textStateNameEng
+                    textStateId = viewModel.textStateAdress
                 )
                 CompanyDescriptionInput()
                 InfoPersonInCharge()
@@ -289,7 +289,10 @@ class ApplyCompanyFragment : BaseFragment() {
                         Modifier
                             .weight(1f)
                             .fillMaxHeight()
-                            .background(ColorUtils.blue_2177E4),
+                            .background(ColorUtils.blue_2177E4)
+                            .noRippleClickable {
+                                viewModel.makeCompany(accessToken!!)
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -323,11 +326,10 @@ class ApplyCompanyFragment : BaseFragment() {
     @Composable
     private fun CategorySeletion() {
         val options = viewModel.listCategoryState
-//        val options = GetDummyData.getSortFavoriteCompany(LocalContext.current)
         var expanded by remember { mutableStateOf(false) }
-        val selectedOptionText = remember { mutableStateOf(CategoryModel()) }
         LaunchedEffect(viewModel.listCategoryState.size) {
-            selectedOptionText.value = if (options.size > 0) options[0] else CategoryModel()
+            viewModel.selectedOptionCategory.value =
+                if (options.size > 0) options[0] else CategoryModel()
         }
         Row(
             modifier = Modifier
@@ -346,7 +348,7 @@ class ApplyCompanyFragment : BaseFragment() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                selectedOptionText.value.name ?: "",
+                viewModel.selectedOptionCategory.value.name ?: "",
                 modifier = Modifier.weight(1f),
                 style = text14_222,
                 textAlign = TextAlign.Start
@@ -367,7 +369,7 @@ class ApplyCompanyFragment : BaseFragment() {
                 options.forEach { selectionOption ->
                     DropdownMenuItem(
                         onClick = {
-                            selectedOptionText.value = selectionOption
+                            viewModel.selectedOptionCategory.value = selectionOption
                             expanded = false
                         }
                     ) {
@@ -490,22 +492,35 @@ class ApplyCompanyFragment : BaseFragment() {
             BaseSeletion(
                 modifier = Modifier
                     .padding(end = 5.dp)
-                    .weight(1f)
+                    .weight(1f),
+                list = GetDummyData.getSortFavoriteCompany(LocalContext.current),
+                initValue = GetDummyData.getSortFavoriteCompany(LocalContext.current)[0]
             )
             BaseSeletion(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 5.dp)
+                    .padding(end = 5.dp),
+                list = GetDummyData.getSortFavoriteCompany(LocalContext.current),
+                initValue = GetDummyData.getSortFavoriteCompany(LocalContext.current)[0]
             )
-            BaseSeletion(modifier = Modifier.weight(1f))
+            BaseSeletion(
+                modifier = Modifier.weight(1f),
+                list = GetDummyData.getSortFavoriteCompany(LocalContext.current),
+                initValue = GetDummyData.getSortFavoriteCompany(LocalContext.current)[0]
+            )
         }
     }
 
     @Composable
-    private fun BaseSeletion(modifier: Modifier = Modifier) {
-        val options = GetDummyData.getSortFavoriteCompany(LocalContext.current)
+    private fun BaseSeletion(
+        modifier: Modifier = Modifier,
+        list: MutableList<KeyValueModel>,
+        initValue: KeyValueModel,
+        callback: ((KeyValueModel) -> Unit)? = null
+    ) {
+        val options = list
         var expanded by remember { mutableStateOf(false) }
-        var selectedOptionText by remember { mutableStateOf(options[0]) }
+        var selectedOptionText by remember { mutableStateOf(initValue) }
         Row(
             modifier = modifier
 //                .padding(top = 6.dp, start = 16.dp)
@@ -546,6 +561,7 @@ class ApplyCompanyFragment : BaseFragment() {
                         onClick = {
                             selectedOptionText = selectionOption
                             expanded = false
+                            callback?.invoke(selectionOption)
                         }
                     ) {
                         Text(text = selectionOption.name!!)
@@ -767,9 +783,21 @@ class ApplyCompanyFragment : BaseFragment() {
                 fontWeight = FontWeight.Bold
             )
             Row(Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                BaseSeletion(modifier = Modifier.width(110.dp))
+                BaseSeletion(
+                    modifier = Modifier.width(110.dp),
+                    list = GetDummyData.getTime1Hour(),
+                    initValue = KeyValueModel("null", "오픈")
+                ) {
+                    viewModel.textStateOpenTime.value = it.id!!.toInt()
+                }
                 Text("~", modifier = Modifier.padding(horizontal = 4.dp))
-                BaseSeletion(modifier = Modifier.width(110.dp))
+                BaseSeletion(
+                    modifier = Modifier.width(110.dp),
+                    list = GetDummyData.getTime1Hour(),
+                    initValue = KeyValueModel("null", "마감")
+                ) {
+                    viewModel.textStateCloseTime.value = it.id!!.toInt()
+                }
             }
         }
     }

@@ -2,11 +2,13 @@ package com.nagaja.the330.view.applycompany
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.CompanyModel
+import com.nagaja.the330.model.NameAreaModel
 import com.nagaja.the330.utils.AppConstants
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -18,6 +20,7 @@ class ApplyCompanyVM(
     private val repo: ApplyCompanyRepo
 ) : BaseViewModel() {
     val listCategoryState = mutableStateListOf<CategoryModel>()
+    val selectedOptionCategory = mutableStateOf(CategoryModel())
 
     //info company
     val textStateNameEng = mutableStateOf(TextFieldValue(""))
@@ -25,6 +28,8 @@ class ApplyCompanyVM(
     val textStateNameKr = mutableStateOf(TextFieldValue(""))
     val textStateNameCN = mutableStateOf(TextFieldValue(""))
     val textStateNameJP = mutableStateOf(TextFieldValue(""))
+
+    val textStateAdress = mutableStateOf(TextFieldValue(""))
 
     val textStateDesEng = mutableStateOf(TextFieldValue(""))
     val textStateDesPhi = mutableStateOf(TextFieldValue(""))
@@ -39,6 +44,9 @@ class ApplyCompanyVM(
     val textStateFb = mutableStateOf(TextFieldValue(""))
     val textStateKakao = mutableStateOf(TextFieldValue(""))
     val textStateLine = mutableStateOf(TextFieldValue(""))
+
+    val textStateOpenTime = mutableStateOf(-1)
+    val textStateCloseTime = mutableStateOf(-1)
 
     val textStateNumReservation = mutableStateOf(TextFieldValue(""))
 
@@ -56,7 +64,33 @@ class ApplyCompanyVM(
 
     fun makeCompany(token: String) {
         val companyModel = CompanyModel().apply {
+            ctype = selectedOptionCategory.value.ctype
+            name = mutableListOf<NameAreaModel>().apply {
+                add(NameAreaModel(name = textStateNameEng.value.text, lang = AppConstants.Lang.EN))
+                add(NameAreaModel(name = textStateNamePhi.value.text, lang = AppConstants.Lang.PH))
+                add(NameAreaModel(name = textStateNameKr.value.text, lang = AppConstants.Lang.KR))
+                add(NameAreaModel(name = textStateNameCN.value.text, lang = AppConstants.Lang.CN))
+                add(NameAreaModel(name = textStateNameJP.value.text, lang = AppConstants.Lang.JP))
+            }
+            address = textStateAdress.value.text
+            description = mutableListOf<NameAreaModel>().apply {
+                add(NameAreaModel(name = textStateDesEng.value.text, lang = AppConstants.Lang.EN))
+                add(NameAreaModel(name = textStateDesPhi.value.text, lang = AppConstants.Lang.PH))
+                add(NameAreaModel(name = textStateDesKr.value.text, lang = AppConstants.Lang.KR))
+                add(NameAreaModel(name = textStateDesCN.value.text, lang = AppConstants.Lang.CN))
+                add(NameAreaModel(name = textStateDesJP.value.text, lang = AppConstants.Lang.JP))
+            }
+            chargeName = textStateName.value.text
+            chargePhone = textStatePhone.value.text
+            chargeEmail = textStateMailAddress.value.text
+            chargeFacebook = textStateFb.value.text
+            chargeKakao = textStateKakao.value.text
+            chargeLine = textStateLine.value.text
 
+            openHour = textStateOpenTime.value
+            closeHour = textStateCloseTime.value
+
+            file = "AOS_4_1644994525949.jpg"
         }
         viewModelScope.launch {
             repo.makeCompany(token, companyModel)
