@@ -1,5 +1,11 @@
 package com.nagaja.the330.view.applycompany
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.provider.MediaStore
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
@@ -36,13 +42,16 @@ import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.RealPathUtil
 import com.nagaja.the330.view.*
 import com.skydoves.landscapist.glide.GlideImage
+import java.io.File
 
 class ApplyCompanyFragment : BaseFragment() {
     private lateinit var viewModel: ApplyCompanyVM
     private var onClickRemove: ((Int) -> Unit)? = null
     private var onClickChoose: ((Int) -> Unit)? = null
+    private var callbackAttachFile: ((Uri?) -> Unit)? = null
 
     companion object {
         fun newInstance() = ApplyCompanyFragment()
@@ -228,6 +237,16 @@ class ApplyCompanyFragment : BaseFragment() {
                         .padding(top = 8.dp)
                         .padding(horizontal = 16.dp)
                 )
+                val fileName = remember { mutableStateOf("") }
+                callbackAttachFile = { uri ->
+                    fileName.value =
+                        File(
+                            RealPathUtil.getPath(
+                                this@ApplyCompanyFragment.requireContext(),
+                                uri
+                            )
+                        ).name
+                }
                 Row(
                     Modifier
                         .padding(top = 8.dp)
@@ -238,11 +257,21 @@ class ApplyCompanyFragment : BaseFragment() {
                             color = ColorUtils.gray_E1E1E1,
                             shape = RoundedCornerShape(4.dp)
                         )
-                        .padding(horizontal = 9.dp),
+                        .padding(horizontal = 9.dp)
+                        .noRippleClickable {
+                            checkPermissBeforeAttachFile(this@ApplyCompanyFragment.requireContext()) {
+                                val intent = Intent(
+                                    Intent.ACTION_PICK,
+                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                                )
+                                intent.type = "image/*"
+                                startForResultCallback.launch(intent)
+                            }
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "test.jpg",
+                        fileName.value,
                         style = text14_222,
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Start
@@ -321,6 +350,16 @@ class ApplyCompanyFragment : BaseFragment() {
             }
         }
     }
+
+    private val startForResultCallback =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val resultCode = result.resultCode
+            val data = result.data
+            if (resultCode == Activity.RESULT_OK) {
+                val uri = copyFileOnlyAndroid10(data?.data)
+                callbackAttachFile?.invoke(uri)
+            }
+        }
 
     @Preview
     @Composable
