@@ -2,17 +2,22 @@ package com.nagaja.the330.utils
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.provider.Settings
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.nagaja.the330.R
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -93,6 +98,23 @@ object CommonUtils {
         pattern = Pattern.compile(regex)
         val matcher: Matcher = pattern.matcher(email)
         return matcher.matches()
+    }
+
+    fun showLoadingDialog(context: Context?): ProgressDialog? {
+        try {
+            val progressDialog = ProgressDialog(context, R.style.NewDialog)
+            progressDialog.show()
+            if (progressDialog.window != null) {
+                progressDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            }
+            progressDialog.setContentView(R.layout.progress_dialog)
+            progressDialog.isIndeterminate = true
+            progressDialog.setCancelable(false)
+            progressDialog.setCanceledOnTouchOutside(false)
+            return progressDialog
+        } catch (e: Exception) {
+        }
+        return null
     }
 
 //    fun showBottomDialog(

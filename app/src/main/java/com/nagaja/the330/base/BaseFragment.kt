@@ -103,10 +103,10 @@ abstract class BaseFragment : Fragment() {
         inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 
-//    open fun showLoading() {
-//        hideLoading()
-//        mProgressDialog = CommonUtils.showLoadingDialog(this.context)
-//    }
+    open fun showLoading() {
+        hideLoading()
+        mProgressDialog = CommonUtils.showLoadingDialog(this.context)
+    }
 
     open fun hideLoading() {
         if (mProgressDialog != null && mProgressDialog!!.isShowing) {
