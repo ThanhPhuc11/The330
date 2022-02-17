@@ -80,5 +80,5 @@ interface ApiService {
     suspend fun makeCompany(
         @Header("Authorization") token: String,
         @Body body: CompanyModel
-    ): Response<Unit> // 200, chua nhet return
+    ): AppyCompanyResponse
 }

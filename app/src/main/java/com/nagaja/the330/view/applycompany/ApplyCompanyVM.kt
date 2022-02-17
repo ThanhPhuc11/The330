@@ -50,6 +50,9 @@ class ApplyCompanyVM(
 
     val textStateNumReservation = mutableStateOf(TextFieldValue(""))
 
+    var fileName = ""
+    var filePath = ""
+
     fun getCategory(token: String) {
         viewModelScope.launch {
             repo.getCategory(token, "COMPANY_INFO")
@@ -90,7 +93,7 @@ class ApplyCompanyVM(
             openHour = textStateOpenTime.value
             closeHour = textStateCloseTime.value
 
-            file = "AOS_4_1644994525949.jpg"
+            file = fileName
         }
         viewModelScope.launch {
             repo.makeCompany(token, companyModel)

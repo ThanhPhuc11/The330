@@ -34,17 +34,28 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.google.gson.Gson
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.data.dataStore
 import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.NameUtils
 import com.nagaja.the330.utils.RealPathUtil
 import com.nagaja.the330.view.*
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
 import java.io.File
 
 class ApplyCompanyFragment : BaseFragment() {
@@ -52,6 +63,8 @@ class ApplyCompanyFragment : BaseFragment() {
     private var onClickRemove: ((Int) -> Unit)? = null
     private var onClickChoose: ((Int) -> Unit)? = null
     private var callbackAttachFile: ((Uri?) -> Unit)? = null
+
+    private var userDetail: UserDetail? = null
 
     companion object {
         fun newInstance() = ApplyCompanyFragment()
@@ -72,6 +85,14 @@ class ApplyCompanyFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_START -> {
                         viewModel.getCategory(accessToken!!)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            requireContext().dataStore.data.map { get ->
+                                get[DataStorePref.USER_DETAIL] ?: ""
+                            }.collect {
+                                userDetail = Gson().fromJson(it, UserDetail::class.java)
+                                this@launch.coroutineContext.job.cancel()
+                            }
+                        }
                     }
                     Lifecycle.Event.ON_STOP -> {
 
@@ -239,13 +260,16 @@ class ApplyCompanyFragment : BaseFragment() {
                 )
                 val fileName = remember { mutableStateOf("") }
                 callbackAttachFile = { uri ->
-                    fileName.value =
-                        File(
-                            RealPathUtil.getPath(
-                                this@ApplyCompanyFragment.requireContext(),
-                                uri
-                            )
-                        ).name
+                    val file = File(
+                        RealPathUtil.getPath(
+                            this@ApplyCompanyFragment.requireContext(),
+                            uri
+                        )
+                    )
+                    fileName.value = file.name
+                    viewModel.fileName =
+                        NameUtils.setFileName(userDetail?.id)
+                    viewModel.filePath = file.path
                 }
                 Row(
                     Modifier
