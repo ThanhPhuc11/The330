@@ -122,31 +122,21 @@ class ApplyCompanyVM(
     fun uploadImageTest(url: String) {
         val requestFile: RequestBody =
             File(filePath).asRequestBody("application/octet-stream".toMediaTypeOrNull())
-//        val body: MultipartBody.Part =
-//            MultipartBody.Part.createFormData("file", fileName, requestFile)
 
-//        val fbody = File(url).asRequestBody("image".toMediaTypeOrNull())
-
-        val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl("https://the330-dev.s3.ap-northeast-2.amazonaws.com")
-            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
-            .build()
-
-        val apiService: ApiService =
-            retrofit.create(ApiService::class.java)
-
-        val regService: Call<Unit> = apiService.uploadImage(
-            url,
-            requestFile
-        )
-        regService.enqueue(object : Callback<Unit> {
-            override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
-                Log.e("Success", response.message())
-            }
-
-            override fun onFailure(call: Call<Unit>, error: Throwable?) {
-                Log.e("Fail", error.toString())
-            }
-        })
+        viewModelScope.launch {
+            repo.uploadImage(url, requestFile)
+                .onStart { }
+                .onCompletion { }
+                .catch {
+                    Log.e("Catch", this.toString())
+                }
+                .collect {
+                    if (it.raw().isSuccessful && it.raw().code == 200) {
+                        Log.e("Success", "upload success")
+                    } else {
+                        Log.e("Fail", "upload fail")
+                    }
+                }
+        }
     }
 }

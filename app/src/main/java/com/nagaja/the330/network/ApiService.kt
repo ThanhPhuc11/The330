@@ -86,11 +86,9 @@ interface ApiService {
         @Body body: CompanyModel
     ): AppyCompanyResponse
 
-//    @Headers("Content-Type: image/jpeg")
-//    @Multipart
     @PUT
-    fun uploadImage(
+    suspend fun uploadImage(
         @Url fullUrl: String?,
         @Body file: RequestBody
-    ): Call<Unit>
+    ): Response<Unit>
 }
