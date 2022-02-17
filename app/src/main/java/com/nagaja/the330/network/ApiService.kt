@@ -1,8 +1,12 @@
 package com.nagaja.the330.network
 
 import com.nagaja.the330.model.*
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
+
 
 interface ApiService {
     @GET("auth/accessToken")
@@ -81,4 +85,12 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body body: CompanyModel
     ): AppyCompanyResponse
+
+//    @Headers("Content-Type: image/jpeg")
+//    @Multipart
+    @PUT
+    fun uploadImage(
+        @Url fullUrl: String?,
+        @Body file: RequestBody
+    ): Call<Unit>
 }

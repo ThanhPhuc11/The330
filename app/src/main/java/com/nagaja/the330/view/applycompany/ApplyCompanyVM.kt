@@ -1,20 +1,32 @@
 package com.nagaja.the330.view.applycompany
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
+import com.google.gson.GsonBuilder
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.CompanyModel
 import com.nagaja.the330.model.NameAreaModel
+import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.utils.AppConstants
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
+
 
 class ApplyCompanyVM(
     private val repo: ApplyCompanyRepo
@@ -101,8 +113,40 @@ class ApplyCompanyVM(
                 .onCompletion { }
                 .catch { }
                 .collect {
-
+                    val url = it.file?.url
+                    url?.let { it1 -> uploadImageTest(it1) }
                 }
         }
+    }
+
+    fun uploadImageTest(url: String) {
+        val requestFile: RequestBody =
+            File(filePath).asRequestBody("application/octet-stream".toMediaTypeOrNull())
+//        val body: MultipartBody.Part =
+//            MultipartBody.Part.createFormData("file", fileName, requestFile)
+
+//        val fbody = File(url).asRequestBody("image".toMediaTypeOrNull())
+
+        val retrofit: Retrofit = Retrofit.Builder()
+            .baseUrl("https://the330-dev.s3.ap-northeast-2.amazonaws.com")
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
+            .build()
+
+        val apiService: ApiService =
+            retrofit.create(ApiService::class.java)
+
+        val regService: Call<Unit> = apiService.uploadImage(
+            url,
+            requestFile
+        )
+        regService.enqueue(object : Callback<Unit> {
+            override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                Log.e("Success", response.message())
+            }
+
+            override fun onFailure(call: Call<Unit>, error: Throwable?) {
+                Log.e("Fail", error.toString())
+            }
+        })
     }
 }

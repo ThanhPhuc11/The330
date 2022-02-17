@@ -268,7 +268,7 @@ class ApplyCompanyFragment : BaseFragment() {
                     )
                     fileName.value = file.name
                     viewModel.fileName =
-                        NameUtils.setFileName(userDetail?.id)
+                        NameUtils.setFileName(userDetail?.id, file)
                     viewModel.filePath = file.path
                 }
                 Row(
@@ -360,7 +360,10 @@ class ApplyCompanyFragment : BaseFragment() {
                         Modifier
                             .weight(1f)
                             .fillMaxHeight()
-                            .background(ColorUtils.gray_222222),
+                            .background(ColorUtils.gray_222222)
+                            .noRippleClickable {
+                                viewModel.uploadImageTest("https://the330-dev.s3.ap-northeast-2.amazonaws.com/assets/company_certificate/7/ab7c00e81ea445afb1bc65721731c7e0/AOS_11_1645071658468_png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220217T042159Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=AKIAQVDLHMHTLHOWRIXP%2F20220217%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Signature=2f11093b34851c875d756cf29a13ff6d5faa3c45028f002dbf5df8c54f1741f6")
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
