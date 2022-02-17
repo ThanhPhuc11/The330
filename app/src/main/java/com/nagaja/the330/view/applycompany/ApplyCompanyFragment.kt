@@ -42,13 +42,12 @@ import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.data.dataStore
 import com.nagaja.the330.model.CategoryModel
+import com.nagaja.the330.model.FileModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.UserDetail
-import com.nagaja.the330.utils.AppConstants
-import com.nagaja.the330.utils.ColorUtils
-import com.nagaja.the330.utils.NameUtils
-import com.nagaja.the330.utils.RealPathUtil
+import com.nagaja.the330.utils.*
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.applycompanyproduct.ProductCompanyFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -62,6 +61,7 @@ class ApplyCompanyFragment : BaseFragment() {
     private lateinit var viewModel: ApplyCompanyVM
     private var onClickRemove: ((Int) -> Unit)? = null
     private var onClickChoose: ((Int) -> Unit)? = null
+    private var callbackListImage: ((Uri?) -> Unit)? = null
     private var callbackAttachFile: ((Uri?) -> Unit)? = null
 
     private var userDetail: UserDetail? = null
@@ -76,7 +76,6 @@ class ApplyCompanyFragment : BaseFragment() {
         viewController = (activity as MainActivity).viewController
     }
 
-    @Preview
     @Composable
     override fun UIData() {
         val owner = LocalLifecycleOwner.current
@@ -134,15 +133,27 @@ class ApplyCompanyFragment : BaseFragment() {
                     modifier = Modifier.padding(top = 20.dp, bottom = 13.dp, start = 16.dp)
                 )
 
-                Row() {
-                    RepresentativeImage()
+                Row {
                     val listImage = remember {
-                        mutableStateListOf<KeyValueModel>().apply {
-                            add(KeyValueModel())
-                            add(KeyValueModel())
-                            add(KeyValueModel())
-                            add(KeyValueModel())
-                            add(KeyValueModel())
+                        mutableStateListOf<FileModel>()
+                    }
+                    callbackListImage = { uri ->
+                        listImage.add(FileModel(url = uri.toString()))
+                    }
+                    val count = remember { mutableStateOf(listImage.size) }
+                    LaunchedEffect(listImage.size) {
+                        count.value = listImage.size
+                    }
+                    RepresentativeImage(count) {
+                        if (count.value == 5) return@RepresentativeImage
+                        checkPermissBeforeAttachFile(this@ApplyCompanyFragment.requireContext()) {
+                            val intent = Intent(Intent.ACTION_PICK).apply {
+                                setDataAndType(
+                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                    "image/*"
+                                )
+                            }
+                            startResultRepresentativeCallback.launch(intent)
                         }
                     }
                     onClickRemove = { index ->
@@ -150,7 +161,7 @@ class ApplyCompanyFragment : BaseFragment() {
                     }
                     LazyRow {
                         itemsIndexed(listImage) { index, obj ->
-                            ItemImagePicked(index)
+                            ItemImagePicked(index, obj)
                         }
                     }
                 }
@@ -362,7 +373,10 @@ class ApplyCompanyFragment : BaseFragment() {
                             .fillMaxHeight()
                             .background(ColorUtils.gray_222222)
                             .noRippleClickable {
-                                viewModel.uploadImageTest("https://the330-dev.s3.ap-northeast-2.amazonaws.com/assets/company_certificate/7/ab7c00e81ea445afb1bc65721731c7e0/AOS_11_1645071658468_png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220217T042159Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=AKIAQVDLHMHTLHOWRIXP%2F20220217%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Signature=2f11093b34851c875d756cf29a13ff6d5faa3c45028f002dbf5df8c54f1741f6")
+                                viewController?.pushFragment(
+                                    ScreenId.SCREEN_APPLY_COMPANY_PRODUCT_INFO,
+                                    ProductCompanyFragment.newInstance()
+                                )
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -378,6 +392,16 @@ class ApplyCompanyFragment : BaseFragment() {
         }
     }
 
+    private val startResultRepresentativeCallback =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val resultCode = result.resultCode
+            val data = result.data
+            if (resultCode == Activity.RESULT_OK) {
+                val uri = copyFileOnlyAndroid10(data?.data)
+                callbackListImage?.invoke(uri)
+            }
+        }
+
     private val startForResultCallback =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             val resultCode = result.resultCode
@@ -388,7 +412,6 @@ class ApplyCompanyFragment : BaseFragment() {
             }
         }
 
-    @Preview
     @Composable
     private fun CategorySeletion() {
         val options = viewModel.listCategoryState
@@ -446,20 +469,22 @@ class ApplyCompanyFragment : BaseFragment() {
         }
     }
 
-    @Preview
     @Composable
-    private fun RepresentativeImage() {
+    private fun RepresentativeImage(count: MutableState<Int>, onClick: () -> Unit) {
         Column(
             Modifier
                 .padding(start = 16.dp, top = 4.dp, end = 8.dp)
                 .size(72.dp)
-                .border(width = 1.dp, color = ColorUtils.blue_2177E4.copy(alpha = 0.3f)),
+                .border(width = 1.dp, color = ColorUtils.blue_2177E4.copy(alpha = 0.3f))
+                .noRippleClickable {
+                    onClick.invoke()
+                },
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Image(painter = painterResource(R.drawable.ic_choose_image), contentDescription = null)
             Text(
-                "4/5",
+                "${count.value}/5",
                 color = ColorUtils.blue_2177E4,
                 modifier = Modifier
                     .padding(top = 3.dp)
@@ -471,7 +496,7 @@ class ApplyCompanyFragment : BaseFragment() {
     }
 
     @Composable
-    private fun ItemImagePicked(position: Int) {
+    private fun ItemImagePicked(position: Int, obj: FileModel) {
         ConstraintLayout(
             Modifier
                 .padding(end = 4.dp)
@@ -479,7 +504,7 @@ class ApplyCompanyFragment : BaseFragment() {
         ) {
             val (content, close) = createRefs()
             GlideImage(
-                imageModel = "",
+                imageModel = obj.url,
                 contentDescription = "",
                 placeHolder = painterResource(R.drawable.ic_default_nagaja),
                 error = painterResource(R.drawable.ic_default_nagaja),
