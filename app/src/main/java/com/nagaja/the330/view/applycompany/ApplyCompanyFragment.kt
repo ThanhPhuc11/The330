@@ -513,35 +513,35 @@ class ApplyCompanyFragment : BaseFragment() {
                 modifier = Modifier
                     .padding(bottom = 4.dp)
                     .height(40.dp),
-                hint = stringResource(R.string.input_name_eng),
+                hint = stringResource(R.string.please_enter_company_name_en),
                 textStateId = viewModel.textStateNameEng
             )
             TextFieldCustom(
                 modifier = Modifier
                     .padding(bottom = 4.dp)
                     .height(40.dp),
-                hint = stringResource(R.string.input_name_phi),
+                hint = stringResource(R.string.please_enter_company_name_ph),
                 textStateId = viewModel.textStateNamePhi
             )
             TextFieldCustom(
                 modifier = Modifier
                     .padding(bottom = 4.dp)
                     .height(40.dp),
-                hint = stringResource(R.string.input_name_kr),
+                hint = stringResource(R.string.please_enter_company_name_kr),
                 textStateId = viewModel.textStateNameKr
             )
             TextFieldCustom(
                 modifier = Modifier
                     .padding(bottom = 4.dp)
                     .height(40.dp),
-                hint = stringResource(R.string.input_name_china),
+                hint = stringResource(R.string.please_enter_company_name_cn),
                 textStateId = viewModel.textStateNameCN
             )
             TextFieldCustom(
                 modifier = Modifier
                     .padding(bottom = 4.dp)
                     .height(40.dp),
-                hint = stringResource(R.string.input_name_jp),
+                hint = stringResource(R.string.please_enter_company_name_jp),
                 textStateId = viewModel.textStateNameJP
             )
         }
@@ -645,35 +645,35 @@ class ApplyCompanyFragment : BaseFragment() {
                 modifier = Modifier
                     .padding(top = 4.dp)
                     .height(40.dp),
-                hint = stringResource(R.string.input_des_eng),
+                hint = stringResource(R.string.please_enter_company_description_en),
                 textStateId = viewModel.textStateDesEng
             )
             TextFieldCustom(
                 modifier = Modifier
                     .padding(top = 4.dp)
                     .height(40.dp),
-                hint = stringResource(R.string.input_des_phi),
+                hint = stringResource(R.string.please_enter_company_description_ph),
                 textStateId = viewModel.textStateDesPhi
             )
             TextFieldCustom(
                 modifier = Modifier
                     .padding(top = 4.dp)
                     .height(40.dp),
-                hint = stringResource(R.string.input_des_kr),
+                hint = stringResource(R.string.please_enter_company_description_kr),
                 textStateId = viewModel.textStateDesKr
             )
             TextFieldCustom(
                 modifier = Modifier
                     .padding(top = 4.dp)
                     .height(40.dp),
-                hint = stringResource(R.string.input_des_china),
+                hint = stringResource(R.string.please_enter_company_description_cn),
                 textStateId = viewModel.textStateDesCN
             )
             TextFieldCustom(
                 modifier = Modifier
                     .padding(top = 4.dp)
                     .height(40.dp),
-                hint = stringResource(R.string.input_des_jp),
+                hint = stringResource(R.string.please_enter_company_description_jp),
                 textStateId = viewModel.textStateDesJP
             )
         }

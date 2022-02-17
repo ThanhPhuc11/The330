@@ -37,6 +37,7 @@ import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.applycompany.ApplyCompanyFragment
+import com.nagaja.the330.view.applycompanyproduct.ProductCompanyFragment
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.noRippleClickable

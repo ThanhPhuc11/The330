@@ -73,17 +73,17 @@
     <string name="category_selection">카테고리선택</string>
     <string name="representative_image">대표이미지</string>
 
-    <string name="input_name_eng">기업명을 입력해 주세요.(영어)</string>
-    <string name="input_name_phi">기업명을 입력해 주세요.(필리핀어)</string>
-    <string name="input_name_kr">기업명을 입력해 주세요.(한국어)</string>
-    <string name="input_name_china">기업명을 입력해 주세요.(중국어)</string>
-    <string name="input_name_jp">기업명을 입력해 주세요.(일본어)</string>
+    <string name="please_enter_company_name_en">기업명을 입력해 주세요.(영어)</string>
+    <string name="please_enter_company_name_ph">기업명을 입력해 주세요.(필리핀어)</string>
+    <string name="please_enter_company_name_kr">기업명을 입력해 주세요.(한국어)</string>
+    <string name="please_enter_company_name_cn">기업명을 입력해 주세요.(중국어)</string>
+    <string name="please_enter_company_name_jp">기업명을 입력해 주세요.(일본어)</string>
 
-    <string name="input_des_eng">기업설명을 입력해 주세요.(영어)</string>
-    <string name="input_des_phi">기업설명을 입력해 주세요.(필리핀어)</string>
-    <string name="input_des_kr">기업설명을 입력해 주세요.(한국어)</string>
-    <string name="input_des_china">기업설명을 입력해 주세요.(중국어)</string>
-    <string name="input_des_jp">기업설명을 입력해 주세요.(일본어)</string>
+    <string name="please_enter_company_description_en">기업설명을 입력해 주세요.(영어)</string>
+    <string name="please_enter_company_description_ph">기업설명을 입력해 주세요.(필리핀어)</string>
+    <string name="please_enter_company_description_kr">기업설명을 입력해 주세요.(한국어)</string>
+    <string name="please_enter_company_description_cn">기업설명을 입력해 주세요.(중국어)</string>
+    <string name="please_enter_company_description_jp">기업설명을 입력해 주세요.(일본어)</string>
     <string name="area_selection">지역 선택</string>
     <string name="input_detail_address">상세 주소를 입력하세요.</string>
 
@@ -109,4 +109,29 @@
     <string name="attach_file_note_3">* 문서 파일, 이미지 파일, 압축 파일만 업로드 해주세요.</string>
     <string name="modifier_completed">수정 완료</string>
     <string name="edit_prod_info">상품 정보 수정</string>
+
+    <!--apply company product info-->
+    <string name="product_info">상품정보</string>
+    <string name="add">추가</string>
+    <string name="product_image">상품 이미지</string>
+
+    <string name="please_enter_product_name_en">상품명을 입력해 주세요.(영어)</string>
+    <string name="please_enter_product_name_ph">상품명을 입력해 주세요.(필리핀어)</string>
+    <string name="please_enter_product_name_kr">상품명을 입력해 주세요.(한국어)</string>
+    <string name="please_enter_product_name_cn">상품명을 입력해 주세요.(중국어)</string>
+    <string name="please_enter_product_name_jp">상품명을 입력해 주세요.(일본어)</string>
+
+    <string name="price">가격</string>
+    <string name="market_price">시가</string>
+    <string name="please_enter_price">가격을 입력해 주세요.</string>
+
+    <string name="product_descript_remark">상품 설명, 비고</string>
+    <string name="please_enter_product_description_en">부가 설명을 입력해 주세요.(영어)</string>
+    <string name="please_enter_product_description_ph">부가 설명을 입력해 주세요.(필리핀어)</string>
+    <string name="please_enter_product_description_kr">부가 설명을 입력해 주세요.(한국어)</string>
+    <string name="please_enter_product_description_cn">부가 설명을 입력해 주세요.(중국어)</string>
+    <string name="please_enter_product_description_jp">부가 설명을 입력해 주세요.(일본어)</string>
+    <string name="register_request">등록 요청</string>
+
+
 </resources>

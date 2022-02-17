@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.view.applycompany.ApplyCompanyRepo
 import com.nagaja.the330.view.applycompany.ApplyCompanyVM
+import com.nagaja.the330.view.applycompanyproduct.ProductCompanyRepo
+import com.nagaja.the330.view.applycompanyproduct.ProductCompanyVM
 import com.nagaja.the330.view.edit_profile.EditProfileRepo
 import com.nagaja.the330.view.edit_profile.EditProfileVM
 import com.nagaja.the330.view.favoritecompany.FavCompanyRepo
@@ -44,6 +46,8 @@ class ViewModelFactory(apiService: ApiService) :
             FavCompanyVM(FavCompanyRepo(apiService))
         creators[ApplyCompanyVM::class.java] =
             ApplyCompanyVM(ApplyCompanyRepo(apiService))
+        creators[ProductCompanyVM::class.java] =
+            ProductCompanyVM(ProductCompanyRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
