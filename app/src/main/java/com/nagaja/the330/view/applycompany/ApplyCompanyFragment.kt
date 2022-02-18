@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
@@ -41,10 +43,7 @@ import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.data.dataStore
-import com.nagaja.the330.model.CategoryModel
-import com.nagaja.the330.model.FileModel
-import com.nagaja.the330.model.KeyValueModel
-import com.nagaja.the330.model.UserDetail
+import com.nagaja.the330.model.*
 import com.nagaja.the330.utils.*
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompanyproduct.ProductCompanyFragment
@@ -59,6 +58,7 @@ import java.io.File
 
 class ApplyCompanyFragment : BaseFragment() {
     private lateinit var viewModel: ApplyCompanyVM
+    private lateinit var shareViewModel: ShareApplyCompanyVM
     private var onClickRemove: ((Int) -> Unit)? = null
     private var onClickChoose: ((Int) -> Unit)? = null
     private var callbackListImage: ((Uri?) -> Unit)? = null
@@ -73,7 +73,9 @@ class ApplyCompanyFragment : BaseFragment() {
     @Composable
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[ApplyCompanyVM::class.java]
+        shareViewModel = ViewModelProvider(this)[ShareApplyCompanyVM::class.java]
         viewController = (activity as MainActivity).viewController
+
     }
 
     @Composable
@@ -389,6 +391,7 @@ class ApplyCompanyFragment : BaseFragment() {
                             .background(ColorUtils.gray_222222)
                             .noRippleClickable {
                                 if (viewModel.isValidate()) {
+                                    shareViewModel.companyInfoState.value = viewModel.saveCompanyTransfer()
                                     viewController?.pushFragment(
                                         ScreenId.SCREEN_APPLY_COMPANY_PRODUCT_INFO,
                                         ProductCompanyFragment.newInstance()
@@ -742,7 +745,8 @@ class ApplyCompanyFragment : BaseFragment() {
                     .padding(bottom = 4.dp)
                     .height(40.dp),
                 hint = stringResource(R.string.please_enter_your_phone_number),
-                textStateId = viewModel.textStatePhone
+                textStateId = viewModel.textStatePhone,
+                inputType = KeyboardType.Number
             )
             TextFieldCustom(
                 modifier = Modifier

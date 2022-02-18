@@ -86,9 +86,8 @@ class ApplyCompanyVM(
         return true
     }
 
-    fun makeCompany(token: String) {
-        if (!isValidate()) return
-        val companyModel = CompanyModel().apply {
+    fun saveCompanyTransfer(): CompanyModel {
+        return CompanyModel().apply {
             ctype = selectedOptionCategory.value.ctype
             images = listImageRepresentative
             name = mutableListOf<NameModel>().apply {
@@ -117,7 +116,13 @@ class ApplyCompanyVM(
             closeHour = textStateCloseTime.value
 
             file = fileName
+            fileTemp = FileModel(url = filePath)
         }
+    }
+
+    fun makeCompany(token: String) {
+        if (!isValidate()) return
+        val companyModel = saveCompanyTransfer()
         viewModelScope.launch {
             repo.makeCompany(token, companyModel)
                 .onStart { }

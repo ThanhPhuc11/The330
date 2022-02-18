@@ -3,6 +3,7 @@ package com.nagaja.the330.view.applycompanyproduct
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,6 +23,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,16 +32,22 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.dataStore
+import com.nagaja.the330.model.CompanyModel
 import com.nagaja.the330.model.FileModel
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.NameUtils
+import com.nagaja.the330.utils.RealPathUtil
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.applycompany.ShareApplyCompanyVM
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,9 +55,11 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
+import java.io.File
 
 class ProductCompanyFragment : BaseFragment() {
     private lateinit var viewModel: ProductCompanyVM
+    private lateinit var shareViewModel: ShareApplyCompanyVM
     private var onClickRemove: ((Int) -> Unit)? = null
     private var onClickChoose: ((Int) -> Unit)? = null
     private var callbackListImage: ((Uri?) -> Unit)? = null
@@ -63,6 +73,7 @@ class ProductCompanyFragment : BaseFragment() {
     @Composable
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[ProductCompanyVM::class.java]
+        shareViewModel = ViewModelProvider(activity?.supportFragmentManager?.findFragmentByTag(ScreenId.SCREEN_APPLY_COMPANY)!!)[ShareApplyCompanyVM::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
@@ -139,7 +150,19 @@ class ProductCompanyFragment : BaseFragment() {
                     val listImage = remember { mutableStateListOf<FileModel>() }
                     val count = remember { mutableStateOf(listImage.size) }
                     callbackListImage = { uri ->
+                        val fileTemp = File(
+                            RealPathUtil.getPath(
+                                this@ProductCompanyFragment.requireContext(),
+                                uri
+                            )
+                        )
                         listImage.add(FileModel(url = uri.toString()))
+                        viewModel.listImageProduct.add(
+                            FileModel(
+                                fileName = NameUtils.setFileName(userDetail?.id, fileTemp),
+                                url = fileTemp.path
+                            )
+                        )
                     }
                     LaunchedEffect(listImage.size) {
                         count.value = listImage.size
@@ -158,10 +181,11 @@ class ProductCompanyFragment : BaseFragment() {
                     }
                     onClickRemove = { index ->
                         listImage.removeAt(index)
+                        viewModel.listImageProduct.removeAt(index)
                     }
                     LazyRow {
                         itemsIndexed(listImage) { index, obj ->
-                            ItemImagePicked(index)
+                            ItemImagePicked(index, obj)
                         }
                     }
                 }
@@ -215,6 +239,7 @@ class ProductCompanyFragment : BaseFragment() {
 
                 ProductDescriptionInput()
 
+                //TODO: Button complete
                 Box(
                     Modifier
                         .padding(top = 100.dp)
@@ -222,7 +247,7 @@ class ProductCompanyFragment : BaseFragment() {
                         .height(52.dp)
                         .background(ColorUtils.blue_2177E4)
                         .noRippleClickable {
-//                            viewModel.makeCompany(accessToken!!)
+                            viewModel.makeCompany(accessToken!!, shareViewModel.companyInfoState.value)
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -274,7 +299,7 @@ class ProductCompanyFragment : BaseFragment() {
     }
 
     @Composable
-    private fun ItemImagePicked(position: Int) {
+    private fun ItemImagePicked(position: Int, obj: FileModel) {
         ConstraintLayout(
             Modifier
                 .padding(end = 4.dp)
@@ -282,7 +307,7 @@ class ProductCompanyFragment : BaseFragment() {
         ) {
             val (content, close) = createRefs()
             GlideImage(
-                imageModel = "",
+                imageModel = obj.url,
                 contentDescription = "",
                 placeHolder = painterResource(R.drawable.ic_default_nagaja),
                 error = painterResource(R.drawable.ic_default_nagaja),
@@ -403,7 +428,7 @@ class ProductCompanyFragment : BaseFragment() {
             PriceUI(
                 symbol = "₱",
                 hint = stringResource(R.string.please_enter_price),
-                viewModel.textStatePeso
+                viewModel.textStatePeso,
             )
             PriceUI(
                 symbol = "$",
@@ -441,7 +466,8 @@ class ProductCompanyFragment : BaseFragment() {
                     .weight(1f)
                     .height(40.dp),
                 hint = hint,
-                textStateId = textStateId
+                textStateId = textStateId,
+                inputType = KeyboardType.Number
             )
         }
     }

@@ -1,11 +1,13 @@
 package com.nagaja.the330.view.applycompanyproduct
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.CompanyModel
+import com.nagaja.the330.model.FileModel
 import com.nagaja.the330.model.NameModel
 import com.nagaja.the330.model.ProductModel
 import com.nagaja.the330.utils.AppConstants
@@ -23,6 +25,9 @@ import java.io.File
 class ProductCompanyVM(
     private val repo: ProductCompanyRepo
 ) : BaseViewModel() {
+    private lateinit var companyModel: CompanyModel
+
+    val listImageProduct = mutableStateListOf<FileModel>()
 
     //info company
     val textStateNameEng = mutableStateOf(TextFieldValue(""))
@@ -45,7 +50,7 @@ class ProductCompanyVM(
     var filePath = ""
 
 
-    fun makeCompany(token: String) {
+    fun makeCompany(token: String, companyModel: CompanyModel) {
 //        val companyModel = CompanyModel().apply {
 //            name = mutableListOf<NameAreaModel>().apply {
 //                add(NameAreaModel(name = textStateNameEng.value.text, lang = AppConstants.Lang.EN))
@@ -80,6 +85,7 @@ class ProductCompanyVM(
             textStateDollar.value.text.isBlank()
         ) return
         val productModel = ProductModel().apply {
+            images = listImageProduct
             name = mutableListOf<NameModel>().apply {
                 add(NameModel(name = textStateNameEng.value.text, lang = AppConstants.Lang.EN))
                 add(NameModel(name = textStateNamePhi.value.text, lang = AppConstants.Lang.PH))
@@ -97,9 +103,12 @@ class ProductCompanyVM(
 
             peso = textStatePeso.value.text.toDouble()
             dollar = textStateDollar.value.text.toDouble()
-            won = textStateWon.value.text.toDouble()
+            if (textStateWon.value.text.isNotEmpty()) {
+                won = textStateWon.value.text.toDouble()
+            }
         }
-        val companyModel = CompanyModel().apply {
+        this.companyModel = companyModel
+        this.companyModel.apply {
             products = mutableListOf<ProductModel>().apply {
                 add(productModel)
             }
@@ -110,15 +119,32 @@ class ProductCompanyVM(
                 .onCompletion { }
                 .catch { }
                 .collect {
-                    val url = it.file?.url
-                    url?.let { it1 -> uploadImageTest(it1) }
+                    if (it.images != null && it.images!!.size > 0)
+                        it.images?.onEach { fileModel ->
+                            companyModel.images!!.forEach { fileLocal ->
+                                if (fileModel.url?.contains(fileLocal.fileName!!) == true) {
+                                    uploadImageTest(fileModel.url ?: "", fileLocal.url!!)
+                                }
+                            }
+                        }
+
+                    if (it.products != null && it.products!!.size > 0)
+                        it.products!![0].images!!.onEach { fileModel ->
+                            companyModel.products!![0].images!!.forEach { fileLocal ->
+                                if (fileModel.url?.contains(fileLocal.fileName!!) == true) {
+                                    uploadImageTest(fileModel.url ?: "", fileLocal.url!!)
+                                }
+                            }
+                        }
+
+                    it.file?.url?.let { it1 -> uploadImageTest(it1, companyModel.fileTemp?.url!!) }
                 }
         }
     }
 
-    fun uploadImageTest(url: String) {
+    fun uploadImageTest(url: String, path: String) {
         val requestFile: RequestBody =
-            File(filePath).asRequestBody("application/octet-stream".toMediaTypeOrNull())
+            File(path).asRequestBody("application/octet-stream".toMediaTypeOrNull())
 
         viewModelScope.launch {
             repo.uploadImage(url, requestFile)

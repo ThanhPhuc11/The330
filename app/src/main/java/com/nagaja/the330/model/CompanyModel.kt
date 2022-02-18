@@ -23,5 +23,6 @@ class CompanyModel {
     var paymentMethod: String? = null
     var ctype: String? = null
     var file: String? = null
+    var fileTemp: FileModel? = null
     var products: MutableList<ProductModel>? = null
 }
