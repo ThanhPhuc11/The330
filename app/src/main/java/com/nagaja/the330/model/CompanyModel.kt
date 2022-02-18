@@ -2,13 +2,13 @@ package com.nagaja.the330.model
 
 class CompanyModel {
     var id: Int? = null
-    var name: MutableList<NameAreaModel>? = null
+    var name: MutableList<NameModel>? = null
     var images: List<Any>? = null
     var popularArea: PopularAreaModel? = null
     var city: CityModel? = null
     var district: DistrictModel? = null
     var address: String? = null
-    var description: MutableList<NameAreaModel>? = null
+    var description: MutableList<NameModel>? = null
     var chargeName: String? = null
     var chargePhone: String? = null
     var chargeEmail: String? = null
@@ -23,4 +23,5 @@ class CompanyModel {
     var paymentMethod: String? = null
     var ctype: String? = null
     var file: String? = null
+    var products: MutableList<ProductModel>? = null
 }

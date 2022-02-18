@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -385,14 +386,14 @@ class ProductCompanyFragment : BaseFragment() {
                 .padding(horizontal = 16.dp)
                 .padding(top = 8.dp)
         ) {
-            PriceUI(symbol = "₱", hint = stringResource(R.string.please_enter_price))
-            PriceUI(symbol = "$", hint = stringResource(R.string.please_enter_price))
-            PriceUI(symbol = "₩", hint = stringResource(R.string.please_enter_price))
+            PriceUI(symbol = "₱", hint = stringResource(R.string.please_enter_price), viewModel.textStatePeso)
+            PriceUI(symbol = "$", hint = stringResource(R.string.please_enter_price), viewModel.textStateDollar)
+            PriceUI(symbol = "₩", hint = stringResource(R.string.please_enter_price), viewModel.textStateWon)
         }
     }
 
     @Composable
-    private fun PriceUI(symbol: String, hint: String) {
+    private fun PriceUI(symbol: String, hint: String, textStateId: MutableState<TextFieldValue>) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -413,7 +414,8 @@ class ProductCompanyFragment : BaseFragment() {
                 modifier = Modifier
                     .weight(1f)
                     .height(40.dp),
-                hint = hint
+                hint = hint,
+                textStateId = textStateId
             )
         }
     }

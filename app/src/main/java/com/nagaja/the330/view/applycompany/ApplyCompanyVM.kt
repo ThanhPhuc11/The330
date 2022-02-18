@@ -5,12 +5,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
-import com.google.gson.GsonBuilder
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.CompanyModel
-import com.nagaja.the330.model.NameAreaModel
-import com.nagaja.the330.network.ApiService
+import com.nagaja.the330.model.NameModel
 import com.nagaja.the330.utils.AppConstants
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -20,11 +18,6 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
 
@@ -80,20 +73,20 @@ class ApplyCompanyVM(
     fun makeCompany(token: String) {
         val companyModel = CompanyModel().apply {
             ctype = selectedOptionCategory.value.ctype
-            name = mutableListOf<NameAreaModel>().apply {
-                add(NameAreaModel(name = textStateNameEng.value.text, lang = AppConstants.Lang.EN))
-                add(NameAreaModel(name = textStateNamePhi.value.text, lang = AppConstants.Lang.PH))
-                add(NameAreaModel(name = textStateNameKr.value.text, lang = AppConstants.Lang.KR))
-                add(NameAreaModel(name = textStateNameCN.value.text, lang = AppConstants.Lang.CN))
-                add(NameAreaModel(name = textStateNameJP.value.text, lang = AppConstants.Lang.JP))
+            name = mutableListOf<NameModel>().apply {
+                add(NameModel(name = textStateNameEng.value.text, lang = AppConstants.Lang.EN))
+                add(NameModel(name = textStateNamePhi.value.text, lang = AppConstants.Lang.PH))
+                add(NameModel(name = textStateNameKr.value.text, lang = AppConstants.Lang.KR))
+                add(NameModel(name = textStateNameCN.value.text, lang = AppConstants.Lang.CN))
+                add(NameModel(name = textStateNameJP.value.text, lang = AppConstants.Lang.JP))
             }
             address = textStateAdress.value.text
-            description = mutableListOf<NameAreaModel>().apply {
-                add(NameAreaModel(name = textStateDesEng.value.text, lang = AppConstants.Lang.EN))
-                add(NameAreaModel(name = textStateDesPhi.value.text, lang = AppConstants.Lang.PH))
-                add(NameAreaModel(name = textStateDesKr.value.text, lang = AppConstants.Lang.KR))
-                add(NameAreaModel(name = textStateDesCN.value.text, lang = AppConstants.Lang.CN))
-                add(NameAreaModel(name = textStateDesJP.value.text, lang = AppConstants.Lang.JP))
+            description = mutableListOf<NameModel>().apply {
+                add(NameModel(name = textStateDesEng.value.text, lang = AppConstants.Lang.EN))
+                add(NameModel(name = textStateDesPhi.value.text, lang = AppConstants.Lang.PH))
+                add(NameModel(name = textStateDesKr.value.text, lang = AppConstants.Lang.KR))
+                add(NameModel(name = textStateDesCN.value.text, lang = AppConstants.Lang.CN))
+                add(NameModel(name = textStateDesJP.value.text, lang = AppConstants.Lang.JP))
             }
             chargeName = textStateName.value.text
             chargePhone = textStatePhone.value.text
