@@ -138,7 +138,19 @@ class ApplyCompanyFragment : BaseFragment() {
                         mutableStateListOf<FileModel>()
                     }
                     callbackListImage = { uri ->
+                        val fileTemp = File(
+                            RealPathUtil.getPath(
+                                this@ApplyCompanyFragment.requireContext(),
+                                uri
+                            )
+                        )
                         listImage.add(FileModel(url = uri.toString()))
+                        viewModel.listImageRepresentative.add(
+                            FileModel(
+                                fileName = NameUtils.setFileName(userDetail?.id, fileTemp),
+                                url = fileTemp.path
+                            )
+                        )
                     }
                     val count = remember { mutableStateOf(listImage.size) }
                     LaunchedEffect(listImage.size) {
@@ -158,6 +170,7 @@ class ApplyCompanyFragment : BaseFragment() {
                     }
                     onClickRemove = { index ->
                         listImage.removeAt(index)
+                        viewModel.listImageRepresentative.removeAt(index)
                     }
                     LazyRow {
                         itemsIndexed(listImage) { index, obj ->
@@ -349,6 +362,7 @@ class ApplyCompanyFragment : BaseFragment() {
                         .padding(top = 77.dp)
                         .height(52.dp)
                 ) {
+                    //TODO: Button completed without product
                     Box(
                         Modifier
                             .weight(1f)
@@ -367,16 +381,19 @@ class ApplyCompanyFragment : BaseFragment() {
                         )
                     }
 
+                    //TODO: Button next product input
                     Box(
                         Modifier
                             .weight(1f)
                             .fillMaxHeight()
                             .background(ColorUtils.gray_222222)
                             .noRippleClickable {
-                                viewController?.pushFragment(
-                                    ScreenId.SCREEN_APPLY_COMPANY_PRODUCT_INFO,
-                                    ProductCompanyFragment.newInstance()
-                                )
+                                if (viewModel.isValidate()) {
+                                    viewController?.pushFragment(
+                                        ScreenId.SCREEN_APPLY_COMPANY_PRODUCT_INFO,
+                                        ProductCompanyFragment.newInstance()
+                                    )
+                                }
                             },
                         contentAlignment = Alignment.Center
                     ) {

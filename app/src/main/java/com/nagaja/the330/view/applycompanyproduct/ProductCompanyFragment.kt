@@ -1,7 +1,9 @@
 package com.nagaja.the330.view.applycompanyproduct
 
 import android.app.Activity
+import android.content.Intent
 import android.net.Uri
+import android.provider.MediaStore
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
@@ -34,7 +36,7 @@ import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.dataStore
-import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.FileModel
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.*
@@ -50,7 +52,7 @@ class ProductCompanyFragment : BaseFragment() {
     private lateinit var viewModel: ProductCompanyVM
     private var onClickRemove: ((Int) -> Unit)? = null
     private var onClickChoose: ((Int) -> Unit)? = null
-    private var callbackAttachFile: ((Uri?) -> Unit)? = null
+    private var callbackListImage: ((Uri?) -> Unit)? = null
 
     private var userDetail: UserDetail? = null
 
@@ -134,14 +136,24 @@ class ProductCompanyFragment : BaseFragment() {
                 )
 
                 Row {
-                    RepresentativeImage()
-                    val listImage = remember {
-                        mutableStateListOf<KeyValueModel>().apply {
-                            add(KeyValueModel())
-                            add(KeyValueModel())
-                            add(KeyValueModel())
-                            add(KeyValueModel())
-                            add(KeyValueModel())
+                    val listImage = remember { mutableStateListOf<FileModel>() }
+                    val count = remember { mutableStateOf(listImage.size) }
+                    callbackListImage = { uri ->
+                        listImage.add(FileModel(url = uri.toString()))
+                    }
+                    LaunchedEffect(listImage.size) {
+                        count.value = listImage.size
+                    }
+                    RepresentativeImage(count) {
+                        if (count.value == 5) return@RepresentativeImage
+                        checkPermissBeforeAttachFile(this@ProductCompanyFragment.requireContext()) {
+                            val intent = Intent(Intent.ACTION_PICK).apply {
+                                setDataAndType(
+                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                    "image/*"
+                                )
+                            }
+                            startResultRepresentativeCallback.launch(intent)
                         }
                     }
                     onClickRemove = { index ->
@@ -225,30 +237,32 @@ class ProductCompanyFragment : BaseFragment() {
         }
     }
 
-    private val startForResultCallback =
+    private val startResultRepresentativeCallback =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             val resultCode = result.resultCode
             val data = result.data
             if (resultCode == Activity.RESULT_OK) {
                 val uri = copyFileOnlyAndroid10(data?.data)
-                callbackAttachFile?.invoke(uri)
+                callbackListImage?.invoke(uri)
             }
         }
 
-    @Preview
     @Composable
-    private fun RepresentativeImage() {
+    private fun RepresentativeImage(count: MutableState<Int>, onClick: () -> Unit) {
         Column(
             Modifier
                 .padding(start = 16.dp, top = 4.dp, end = 8.dp)
                 .size(72.dp)
-                .border(width = 1.dp, color = ColorUtils.blue_2177E4.copy(alpha = 0.3f)),
+                .border(width = 1.dp, color = ColorUtils.blue_2177E4.copy(alpha = 0.3f))
+                .noRippleClickable {
+                    onClick.invoke()
+                },
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Image(painter = painterResource(R.drawable.ic_choose_image), contentDescription = null)
             Text(
-                "4/5",
+                "${count.value}/5",
                 color = ColorUtils.blue_2177E4,
                 modifier = Modifier
                     .padding(top = 3.dp)
@@ -386,9 +400,21 @@ class ProductCompanyFragment : BaseFragment() {
                 .padding(horizontal = 16.dp)
                 .padding(top = 8.dp)
         ) {
-            PriceUI(symbol = "₱", hint = stringResource(R.string.please_enter_price), viewModel.textStatePeso)
-            PriceUI(symbol = "$", hint = stringResource(R.string.please_enter_price), viewModel.textStateDollar)
-            PriceUI(symbol = "₩", hint = stringResource(R.string.please_enter_price), viewModel.textStateWon)
+            PriceUI(
+                symbol = "₱",
+                hint = stringResource(R.string.please_enter_price),
+                viewModel.textStatePeso
+            )
+            PriceUI(
+                symbol = "$",
+                hint = stringResource(R.string.please_enter_price),
+                viewModel.textStateDollar
+            )
+            PriceUI(
+                symbol = "₩",
+                hint = stringResource(R.string.please_enter_price),
+                viewModel.textStateWon
+            )
         }
     }
 

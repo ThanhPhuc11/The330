@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.CompanyModel
+import com.nagaja.the330.model.FileModel
 import com.nagaja.the330.model.NameModel
 import com.nagaja.the330.utils.AppConstants
 import kotlinx.coroutines.flow.catch
@@ -26,6 +27,8 @@ class ApplyCompanyVM(
 ) : BaseViewModel() {
     val listCategoryState = mutableStateListOf<CategoryModel>()
     val selectedOptionCategory = mutableStateOf(CategoryModel())
+
+    val listImageRepresentative = mutableStateListOf<FileModel>()
 
     //info company
     val textStateNameEng = mutableStateOf(TextFieldValue(""))
@@ -56,7 +59,7 @@ class ApplyCompanyVM(
     val textStateNumReservation = mutableStateOf(TextFieldValue(""))
 
     var fileName = ""
-    var filePath = ""
+    var filePath = "" //TODO: path sau khi lay realpath
 
     fun getCategory(token: String) {
         viewModelScope.launch {
@@ -70,9 +73,24 @@ class ApplyCompanyVM(
         }
     }
 
+    fun isValidate(): Boolean {
+        if (selectedOptionCategory.value.ctype.isNullOrBlank() ||
+            textStateNameEng.value.text.isBlank() ||
+            textStateAdress.value.text.isBlank() ||
+            textStateDesEng.value.text.isBlank() ||
+            textStateName.value.text.isBlank() ||
+            textStateOpenTime.value < 0 ||
+            textStateCloseTime.value < 0 ||
+            fileName.isEmpty()
+        ) return false
+        return true
+    }
+
     fun makeCompany(token: String) {
+        if (!isValidate()) return
         val companyModel = CompanyModel().apply {
             ctype = selectedOptionCategory.value.ctype
+            images = listImageRepresentative
             name = mutableListOf<NameModel>().apply {
                 add(NameModel(name = textStateNameEng.value.text, lang = AppConstants.Lang.EN))
                 add(NameModel(name = textStateNamePhi.value.text, lang = AppConstants.Lang.PH))
@@ -106,28 +124,36 @@ class ApplyCompanyVM(
                 .onCompletion { }
                 .catch { }
                 .collect {
-                    val url = it.file?.url
-                    url?.let { it1 -> uploadImageTest(it1) }
+                    if (it.images != null && it.images!!.size > 0)
+                        it.images?.onEach { fileModel ->
+                            listImageRepresentative.forEach { fileLocal ->
+                                if (fileModel.url?.contains(fileLocal.fileName!!) == true) {
+                                    uploadImageTest(fileModel.url ?: "", fileLocal.url!!)
+                                }
+                            }
+                        }
+
+                    it.file?.url?.let { it1 -> uploadImageTest(it1, filePath) }
                 }
         }
     }
 
-    fun uploadImageTest(url: String) {
+    fun uploadImageTest(url: String, path: String) {
         val requestFile: RequestBody =
-            File(filePath).asRequestBody("application/octet-stream".toMediaTypeOrNull())
+            File(path).asRequestBody("application/octet-stream".toMediaTypeOrNull())
 
         viewModelScope.launch {
             repo.uploadImage(url, requestFile)
                 .onStart { }
                 .onCompletion { }
                 .catch {
-                    Log.e("Catch", this.toString())
+                    Log.e("Catch", this.toString() + path)
                 }
                 .collect {
                     if (it.raw().isSuccessful && it.raw().code == 200) {
-                        Log.e("Success", "upload success")
+                        Log.e("Success", path)
                     } else {
-                        Log.e("Fail", "upload fail")
+                        Log.e("Fail", path)
                     }
                 }
         }

@@ -3,7 +3,7 @@ package com.nagaja.the330.model
 class CompanyModel {
     var id: Int? = null
     var name: MutableList<NameModel>? = null
-    var images: List<Any>? = null
+    var images: MutableList<FileModel>? = null
     var popularArea: PopularAreaModel? = null
     var city: CityModel? = null
     var district: DistrictModel? = null
