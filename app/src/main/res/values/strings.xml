@@ -132,6 +132,7 @@
     <string name="please_enter_product_description_cn">부가 설명을 입력해 주세요.(중국어)</string>
     <string name="please_enter_product_description_jp">부가 설명을 입력해 주세요.(일본어)</string>
     <string name="register_request">등록 요청</string>
+    <string name="apply_company_result_title">기업 회원 신청 결과</string>
 
 
 </resources>
