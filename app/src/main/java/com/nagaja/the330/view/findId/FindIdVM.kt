@@ -19,6 +19,8 @@ class FindIdVM(private val repo: FindIdRepo) : BaseViewModel() {
     var _otp: Int? = null
     var _snsType: String? = null
 
+    val stateID = mutableStateOf("")
+
     // Phone
     val stateEdtPhone = mutableStateOf(TextFieldValue(""))
     val stateEnableFocusPhone = mutableStateOf(true)
@@ -35,97 +37,20 @@ class FindIdVM(private val repo: FindIdRepo) : BaseViewModel() {
 
     val callbackFindIdSuccess = MutableLiveData<UserDetail>()
 
-    fun checkPhone() {
-        stateBtnSendPhone.value = stateEdtPhone.value.text.length >= 10
-    }
-
-    fun checkOTP() {
-        stateBtnSendOTP.value = stateEdtOTP.value.text.isNotBlank()
-    }
-
-    fun checkExistByPhone() {
-        val phone = stateEdtPhone.value.text
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.checkExistPhone(PhoneAvailableModel(phone = phone))
-                .onStart { }
-                .onCompletion { }
-                .catch { }
-                .collect {
-                    if (!it.available) {
-                        _snsType = it.snsInfo?.type
-                        sendPhone()
-                    }
-                }
-        }
-    }
-
-    fun sendPhone() {
-        val phone = stateEdtPhone.value.text
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.sendPhone(PhoneAvailableModel(phone = phone, nationNumber = _nationalNumber))
-                .onStart {
-                    stateEnableFocusPhone.value = false
-                    stateBtnSendPhone.value = false
-                }
-                .onCompletion { }
-                .catch {
-                    stateBtnSendPhone.value = true
-                    stateEnableFocusPhone.value = true
-                }
-                .collect {
-                    cbActivePhoneButtonTimer.value = true
-                    stateEnableFocusOTP.value = true
-                }
-        }
-    }
-
-    fun sendOTP() {
-        val otp = stateEdtOTP.value.text
-        val phone = stateEdtPhone.value.text
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.sendOTP(
-                PhoneAvailableModel(
-                    phone = phone,
-                    otp = otp.toInt(),
-                    nationNumber = _nationalNumber
-                )
-            )
-                .onStart {
-                    stateEnableFocusOTP.value = false
-                    stateBtnSendOTP.value = false
-                }
-                .onCompletion { }
-                .catch {
-
-                }
-                .collect {
-                    if (it.raw().isSuccessful && it.raw().code == 202) {
-                        cbActivePhoneButtonTimer.value = false
-                        validatePhone.value = true
-                        _otp = it.body()?.otp
-                        findIdByPhone()
-                    }
-                }
-
-        }
-    }
-
-    private fun findIdByPhone() {
+    fun findIdByPhone(nationalNum: String?, phoneNum: String?, otp: Int?) {
         viewModelScope.launch {
             repo.findIdByPhone(
                 PhoneAvailableModel(
-                    nationNumber = _nationalNumber,
-                    phone = stateEdtPhone.value.text,
-                    otp = _otp
+                    nationNumber = nationalNum,
+                    phone = phoneNum,
+                    otp = otp
                 )
             )
                 .onStart { }
                 .onCompletion { }
                 .catch { }
                 .collect {
-                    callbackFindIdSuccess.value = it.apply {
-                        this.snsType = _snsType
-                    }
+                    stateID.value = it.name.toString()
                 }
         }
     }

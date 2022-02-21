@@ -24,18 +24,16 @@ import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
-import com.nagaja.the330.view.findId.FindIdFragment
 import com.nagaja.the330.view.reset_templace.ResetTemplaceShareVM
 
 class VerifyOTPFragment : BaseFragment() {
     private lateinit var viewModel: VerifyOTPVM
     private lateinit var shareViewModel: ResetTemplaceShareVM
     private var countDownTimer: CountDownTimer? = null
-    var callbackUser: ((UserDetail) -> Unit)? = null
+    var callbackResult: ((Boolean, String?, String?, Int?) -> Unit)? = null
 
     companion object {
         fun newInstance() = VerifyOTPFragment()
@@ -53,14 +51,15 @@ class VerifyOTPFragment : BaseFragment() {
 
         viewController = (activity as MainActivity).viewController
 
-        viewModel.callbackFindIdSuccess.observe(viewLifecycleOwner) {
-//            callbackUser?.invoke(it)
-            shareViewModel.userDetail = it
+        viewModel.callbackVerifySuccess.observe(viewLifecycleOwner) {
             viewController?.popFragment()
-            viewController?.pushFragment(
-                ScreenId.SCREEN_FIND_ID,
-                FindIdFragment.newInstance()
+            callbackResult?.invoke(
+                true,
+                viewModel._nationalNumber,
+                viewModel.stateEdtPhone.value.text,
+                viewModel._otp
             )
+//            shareViewModel.userDetail = it
         }
     }
 
@@ -76,7 +75,8 @@ class VerifyOTPFragment : BaseFragment() {
                                 viewModel.stateBtnSendPhone.value = true
                                 viewModel.stateEnableFocusPhone.value = true
                                 viewModel.cbActivePhoneButtonTimer.value = false
-                                viewModel.cbNumberCoundown.value = getString(R.string.authen_request)
+                                viewModel.cbNumberCoundown.value =
+                                    getString(R.string.authen_request)
                             }
 
                             override fun onTick(millisUntilFinished: Long) {

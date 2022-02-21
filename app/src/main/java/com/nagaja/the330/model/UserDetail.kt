@@ -38,4 +38,6 @@ class UserDetail {
     @SerializedName("real_name")
     @Expose
     var realName: String? = null
+
+    var available: Boolean? = false
 }

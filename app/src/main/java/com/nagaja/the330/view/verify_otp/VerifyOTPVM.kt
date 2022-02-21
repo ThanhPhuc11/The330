@@ -33,7 +33,7 @@ class VerifyOTPVM(private val repo: VerifyOTPRepo) : BaseViewModel() {
 
     val validatePhone = mutableStateOf(false)
 
-    val callbackFindIdSuccess = MutableLiveData<UserDetail>()
+    val callbackVerifySuccess = MutableLiveData<Unit>()
 
     fun checkPhone() {
         stateBtnSendPhone.value = stateEdtPhone.value.text.length >= 10
@@ -59,9 +59,9 @@ class VerifyOTPVM(private val repo: VerifyOTPRepo) : BaseViewModel() {
         }
     }
 
-    fun sendPhone() {
+    private fun sendPhone() {
         val phone = stateEdtPhone.value.text
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             repo.sendPhone(PhoneAvailableModel(phone = phone, nationNumber = _nationalNumber))
                 .onStart {
                     stateEnableFocusPhone.value = false
@@ -82,7 +82,7 @@ class VerifyOTPVM(private val repo: VerifyOTPRepo) : BaseViewModel() {
     fun sendOTP() {
         val otp = stateEdtOTP.value.text
         val phone = stateEdtPhone.value.text
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             repo.sendOTP(
                 PhoneAvailableModel(
                     phone = phone,
@@ -103,7 +103,7 @@ class VerifyOTPVM(private val repo: VerifyOTPRepo) : BaseViewModel() {
                         cbActivePhoneButtonTimer.value = false
                         validatePhone.value = true
                         _otp = it.body()?.otp
-                        findIdByPhone()
+                        callbackVerifySuccess.value = Unit
                     }
                 }
 
@@ -123,9 +123,9 @@ class VerifyOTPVM(private val repo: VerifyOTPRepo) : BaseViewModel() {
                 .onCompletion { }
                 .catch { }
                 .collect {
-                    callbackFindIdSuccess.value = it.apply {
-                        this.snsType = _snsType
-                    }
+//                    callbackFindIdSuccess.value = it.apply {
+//                        this.snsType = _snsType
+//                    }
                 }
         }
     }

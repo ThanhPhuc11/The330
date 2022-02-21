@@ -11,6 +11,8 @@ import com.nagaja.the330.view.edit_profile.EditProfileRepo
 import com.nagaja.the330.view.edit_profile.EditProfileVM
 import com.nagaja.the330.view.favoritecompany.FavCompanyRepo
 import com.nagaja.the330.view.favoritecompany.FavCompanyVM
+import com.nagaja.the330.view.findId.FindIdRepo
+import com.nagaja.the330.view.findId.FindIdVM
 import com.nagaja.the330.view.general.GeneralRepository
 import com.nagaja.the330.view.general.GeneralViewModel
 import com.nagaja.the330.view.home.HomeScreenRepo
@@ -19,6 +21,8 @@ import com.nagaja.the330.view.login.LoginRepository
 import com.nagaja.the330.view.login.LoginViewModel
 import com.nagaja.the330.view.mypage.MyPageScreenRepo
 import com.nagaja.the330.view.mypage.MyPageScreenVM
+import com.nagaja.the330.view.resetpassword.ResetPwRepo
+import com.nagaja.the330.view.resetpassword.ResetPwVM
 import com.nagaja.the330.view.signupinfo.SignupInfoRepo
 import com.nagaja.the330.view.signupinfo.SignupInfoVM
 import com.nagaja.the330.view.verify_otp.VerifyOTPRepo
@@ -38,6 +42,10 @@ class ViewModelFactory(apiService: ApiService) :
             LoginViewModel(LoginRepository(apiService))
         creators[VerifyOTPVM::class.java] =
             VerifyOTPVM(VerifyOTPRepo(apiService))
+        creators[FindIdVM::class.java] =
+            FindIdVM(FindIdRepo(apiService))
+        creators[ResetPwVM::class.java] =
+            ResetPwVM(ResetPwRepo(apiService))
         creators[SignupInfoVM::class.java] =
             SignupInfoVM(SignupInfoRepo(apiService))
         creators[HomeScreenVM::class.java] =

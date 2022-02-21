@@ -28,6 +28,11 @@ interface ApiService {
         @Body body: AuthRequest
     ): AuthTokenModel
 
+    @POST("users/existByName")
+    suspend fun checkExistByID(
+        @Body body: UserDetail
+    ): UserDetail
+
     @POST("users/existByPhone")
     suspend fun checkExistPhone(
         @Body phone: PhoneAvailableModel

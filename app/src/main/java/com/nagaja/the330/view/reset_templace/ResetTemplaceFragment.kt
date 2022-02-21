@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
@@ -25,15 +26,22 @@ import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.findId.FindIdFragment
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.resetpassword.InputIDFragment
 import com.nagaja.the330.view.verify_otp.VerifyOTPFragment
 
 class ResetTemplaceFragment : BaseFragment() {
+    private lateinit var shareViewModel: ResetTemplaceShareVM
+
     companion object {
         fun newInstance() = ResetTemplaceFragment()
     }
 
     @Composable
     override fun SetupViewModel() {
+        shareViewModel =
+            ViewModelProvider(
+                this
+            )[ResetTemplaceShareVM::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
@@ -64,14 +72,22 @@ class ResetTemplaceFragment : BaseFragment() {
                     .noRippleClickable {
                         viewController?.pushFragment(
                             ScreenId.SCREEN_VERIFY_OTP,
-                            VerifyOTPFragment.newInstance().apply {
-//                                callbackUser = {
-//                                    viewController?.pushFragment(
-//                                        ScreenId.SCREEN_FIND_ID,
-//                                        FindIdFragment.newInstance()
-//                                    )
-//                                }
-                            }
+                            VerifyOTPFragment
+                                .newInstance()
+                                .apply {
+                                    callbackResult = { isSuccess, nationNum, phoneNum, otp ->
+                                        if (isSuccess) {
+                                            shareViewModel.nationalNum = nationNum
+                                            shareViewModel.phoneNum = phoneNum
+                                            shareViewModel.otp = otp
+
+                                            viewController?.pushFragment(
+                                                ScreenId.SCREEN_FIND_ID,
+                                                FindIdFragment.newInstance()
+                                            )
+                                        }
+                                    }
+                                }
                         )
                     },
                 contentAlignment = Alignment.Center
@@ -94,7 +110,13 @@ class ResetTemplaceFragment : BaseFragment() {
                         width = 1.dp,
                         color = ColorUtils.gray_222222,
                         shape = RoundedCornerShape(4.dp)
-                    ),
+                    )
+                    .noRippleClickable {
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_RESET_INPUT_ID,
+                            InputIDFragment.newInstance()
+                        )
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
