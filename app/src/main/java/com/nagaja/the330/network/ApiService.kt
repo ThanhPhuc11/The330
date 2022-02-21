@@ -33,6 +33,11 @@ interface ApiService {
         @Body phone: PhoneAvailableModel
     ): PhoneAvailableModel
 
+    @POST("users/find_by_phone")
+    suspend fun findIdByPhone(
+        @Body phone: PhoneAvailableModel
+    ): UserDetail
+
     @POST("users/phoneVerify")
     suspend fun sendPhone(
         @Body phone: PhoneAvailableModel
