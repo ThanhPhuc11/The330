@@ -21,6 +21,8 @@ import com.nagaja.the330.view.mypage.MyPageScreenRepo
 import com.nagaja.the330.view.mypage.MyPageScreenVM
 import com.nagaja.the330.view.signupinfo.SignupInfoRepo
 import com.nagaja.the330.view.signupinfo.SignupInfoVM
+import com.nagaja.the330.view.verify_otp.VerifyOTPRepo
+import com.nagaja.the330.view.verify_otp.VerifyOTPVM
 
 
 class ViewModelFactory(apiService: ApiService) :
@@ -34,6 +36,8 @@ class ViewModelFactory(apiService: ApiService) :
             GeneralViewModel(GeneralRepository(apiService))
         creators[LoginViewModel::class.java] =
             LoginViewModel(LoginRepository(apiService))
+        creators[VerifyOTPVM::class.java] =
+            VerifyOTPVM(VerifyOTPRepo(apiService))
         creators[SignupInfoVM::class.java] =
             SignupInfoVM(SignupInfoRepo(apiService))
         creators[HomeScreenVM::class.java] =

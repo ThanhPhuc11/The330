@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.verify_otp
 
+import android.os.CountDownTimer
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -19,11 +20,14 @@ import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.*
 
 class VerifyOTPFragment : BaseFragment() {
     private lateinit var viewModel: VerifyOTPVM
+    private var countDownTimer: CountDownTimer? = null
+    var callbackUser: ((UserDetail) -> Unit)? = null
 
     companion object {
         fun newInstance() = VerifyOTPFragment()
@@ -36,12 +40,42 @@ class VerifyOTPFragment : BaseFragment() {
 
 
         viewModel.callbackFindIdSuccess.observe(viewLifecycleOwner) {
+            callbackUser?.invoke(it)
             viewController?.popFragment()
         }
     }
 
     @Composable
     override fun UIData() {
+        LaunchedEffect(viewModel.stateEdtPhone.value.text.length) {
+            viewModel.checkPhone()
+        }
+        LaunchedEffect(viewModel.stateEdtOTP.value.text.length) {
+            viewModel.checkOTP()
+        }
+        countDownTimer = object : android.os.CountDownTimer(20000, 1000) {
+            override fun onFinish() {
+                viewModel.stateBtnSendPhone.value = true
+                viewModel.stateEnableFocusPhone.value = true
+                viewModel.cbActivePhoneButtonTimer.value = false
+                viewModel.cbNumberCoundown.value = getString(R.string.authen_request)
+            }
+
+            override fun onTick(millisUntilFinished: Long) {
+                "${numberFormat2Digit((millisUntilFinished / 60000).toInt())}:${
+                    numberFormat2Digit(
+                        ((millisUntilFinished % (60000)) / 1000).toInt()
+                    )
+                }".also {
+                    viewModel.cbNumberCoundown.value = it
+                }
+            }
+        }
+        LaunchedEffect(viewModel.cbActivePhoneButtonTimer.value) {
+            if (viewModel.cbActivePhoneButtonTimer.value) {
+                countDownTimer?.start()
+            }
+        }
         LayoutTheme330 {
             Header("title") {
                 viewController?.popFragment()
@@ -102,7 +136,7 @@ class VerifyOTPFragment : BaseFragment() {
                     )
                 }
                 DrawRequestPhoneButton(viewModel.stateBtnSendPhone.value) {
-                    viewModel.sendPhone()
+                    viewModel.checkExistByPhone()
                 }
 
                 //TODO: OTP
@@ -233,5 +267,9 @@ class VerifyOTPFragment : BaseFragment() {
                 )
             }
         }
+    }
+
+    fun numberFormat2Digit(number: Int): String {
+        return if (number < 10) "0$number" else number.toString() + ""
     }
 }

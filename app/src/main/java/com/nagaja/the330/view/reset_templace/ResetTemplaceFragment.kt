@@ -20,8 +20,11 @@ import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.verify_otp.VerifyOTPFragment
 
 class ResetTemplaceFragment : BaseFragment() {
     companion object {
@@ -56,7 +59,13 @@ class ResetTemplaceFragment : BaseFragment() {
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
                     .height(48.dp)
-                    .background(color = ColorUtils.blue_2177E4, shape = RoundedCornerShape(4.dp)),
+                    .background(color = ColorUtils.blue_2177E4, shape = RoundedCornerShape(4.dp))
+                    .noRippleClickable {
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_VERIFY_OTP,
+                            VerifyOTPFragment.newInstance()
+                        )
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(

@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 class VerifyOTPVM(private val repo: VerifyOTPRepo) : BaseViewModel() {
     var _nationalNumber: String? = "82"
     var _otp: Int? = null
+    var _snsType: String? = null
 
     // Phone
     val stateEdtPhone = mutableStateOf(TextFieldValue(""))
@@ -34,6 +35,29 @@ class VerifyOTPVM(private val repo: VerifyOTPRepo) : BaseViewModel() {
 
     val callbackFindIdSuccess = MutableLiveData<UserDetail>()
 
+    fun checkPhone() {
+        stateBtnSendPhone.value = stateEdtPhone.value.text.length >= 10
+    }
+
+    fun checkOTP() {
+        stateBtnSendOTP.value = stateEdtOTP.value.text.isNotBlank()
+    }
+
+    fun checkExistByPhone() {
+        val phone = stateEdtPhone.value.text
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.checkExistPhone(PhoneAvailableModel(phone = phone))
+                .onStart { }
+                .onCompletion { }
+                .catch { }
+                .collect {
+                    if (!it.available) {
+                        _snsType = it.snsInfo?.type
+                        sendPhone()
+                    }
+                }
+        }
+    }
 
     fun sendPhone() {
         val phone = stateEdtPhone.value.text
@@ -99,7 +123,9 @@ class VerifyOTPVM(private val repo: VerifyOTPRepo) : BaseViewModel() {
                 .onCompletion { }
                 .catch { }
                 .collect {
-                    callbackFindIdSuccess.value = it
+                    callbackFindIdSuccess.value = it.apply {
+                        this.snsType = _snsType
+                    }
                 }
         }
     }

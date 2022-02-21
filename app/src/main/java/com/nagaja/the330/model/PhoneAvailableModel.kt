@@ -5,4 +5,5 @@ class PhoneAvailableModel(
     var available: Boolean = false,
     var otp: Int? = null,
     var nationNumber: String? = null,
+    var snsInfo: SNSInfo? = null
 )

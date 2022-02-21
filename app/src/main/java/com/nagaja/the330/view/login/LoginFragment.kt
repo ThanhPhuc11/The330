@@ -13,19 +13,15 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,6 +41,7 @@ import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.general.GeneralViewModel
 import com.nagaja.the330.view.main.MainFragment
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.reset_templace.ResetTemplaceFragment
 import com.nagaja.the330.view.signupinfo.SignupInfoFragment
 import com.nagaja.the330.view.text14_62
 import com.nhn.android.naverlogin.OAuthLogin
@@ -213,7 +210,17 @@ class LoginFragment : BaseFragment() {
                 )
             }
             Row(Modifier.padding(top = 20.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("아이디 찾기", style = text14_62, modifier = Modifier.weight(1f))
+                Text(
+                    "아이디 찾기",
+                    style = text14_62,
+                    modifier = Modifier
+                        .weight(1f)
+                        .noRippleClickable {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_FIND_RESET_TEMPLACE,
+                                ResetTemplaceFragment.newInstance()
+                            )
+                        })
                 Box(
                     modifier = Modifier
                         .height(8.dp)
