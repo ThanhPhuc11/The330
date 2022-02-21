@@ -1,4 +1,4 @@
-package com.nagaja.the330.view.reset_templace
+package com.nagaja.the330.view.findId
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
@@ -23,17 +24,24 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
-import com.nagaja.the330.view.findId.FindIdFragment
 import com.nagaja.the330.view.noRippleClickable
-import com.nagaja.the330.view.verify_otp.VerifyOTPFragment
+import com.nagaja.the330.view.reset_templace.ResetTemplaceShareVM
 
-class ResetTemplaceFragment : BaseFragment() {
+class FindIdFragment : BaseFragment() {
+    private lateinit var shareViewModel: ResetTemplaceShareVM
+
     companion object {
-        fun newInstance() = ResetTemplaceFragment()
+        fun newInstance() = FindIdFragment()
     }
 
     @Composable
     override fun SetupViewModel() {
+        shareViewModel =
+            ViewModelProvider(
+                activity?.supportFragmentManager?.findFragmentByTag(
+                    ScreenId.SCREEN_FIND_RESET_TEMPLACE
+                )!!
+            )[ResetTemplaceShareVM::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
@@ -45,39 +53,39 @@ class ResetTemplaceFragment : BaseFragment() {
                 viewController?.popFragment()
             }
             Text(
-                stringResource(R.string.reset_id_and_password),
+                stringResource(R.string.find_id),
                 color = ColorUtils.gray_222222,
                 fontSize = 24.sp,
                 modifier = Modifier
                     .padding(top = 20.dp)
                     .padding(horizontal = 16.dp)
             )
-
+            Text(
+                stringResource(R.string.your_id_is, shareViewModel.userDetail?.name?:""),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 80.dp, bottom = 40.dp),
+                color = ColorUtils.gray_222222,
+                fontSize = 16.sp
+            )
             //TODO: Find ID
             Box(
                 modifier = Modifier
-                    .padding(top = 80.dp, bottom = 12.dp)
+                    .padding(bottom = 12.dp)
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
                     .height(48.dp)
                     .background(color = ColorUtils.blue_2177E4, shape = RoundedCornerShape(4.dp))
                     .noRippleClickable {
-                        viewController?.pushFragment(
-                            ScreenId.SCREEN_VERIFY_OTP,
-                            VerifyOTPFragment.newInstance().apply {
-//                                callbackUser = {
-//                                    viewController?.pushFragment(
-//                                        ScreenId.SCREEN_FIND_ID,
-//                                        FindIdFragment.newInstance()
-//                                    )
-//                                }
-                            }
-                        )
+//                        viewController?.pushFragment(
+//                            ScreenId.SCREEN_VERIFY_OTP,
+//                            VerifyOTPFragment.newInstance()
+//                        )
                     },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    stringResource(R.string.find_id),
+                    stringResource(R.string.login),
                     color = ColorUtils.white_FFFFFF,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -94,7 +102,10 @@ class ResetTemplaceFragment : BaseFragment() {
                         width = 1.dp,
                         color = ColorUtils.gray_222222,
                         shape = RoundedCornerShape(4.dp)
-                    ),
+                    )
+                    .noRippleClickable {
+
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(

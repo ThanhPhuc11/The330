@@ -1,4 +1,4 @@
-package com.nagaja.the330.view.verify_otp
+package com.nagaja.the330.view.findId
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-class VerifyOTPVM(private val repo: VerifyOTPRepo) : BaseViewModel() {
+class FindIdVM(private val repo: FindIdRepo) : BaseViewModel() {
     var _nationalNumber: String? = "82"
     var _otp: Int? = null
     var _snsType: String? = null
@@ -46,7 +46,7 @@ class VerifyOTPVM(private val repo: VerifyOTPRepo) : BaseViewModel() {
     fun checkExistByPhone() {
         val phone = stateEdtPhone.value.text
         viewModelScope.launch(Dispatchers.IO) {
-            repo.checkExistPhone(PhoneAvailableModel(phone = phone, nationNumber = _nationalNumber))
+            repo.checkExistPhone(PhoneAvailableModel(phone = phone))
                 .onStart { }
                 .onCompletion { }
                 .catch { }
