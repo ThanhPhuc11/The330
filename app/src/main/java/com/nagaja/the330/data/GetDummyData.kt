@@ -12,6 +12,13 @@ object GetDummyData {
         }
     }
 
+    fun getCountryNumber(): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel("82", "+82"))
+            add(KeyValueModel("63", "+63"))
+        }
+    }
+
     fun getSortFavoriteCompany(context: Context): MutableList<KeyValueModel> {
         return mutableListOf<KeyValueModel>().apply {
             add(KeyValueModel("CREATED_ON", context.getString(R.string.sort_create_on)))

@@ -265,6 +265,9 @@ class SignupInfoFragment : BaseFragment() {
                             .fillMaxWidth()
                             .padding(top = 4.dp)
                     ) {
+                        val options = GetDummyData.getCountryNumber()
+                        var expanded by remember { mutableStateOf(false) }
+                        val selectedCountryNum = remember { mutableStateOf(options[0]) }
                         Box(
                             Modifier
                                 .padding(end = 4.dp)
@@ -274,7 +277,28 @@ class SignupInfoFragment : BaseFragment() {
                                     color = ColorUtils.gray_E1E1E1,
                                     shape = RoundedCornerShape(4.dp)
                                 )
-                        )
+                                .noRippleClickable {
+                                    expanded = !expanded
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = selectedCountryNum.value.name!!, style = text14_222)
+                            DropdownMenu(expanded = expanded,
+                                onDismissRequest = {
+                                    expanded = false
+                                }
+                            ) {
+                                options.forEach { selectedOption ->
+                                    DropdownMenuItem(onClick = {
+                                        selectedCountryNum.value = selectedOption
+                                        expanded = false
+                                        viewModel._nationalNumber = selectedOption.id
+                                    }) {
+                                        Text(selectedOption.name!!)
+                                    }
+                                }
+                            }
+                        }
                         HandleInputPhoneNumber(
                             viewModel.stateEdtPhone,
                             modifier = Modifier.weight(1f)
@@ -371,12 +395,20 @@ class SignupInfoFragment : BaseFragment() {
                     val collapsed4 = remember { mutableStateOf(true) }
                     val collapsed5 = remember { mutableStateOf(true) }
                     val collapsed6 = remember { mutableStateOf(true) }
-                    CheckPolicy(text = stringResource(R.string.term_line_1_accept_term_of_use), check1, collapsed1)
+                    CheckPolicy(
+                        text = stringResource(R.string.term_line_1_accept_term_of_use),
+                        check1,
+                        collapsed1
+                    )
                     AnimatedVisibility(visible = !collapsed1.value) {
                         ContentPolicy(content = "content1")
                     }
 
-                    CheckPolicy(text = stringResource(R.string.term_line_2_privacy_policy), check2, collapsed2)
+                    CheckPolicy(
+                        text = stringResource(R.string.term_line_2_privacy_policy),
+                        check2,
+                        collapsed2
+                    )
                     AnimatedVisibility(visible = !collapsed2.value) {
                         ContentPolicy(content = "content2")
                     }
@@ -386,17 +418,29 @@ class SignupInfoFragment : BaseFragment() {
                         ContentPolicy(content = "content3")
                     }
 
-                    CheckPolicy(text = stringResource(R.string.term_line_4_location), check4, collapsed4)
+                    CheckPolicy(
+                        text = stringResource(R.string.term_line_4_location),
+                        check4,
+                        collapsed4
+                    )
                     AnimatedVisibility(visible = !collapsed4.value) {
                         ContentPolicy(content = "content4")
                     }
 
-                    CheckPolicy(text = stringResource(R.string.term_line_5_event_benefit), check5, collapsed5)
+                    CheckPolicy(
+                        text = stringResource(R.string.term_line_5_event_benefit),
+                        check5,
+                        collapsed5
+                    )
                     AnimatedVisibility(visible = !collapsed5.value) {
                         ContentPolicy(content = "content5")
                     }
 
-                    CheckPolicy(text = stringResource(R.string.term_line_6_notification), check6, collapsed6)
+                    CheckPolicy(
+                        text = stringResource(R.string.term_line_6_notification),
+                        check6,
+                        collapsed6
+                    )
                     AnimatedVisibility(visible = !collapsed6.value) {
                         ContentPolicy(content = "content6")
                     }
