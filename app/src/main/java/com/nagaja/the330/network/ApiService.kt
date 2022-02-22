@@ -62,7 +62,7 @@ interface ApiService {
         @Body body: UserDetail
     ): Response<Unit> //204
 
-    @PATCH("users")
+    @PATCH("users/password_reset_main")
     suspend fun changePassword(
         @Body body: UserDetail
     ): Response<Unit> //204

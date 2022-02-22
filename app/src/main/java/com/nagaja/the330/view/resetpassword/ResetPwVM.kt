@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.CommonUtils
@@ -31,6 +30,8 @@ class ResetPwVM(private val repo: ResetPwRepo) : BaseViewModel() {
     var notMatch = ""
 
     val callbackNextScreen = MutableLiveData<Unit>()
+    val callbackChangeSuccess = MutableLiveData<Unit>()
+    val callbackChangeFail = MutableLiveData<Unit>()
 
     fun checkMatchPassword(name: String?, nationNum: String?, phone: String?, otp: Int?) {
         resetState()
@@ -73,7 +74,7 @@ class ResetPwVM(private val repo: ResetPwRepo) : BaseViewModel() {
         }
     }
 
-    fun changePassword(name: String?, nationNum: String?, phone: String?, otp: Int?) {
+    private fun changePassword(name: String?, nationNum: String?, phone: String?, otp: Int?) {
         viewModelScope.launch {
             repo.changePassword(UserDetail().apply {
                 password = stateEdtPw.value.text
@@ -81,14 +82,17 @@ class ResetPwVM(private val repo: ResetPwRepo) : BaseViewModel() {
                 this.nationNumber = nationNum
                 this.phone = phone
                 this.otp = otp
-                userEditType = "RESET_PASSWORD"
             })
                 .onStart { }
                 .onCompletion { }
-                .catch { }
+                .catch {
+                    callbackChangeFail.value = Unit
+                }
                 .collect {
                     if (it.raw().isSuccessful && it.raw().code == 204) {
-
+                        callbackChangeSuccess.value = Unit
+                    } else {
+                        callbackChangeFail.value = Unit
                     }
                 }
         }
