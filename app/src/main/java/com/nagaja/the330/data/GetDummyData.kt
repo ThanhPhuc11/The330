@@ -8,7 +8,7 @@ object GetDummyData {
     fun getCoutryAdrressSignup(): MutableList<KeyValueModel> {
         return mutableListOf<KeyValueModel>().apply {
             add(KeyValueModel("KOREA", "대한민국"))
-            add(KeyValueModel("PHILIPPINE", "필리핀"))
+            add(KeyValueModel("PHILIPPINES", "필리핀"))
         }
     }
 

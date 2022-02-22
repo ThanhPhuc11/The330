@@ -1,7 +1,6 @@
 package com.nagaja.the330.view.signupinfo
 
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -15,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -26,6 +26,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.nagaja.the330.MainActivity
@@ -58,12 +60,42 @@ class SignupInfoFragment : BaseFragment() {
     @Preview(showBackground = true)
     @Composable
     override fun UIData() {
-        DisposableEffect(key1 = Unit, effect = {
-            Log.e("PHUC", "onStart")
-            onDispose {
-                Log.e("PHUC", "onStop")
+        val owner = LocalLifecycleOwner.current
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+                        countDownTimer = object : CountDownTimer(20000, 1000) {
+                            override fun onFinish() {
+                                viewModel.stateBtnSendPhone.value = true
+                                viewModel.stateEnableFocusPhone.value = true
+                                viewModel.cbActivePhoneButtonTimer.value = false
+                                viewModel.cbNumberCoundown.value =
+                                    getString(R.string.authen_request)
+                            }
+
+                            override fun onTick(millisUntilFinished: Long) {
+                                "${numberFormat2Digit((millisUntilFinished / 60000).toInt())}:${
+                                    numberFormat2Digit(
+                                        ((millisUntilFinished % (60000)) / 1000).toInt()
+                                    )
+                                }".also {
+                                    viewModel.cbNumberCoundown.value = it
+                                }
+                            }
+                        }
+                    }
+                    Lifecycle.Event.ON_STOP -> {
+
+                    }
+                    else -> {}
+                }
             }
-        })
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
         val textStateId = remember { mutableStateOf(TextFieldValue("")) }
 
         val checkedAll = remember { mutableStateOf(false) }
@@ -86,6 +118,8 @@ class SignupInfoFragment : BaseFragment() {
         ) {
             checkedAll.value =
                 check1.value && check2.value && check3.value && check4.value && check5.value && check6.value
+            viewModel.validateTermRequire.value =
+                check1.value && check2.value && check3.value && check4.value
         }
 
         LaunchedEffect(viewModel.stateEdtPhone.value.text.length) {
@@ -94,42 +128,46 @@ class SignupInfoFragment : BaseFragment() {
         LaunchedEffect(viewModel.stateEdtOTP.value.text.length) {
             viewModel.checkOTP()
         }
+        LaunchedEffect(viewModel.stateEdtPhone.value) {
+            viewModel.validatePhone.value = false
+        }
+        LaunchedEffect(
+            viewModel.stateNationNum.value,
+            viewModel.stateEdtAddress.value,
+            viewModel.stateEdtAddressDetail.value
+        ) {
+            if (viewModel.stateNationNum.value == GetDummyData.getCountryNumber()[0].id) {
+                viewModel.validateAddress.value =
+                    viewModel.stateEdtAddress.value.text.isNotEmpty() &&
+                            viewModel.stateEdtAddressDetail.value.text.isNotEmpty()
+            } else {
+                viewModel.validateAddress.value =
+                    viewModel.stateEdtAddressDetail.value.text.isNotEmpty()
+            }
+        }
 
         LaunchedEffect(
+            viewModel.stateEdtRealName.value.text,
             viewModel.validateId.value,
             viewModel.validatePass.value,
             viewModel.validatePhone.value,
             viewModel.validateAddress.value,
-            checkedAll.value
+            viewModel.validateTermRequire.value
         ) {
             btnSignupState.value =
-                viewModel.validateId.value &&
+                viewModel.stateEdtRealName.value.text.isNotEmpty() &&
+                        viewModel.validateId.value &&
                         viewModel.validatePass.value &&
                         viewModel.validatePhone.value &&
                         viewModel.validateAddress.value &&
-                        checkedAll.value
-        }
-        countDownTimer = object : android.os.CountDownTimer(20000, 1000) {
-            override fun onFinish() {
-                viewModel.stateBtnSendPhone.value = true
-                viewModel.stateEnableFocusPhone.value = true
-                viewModel.cbActivePhoneButtonTimer.value = false
-                viewModel.cbNumberCoundown.value = getString(R.string.authen_request)
-            }
-
-            override fun onTick(millisUntilFinished: Long) {
-                "${numberFormat2Digit((millisUntilFinished / 60000).toInt())}:${
-                    numberFormat2Digit(
-                        ((millisUntilFinished % (60000)) / 1000).toInt()
-                    )
-                }".also {
-                    viewModel.cbNumberCoundown.value = it
-                }
-            }
+                        viewModel.validateTermRequire.value
         }
         LaunchedEffect(viewModel.cbActivePhoneButtonTimer.value) {
             if (viewModel.cbActivePhoneButtonTimer.value) {
                 countDownTimer?.start()
+            } else {
+                countDownTimer?.cancel()
+                viewModel.cbNumberCoundown.value = getString(R.string.authen_request)
             }
         }
         LayoutTheme330 {
@@ -167,7 +205,7 @@ class SignupInfoFragment : BaseFragment() {
                         modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
                     )
 
-                    //TODO: Name
+                    //TODO: Name (real name)
                     Text(
                         stringResource(R.string.name),
                         style = text14_222,
@@ -175,7 +213,8 @@ class SignupInfoFragment : BaseFragment() {
                     )
                     TextFieldCustom(
                         hint = stringResource(R.string.input_your_name_please),
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = 4.dp),
+                        textStateId = viewModel.stateEdtRealName
                     )
 
                     //TODO: ID
@@ -218,7 +257,7 @@ class SignupInfoFragment : BaseFragment() {
                         color = ColorUtils.gray_222222,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
-                    val textStatePw = remember { viewModel.pw }
+                    val textStatePw = remember { viewModel.stateEdtPw }
                     HandleInputPassword(textStatePw)
                     AnimatedVisibility(
                         visible = (viewModel.stateErrorPw.value != null &&
@@ -292,7 +331,7 @@ class SignupInfoFragment : BaseFragment() {
                                     DropdownMenuItem(onClick = {
                                         selectedCountryNum.value = selectedOption
                                         expanded = false
-                                        viewModel._nationalNumber = selectedOption.id
+                                        viewModel.stateNationNum.value = selectedOption.id ?: ""
                                     }) {
                                         Text(selectedOption.name!!)
                                     }
@@ -451,18 +490,21 @@ class SignupInfoFragment : BaseFragment() {
                             .height(110.dp)
                     )
                 }
-                Button(
-                    onClick = {
-                        viewModel.authWithId(UserDetail().apply {
-                            name = textStateId.value.text
-                        })
-                    },
-                    modifier = Modifier
+
+                Box(
+                    Modifier
                         .padding(bottom = 20.dp)
                         .fillMaxWidth()
                         .height(52.dp)
-                        .background(if (btnSignupState.value) ColorUtils.blue_2177E4 else ColorUtils.gray_E1E1E1),
-                    enabled = btnSignupState.value
+                        .background(if (btnSignupState.value) ColorUtils.blue_2177E4 else ColorUtils.gray_E1E1E1)
+                        .noRippleClickable {
+                            if (btnSignupState.value) {
+                                viewModel.authWithId(UserDetail().apply {
+                                    name = textStateId.value.text
+                                })
+                            }
+                        },
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         stringResource(R.string.btn_register),
@@ -770,8 +812,6 @@ class SignupInfoFragment : BaseFragment() {
             fontWeight = FontWeight.Black,
             modifier = Modifier.padding(top = 20.dp)
         )
-        val edtAddress = remember { mutableStateOf(TextFieldValue("")) }
-        val edtFullAddress = remember { mutableStateOf(TextFieldValue("")) }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -811,6 +851,7 @@ class SignupInfoFragment : BaseFragment() {
                             onClick = {
                                 selectedOptionText = selectionOption
                                 expanded = false
+                                viewModel.nation = selectionOption.id
                             }
                         ) {
                             Text(text = selectionOption.name!!)
@@ -827,6 +868,7 @@ class SignupInfoFragment : BaseFragment() {
                 ) {
                     TextFieldCustom(
                         hint = stringResource(R.string.hint_input_address),
+                        textStateId = viewModel.stateEdtAddress
                     )
                 }
                 Image(
@@ -840,7 +882,7 @@ class SignupInfoFragment : BaseFragment() {
 
         }
         TextFieldSignUp(
-            textStateId = edtAddress,
+            textStateId = viewModel.stateEdtAddressDetail,
             hint = stringResource(R.string.hint_input_full_address),
             modifier = Modifier
                 .padding(top = 8.dp)

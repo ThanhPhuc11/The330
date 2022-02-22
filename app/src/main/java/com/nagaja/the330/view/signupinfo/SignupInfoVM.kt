@@ -19,10 +19,13 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     val stateErrorId: MutableState<String?> = mutableStateOf(null)
     val stateErrorPw: MutableState<String?> = mutableStateOf(null)
     val stateErrorRePw: MutableState<String?> = mutableStateOf(null)
-    val pw = mutableStateOf(TextFieldValue(""))
+
     var confirmPw: String? = null
-    var _nationalNumber: String? = "82"
+    var nation: String? = "KOREA"
     var _otp: Int? = null
+
+    val stateEdtRealName = mutableStateOf(TextFieldValue(""))
+    val stateEdtPw = mutableStateOf(TextFieldValue(""))
 
     // Phone
     val stateEdtPhone = mutableStateOf(TextFieldValue(""))
@@ -40,7 +43,13 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     val validateId = mutableStateOf(false)
     val validatePass = mutableStateOf(false)
     val validatePhone = mutableStateOf(false)
-    val validateAddress = mutableStateOf(true)
+    val validateAddress = mutableStateOf(false)
+    val validateTermRequire = mutableStateOf(false)
+
+    //address
+    val stateNationNum = mutableStateOf("82")
+    val stateEdtAddress = mutableStateOf(TextFieldValue(""))
+    val stateEdtAddressDetail = mutableStateOf(TextFieldValue(""))
 
 
     //    이미 가입된 아이디입니다.
@@ -70,7 +79,7 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
 
     fun checkInputRePw() {
         if (confirmPw == null) return
-        if (confirmPw != pw.value.text) {
+        if (confirmPw != stateEdtPw.value.text) {
             stateErrorRePw.value = "비밀번호가 일치하지 않습니다. 다시 한번 확인해주세요."
         } else {
             stateErrorRePw.value = ""
@@ -106,7 +115,7 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     private fun sendPhone() {
         val phone = stateEdtPhone.value.text
         viewModelScope.launch(Dispatchers.IO) {
-            repo.sendPhone(PhoneAvailableModel(phone = phone, nationNumber = _nationalNumber))
+            repo.sendPhone(PhoneAvailableModel(phone = phone, nationNumber = stateNationNum.value))
                 .onStart {
                     stateEnableFocusPhone.value = false
                     stateBtnSendPhone.value = false
@@ -131,7 +140,7 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
                 PhoneAvailableModel(
                     phone = phone,
                     otp = otp.toInt(),
-                    nationNumber = _nationalNumber
+                    nationNumber = stateNationNum.value
                 )
             )
                 .onStart {
@@ -156,11 +165,15 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     fun authWithId(userDetail: UserDetail) {
         viewModelScope.launch(Dispatchers.IO) {
             repo.authWithId(UserDetail().apply {
+                realName = stateEdtRealName.value.text
                 name = userDetail.name
-                password = pw.value.text
-                nation = "KOREA"
-                nationNumber = _nationalNumber
+                password = stateEdtPw.value.text
+                nationNumber = stateNationNum.value
                 phone = stateEdtPhone.value.text
+                nation = this@SignupInfoVM.nation
+                address = stateEdtAddress.value.text + stateEdtAddressDetail.value.text
+                latitude = 0f
+                longitude = 0f
                 agreePolicy = true
                 otp = _otp
             })
