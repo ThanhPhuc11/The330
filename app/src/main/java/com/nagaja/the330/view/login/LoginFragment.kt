@@ -44,6 +44,7 @@ import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.reset_templace.ResetTemplaceFragment
 import com.nagaja.the330.view.resetpassword.InputIDFragment
 import com.nagaja.the330.view.signupinfo.SignupInfoFragment
+import com.nagaja.the330.view.text14_222
 import com.nagaja.the330.view.text14_62
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
@@ -281,9 +282,8 @@ class LoginFragment : BaseFragment() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                "SNS 계정으로 회원가입/로그인",
-                fontSize = 14.sp,
-                color = ColorUtils.gray_222222
+                stringResource(R.string.signup_for_membership_sns_account),
+                style = text14_222
             )
             Row(Modifier.padding(top = 20.dp)) {
                 IconLogin(ColorUtils.yellow_FFCD00, R.drawable.ic_kakao) {
@@ -298,14 +298,14 @@ class LoginFragment : BaseFragment() {
                     Modifier
                         .padding(8.dp)
                         .size(48.dp)
-                        .clickable {
+                        .noRippleClickable {
 
                         }
                 )
                 IconLogin(ColorUtils.blue_3B5998, R.drawable.ic_facebook, null)
             }
             Text(
-                "비회원으로 이용하기",
+                stringResource(R.string.use_as_a_non_member),
                 color = ColorUtils.gray_626262,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(top = 32.dp, bottom = 37.dp)

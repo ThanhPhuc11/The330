@@ -74,23 +74,29 @@ class ViewController(
 //    }
 
     fun popFragment(underTopAnimation: Boolean? = true) {
-        fragmentManager?.popBackStack()
-        currentFragment = if (fragmentManager?.backStackEntryCount!! > 1) {
-            val fragmentTag =
-                fragmentManager?.getBackStackEntryAt(fragmentManager?.backStackEntryCount!! - 2)?.name
-            fragmentManager?.findFragmentByTag(fragmentTag)
-        } else {
-            null
-        }
-        try {
-            if (underTopAnimation == true) {
-                val animationUnderTopComeback =
-                    AnimationUtils.loadAnimation(currentFragment?.context, R.anim.pop_enter)
-                currentFragment?.view?.animation = animationUnderTopComeback
-            }
-        } catch (e: Exception) {
+        val backstackEntryCount = fragmentManager?.backStackEntryCount?:0
+        var underTopFragment: Fragment? = null
+        if (backstackEntryCount >= 2) {
+            underTopFragment = fragmentManager?.fragments?.get(backstackEntryCount - 2)
+            try {
+                if (underTopAnimation == true) {
+                    val animationUnderTopComeback =
+                        AnimationUtils.loadAnimation(currentFragment?.context, R.anim.pop_enter)
+                    underTopFragment?.view?.animation = animationUnderTopComeback
+                }
+            } catch (e: Exception) {
 
+            }
         }
+        fragmentManager?.popBackStack()
+        currentFragment = underTopFragment
+//        currentFragment = if (fragmentManager?.backStackEntryCount!! > 1) {
+//            val fragmentTag =
+//                fragmentManager?.getBackStackEntryAt(fragmentManager?.backStackEntryCount!! - 2)?.name
+//            fragmentManager?.findFragmentByTag(fragmentTag)
+//        } else {
+//            null
+//        }
     }
 
     fun popAllFragment() {

@@ -3,8 +3,10 @@ package com.nagaja.the330.view.signupinfo
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
+import com.nagaja.the330.model.AuthTokenModel
 import com.nagaja.the330.model.PhoneAvailableModel
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.CommonUtils
@@ -50,6 +52,8 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     val stateNationNum = mutableStateOf("82")
     val stateEdtAddress = mutableStateOf(TextFieldValue(""))
     val stateEdtAddressDetail = mutableStateOf(TextFieldValue(""))
+
+    val callbackRegisSuccess = MutableLiveData<AuthTokenModel>()
 
 
     //    이미 가입된 아이디입니다.
@@ -181,7 +185,7 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
                 .onCompletion { }
                 .catch { }
                 .collect {
-
+                    callbackRegisSuccess.value = it
                 }
         }
     }

@@ -4,7 +4,7 @@
     <string name="naver_client_id" translatable="false">VOvlcYMktVhQETBCWWUy</string>
     <string name="naver_client_secret" translatable="false">u_v__E6r0m</string>
 
-
+    <!--login, sign-up, general-->
     <string name="confirm">확인</string>
     <string name="find_password">비밀번호 찾기</string>
     <string name="signup">회원가입</string>
@@ -38,6 +38,13 @@
     <string name="term_line_4_location">[필수] 위치정보 동의 약관</string>
     <string name="term_line_5_event_benefit">[선택] 이벤트 및 혜택 알림 수신 동의</string>
     <string name="term_line_6_notification">[선택] 서비스 알림 수신 동의</string>
+    <string name="signup_for_membership_sns_account">SNS 계정으로 회원가입/로그인</string>
+    <string name="use_as_a_non_member">비회원으로 이용하기</string>
+
+    <!--welcome-->
+    <string name="member_register_completed">회원가입 완료</string>
+    <string name="welcome_to_nagaja_membership">NAGAJA 의 회원이 되신 걸 환영합니다</string>
+    <string name="go_to_main_page">메인 페이지로 이동</string>
 
     <!--Reset id password 2-3-1-->
     <string name="reset_id_and_password">아이디/비밀번호 재설정</string>

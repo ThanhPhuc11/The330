@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
@@ -175,6 +176,17 @@ abstract class BaseFragment : Fragment() {
         } else {
             return fileUri
         }
+    }
+
+    fun backSystemHandler(handle: () -> Unit) {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    handle.invoke()
+                }
+            }
+        )
     }
 
     val callbackPermission =

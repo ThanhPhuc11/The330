@@ -33,9 +33,11 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 
 class SignupInfoFragment : BaseFragment() {
@@ -55,6 +57,14 @@ class SignupInfoFragment : BaseFragment() {
             }
         viewModel = getViewModelProvider(viewModelStoreOwner)[SignupInfoVM::class.java]
         viewController = (activity as MainActivity).viewController
+
+        viewModel.callbackRegisSuccess.observe(viewLifecycleOwner) {
+            DataStorePref(requireContext()).setToken(it)
+            viewController?.pushFragment(
+                ScreenId.SCREEN_SIGNUP_SUCCESS,
+                SignupSuccessFragment.newInstance()
+            )
+        }
     }
 
     @Preview(showBackground = true)
