@@ -42,6 +42,7 @@ import com.nagaja.the330.view.general.GeneralViewModel
 import com.nagaja.the330.view.main.MainFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.reset_templace.ResetTemplaceFragment
+import com.nagaja.the330.view.resetpassword.InputIDFragment
 import com.nagaja.the330.view.signupinfo.SignupInfoFragment
 import com.nagaja.the330.view.text14_62
 import com.nhn.android.naverlogin.OAuthLogin
@@ -211,7 +212,7 @@ class LoginFragment : BaseFragment() {
             }
             Row(Modifier.padding(top = 20.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    "아이디 찾기",
+                    stringResource(R.string.find_id),
                     style = text14_62,
                     modifier = Modifier
                         .weight(1f)
@@ -227,7 +228,17 @@ class LoginFragment : BaseFragment() {
                         .width(1.dp)
                         .background(ColorUtils.gray_E1E1E1)
                 )
-                Text("비밀번호 찾기", style = text14_62, modifier = Modifier.weight(1f))
+                Text(
+                    stringResource(R.string.find_password),
+                    style = text14_62,
+                    modifier = Modifier
+                        .weight(1f)
+                        .noRippleClickable {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_RESET_INPUT_ID,
+                                InputIDFragment.newInstance()
+                            )
+                        })
                 Box(
                     modifier = Modifier
                         .height(8.dp)
@@ -235,7 +246,7 @@ class LoginFragment : BaseFragment() {
                         .background(ColorUtils.gray_E1E1E1)
                 )
                 Text(
-                    "회원가입",
+                    stringResource(R.string.signup),
                     style = text14_62,
                     modifier = Modifier
                         .weight(1f)

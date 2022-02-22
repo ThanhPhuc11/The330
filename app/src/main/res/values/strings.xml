@@ -3,7 +3,10 @@
     <string name="kakao_native_app_key" translatable="false">a1a9aaac7ab844f2d427fa32bff4fc14</string>
     <string name="naver_client_id" translatable="false">VOvlcYMktVhQETBCWWUy</string>
     <string name="naver_client_secret" translatable="false">u_v__E6r0m</string>
+
+
     <string name="confirm">확인</string>
+    <string name="find_password">비밀번호 찾기</string>
     <string name="signup">회원가입</string>
     <string name="enter_member_infomation">회원 정보 입력</string>
     <string name="name">이름</string>
@@ -41,13 +44,19 @@
     <string name="find_id">아이디 찾기</string>
     <string name="password_reset">비밀번호 재설정</string>
 
-    <!--Reset id password 2-3-2-->
+    <!--Find id 2-3-2-->
     <string name="your_id_is">회원님의 아이디는 %1$s입니다.</string>
 
-    <!--Reset id password 2-3-3-->
+    <!--Input id to reset 2-3-3-->
     <string name="your_id_not_exist_please_check_again">입력하신 아이디가 존재하지 않습니다. 다시 확인해 주세요.</string>
     <string name="next">다음</string>
     <string name="forgot_ID">아이디를 잊어버리셨나요?</string>
+
+    <!--Reset password 2-3-4-->
+    <string name="new_password">새 비밀번호</string>
+    <string name="password_do_not_match_please_check_again">비밀번호가 일치하지 않습니다. 다시 한번 확인해주세요.</string>
+    <string name="new_password_confirm">새 비밀번호 확인</string>
+    <string name="please_re_enter_your_password">비밀번호를 다시 입력해 주세요.</string>
 
     <!--2-1-3-->
     <string name="login">로그인</string>
@@ -146,11 +155,6 @@
     <string name="please_enter_product_description_jp">부가 설명을 입력해 주세요.(일본어)</string>
     <string name="register_request">등록 요청</string>
     <string name="apply_company_result_title">기업 회원 신청 결과</string>
-
-    <string name="new_password">새 비밀번호</string>
-    <string name="password_do_not_match_please_check_again">비밀번호가 일치하지 않습니다. 다시 한번 확인해주세요.</string>
-    <string name="new_password_confirm">새 비밀번호 확인</string>
-    <string name="please_re_enter_your_password">비밀번호를 다시 입력해 주세요.</string>
 
 
 </resources>
