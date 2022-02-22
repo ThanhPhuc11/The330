@@ -5,6 +5,7 @@ import com.nagaja.the330.model.UserDetail
 
 class ResetTemplaceShareVM : ViewModel() {
 //    var userDetail: UserDetail? = null
+    var name: String? = null
     var nationalNum: String? = null
     var phoneNum: String? = null
     var otp: Int? = null
