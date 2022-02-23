@@ -32,7 +32,6 @@ class ApplyResultFragment : BaseFragment() {
         fun newInstance() = ApplyResultFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[ApplyResultVM::class.java]
         viewController = (activity as MainActivity).viewController

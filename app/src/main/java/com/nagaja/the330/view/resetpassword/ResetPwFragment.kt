@@ -29,7 +29,6 @@ class ResetPwFragment : BaseFragment() {
         fun newInstance() = ResetPwFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[ResetPwVM::class.java]
         shareViewModel =

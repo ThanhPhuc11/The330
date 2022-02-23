@@ -26,7 +26,10 @@ class EditProfileVM(
     val stateEdtNation = mutableStateOf(userDetailState.value?.nation ?: "")
     val stateEdtAddress = mutableStateOf(userDetailState.value?.address ?: "")
 
+    var otp: Int? = null
+
     val cbNextScreen = MutableLiveData<Unit>()
+    val cbUpdateSuccess = MutableLiveData<Unit>()
 
 
     fun getUserDetails(token: String) {
@@ -59,6 +62,7 @@ class EditProfileVM(
         val body = UserDetail().apply {
             realName = stateEdtName.value
             address = stateEdtAddress.value
+            userEditType = "EDIT_MEMBER_INFO_WITHOUT_CHANGE_PHONE"
         }
         viewModelScope.launch {
             repo.editUser(token, body)
@@ -71,8 +75,10 @@ class EditProfileVM(
 //                    callbackUserFail.value = Unit
                 }
                 .collect {
-                    callbackSuccess.value = Unit
-//                    userDetailState.value = it
+                    if (it.raw().isSuccessful && it.raw().code == 204) {
+                        callbackSuccess.value = Unit
+                        cbUpdateSuccess.value = Unit
+                    }
                 }
         }
     }
@@ -83,6 +89,8 @@ class EditProfileVM(
             nationNumber = stateEdtNationNum.value
             phone = stateEdtPhone.value
             address = stateEdtAddress.value
+            otp = this@EditProfileVM.otp
+            userEditType = "EDIT_MEMBER_INFO"
         }
         viewModelScope.launch {
             repo.editUser(token, body)
@@ -95,8 +103,10 @@ class EditProfileVM(
 //                    callbackUserFail.value = Unit
                 }
                 .collect {
-                    callbackSuccess.value = Unit
-//                    userDetailState.value = it
+                    if (it.raw().isSuccessful && it.raw().code == 204) {
+                        callbackSuccess.value = Unit
+                        cbUpdateSuccess.value = Unit
+                    }
                 }
         }
     }

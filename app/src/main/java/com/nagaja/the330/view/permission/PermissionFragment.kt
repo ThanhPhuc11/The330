@@ -34,7 +34,6 @@ class PermissionFragment : BaseFragment() {
         fun newInstance() = PermissionFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
         viewController = (activity as MainActivity).viewController
     }

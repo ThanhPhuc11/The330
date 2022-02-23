@@ -40,7 +40,6 @@ class FindIdFragment : BaseFragment() {
         fun newInstance() = FindIdFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this@FindIdFragment)[FindIdVM::class.java]
         shareViewModel =

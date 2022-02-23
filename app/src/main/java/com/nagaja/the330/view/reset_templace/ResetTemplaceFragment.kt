@@ -36,7 +36,6 @@ class ResetTemplaceFragment : BaseFragment() {
         fun newInstance() = ResetTemplaceFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
         shareViewModel =
             ViewModelProvider(

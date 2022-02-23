@@ -50,7 +50,6 @@ class FavCompanyFragment : BaseFragment() {
         fun newInstance() = FavCompanyFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[FavCompanyVM::class.java]
         viewController = (activity as MainActivity).viewController

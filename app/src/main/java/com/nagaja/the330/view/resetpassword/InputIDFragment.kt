@@ -33,7 +33,6 @@ class InputIDFragment : BaseFragment() {
         fun newInstance() = InputIDFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this@InputIDFragment)[ResetPwVM::class.java]
         shareViewModel =

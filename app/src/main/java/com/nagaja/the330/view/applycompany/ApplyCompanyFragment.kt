@@ -70,7 +70,6 @@ class ApplyCompanyFragment : BaseFragment() {
         fun newInstance() = ApplyCompanyFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[ApplyCompanyVM::class.java]
         shareViewModel = ViewModelProvider(this)[ShareApplyCompanyVM::class.java]

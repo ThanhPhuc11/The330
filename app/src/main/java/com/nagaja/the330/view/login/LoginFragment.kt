@@ -64,14 +64,13 @@ class LoginFragment : BaseFragment() {
         fun newInstance() = LoginFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
-        val viewModelStoreOwner: ViewModelStoreOwner =
-            checkNotNull(LocalViewModelStoreOwner.current) {
-                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-            }
-        viewModel = getViewModelProvider(viewModelStoreOwner)[LoginViewModel::class.java]
-        generalViewModel = getViewModelProvider(viewModelStoreOwner)[GeneralViewModel::class.java]
+//        val viewModelStoreOwner: ViewModelStoreOwner =
+//            checkNotNull(LocalViewModelStoreOwner.current) {
+//                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+//            }
+        viewModel = getViewModelProvider(this)[LoginViewModel::class.java]
+        generalViewModel = getViewModelProvider(this)[GeneralViewModel::class.java]
 
         viewController = (activity as MainActivity).viewController
 

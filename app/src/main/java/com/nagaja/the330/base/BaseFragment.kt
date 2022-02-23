@@ -63,15 +63,14 @@ abstract class BaseFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        SetupViewModel()
         return ComposeView(requireContext()).apply {
             setContent {
-                SetupViewModel()
                 UIData()
             }
         }
     }
 
-    @Composable
     abstract fun SetupViewModel()
 
     @Composable

@@ -34,7 +34,6 @@ class SignupSuccessFragment : BaseFragment() {
         fun newInstance() = SignupSuccessFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
         generalViewModel =
             getViewModelProvider(this@SignupSuccessFragment)[GeneralViewModel::class.java]

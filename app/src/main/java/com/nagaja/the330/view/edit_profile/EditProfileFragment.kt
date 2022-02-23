@@ -58,7 +58,6 @@ class EditProfileFragment : BaseFragment() {
         fun newInstance() = EditProfileFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[EditProfileVM::class.java]
         viewController = (activity as MainActivity).viewController
@@ -68,10 +67,14 @@ class EditProfileFragment : BaseFragment() {
                 ScreenId.SCREEN_VERIFY_OTP,
                 VerifyOTPFragment.newInstance().apply {
                     callbackResult = { isSuccess, nationNum, phoneNum, otp ->
+                        viewModel.otp = otp
                         accessToken?.let { it1 -> viewModel.edtUserWithPhone(it1) }
                     }
                 }
             )
+        }
+        viewModel.cbUpdateSuccess.observe(viewLifecycleOwner) {
+            viewController?.popFragment()
         }
     }
 
@@ -178,6 +181,7 @@ class EditProfileFragment : BaseFragment() {
                         viewModel.userDetailState.value?.nationNumber?.let { nationNum ->
                             selectedCountryNum.value =
                                 options.firstOrNull { nationNum == it.id } ?: options[0]
+                            viewModel.stateEdtNationNum.value = selectedCountryNum.value.id!!
                         }
                     }
                     Box(

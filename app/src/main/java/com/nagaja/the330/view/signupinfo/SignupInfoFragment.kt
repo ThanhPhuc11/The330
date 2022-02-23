@@ -65,13 +65,12 @@ class SignupInfoFragment : BaseFragment() {
         }
     }
 
-    @Composable
     override fun SetupViewModel() {
-        val viewModelStoreOwner: ViewModelStoreOwner =
-            checkNotNull(LocalViewModelStoreOwner.current) {
-                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-            }
-        viewModel = getViewModelProvider(viewModelStoreOwner)[SignupInfoVM::class.java]
+//        val viewModelStoreOwner: ViewModelStoreOwner =
+//            checkNotNull(LocalViewModelStoreOwner.current) {
+//                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+//            }
+        viewModel = getViewModelProvider(this)[SignupInfoVM::class.java]
         viewController = (activity as MainActivity).viewController
 
         viewModel.callbackRegisSuccess.observe(viewLifecycleOwner) {

@@ -39,7 +39,6 @@ class VerifyOTPFragment : BaseFragment() {
         fun newInstance() = VerifyOTPFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[VerifyOTPVM::class.java]
 //        shareViewModel =

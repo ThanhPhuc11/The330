@@ -34,7 +34,6 @@ class MainFragment : BaseFragment() {
         fun newInstance() = MainFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
         viewController = (activity as MainActivity).viewController
     }

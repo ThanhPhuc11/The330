@@ -28,7 +28,6 @@ class TermSNSFragment : BaseFragment() {
         fun newInstance() = TermSNSFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
 
     }

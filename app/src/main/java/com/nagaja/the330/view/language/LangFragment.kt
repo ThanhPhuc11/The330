@@ -30,7 +30,6 @@ class LangFragment : BaseFragment() {
         fun newInstance() = LangFragment()
     }
 
-    @Composable
     override fun SetupViewModel() {
 //        TODO("Not yet implemented")
     }
