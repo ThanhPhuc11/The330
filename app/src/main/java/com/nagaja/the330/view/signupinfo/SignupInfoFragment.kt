@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
+import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,7 +45,7 @@ import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.model.UserDetail
+import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.CommonUtils
 import com.nagaja.the330.utils.ScreenId
@@ -53,10 +54,15 @@ import com.nagaja.the330.view.*
 class SignupInfoFragment : BaseFragment() {
     private lateinit var viewModel: SignupInfoVM
     private var countDownTimer: CountDownTimer? = null
+    private var isSNS = false
 
     companion object {
         @JvmStatic
-        fun newInstance() = SignupInfoFragment()
+        fun newInstance(isSNS: Boolean = false) = SignupInfoFragment().apply {
+            arguments = Bundle().apply {
+                putBoolean(AppConstants.EXTRA_KEY1, isSNS)
+            }
+        }
     }
 
     @Composable
@@ -75,6 +81,15 @@ class SignupInfoFragment : BaseFragment() {
                 SignupSuccessFragment.newInstance()
             )
         }
+        viewModel.callbackUpdateSNSInfoSuccess.observe(viewLifecycleOwner) {
+            viewController?.pushFragment(
+                ScreenId.SCREEN_SIGNUP_SUCCESS,
+                SignupSuccessFragment.newInstance()
+            )
+        }
+        viewModel.showMessCallback.observe(viewLifecycleOwner) {
+            showMess(it)
+        }
     }
 
     @Preview(showBackground = true)
@@ -85,6 +100,15 @@ class SignupInfoFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        viewModel.authen_request = getString(R.string.authen_request)
+                        viewModel.please_enter_id = getString(R.string.please_enter_id)
+                        viewModel.guide_input_id = getString(R.string.guide_input_id)
+                        viewModel.please_enter_password = getString(R.string.please_enter_password)
+                        viewModel.password_error_format = getString(R.string.password_error_format)
+                        viewModel.password_do_not_match_please_check_again =
+                            getString(R.string.password_do_not_match_please_check_again)
+
+                        isSNS = requireArguments().getBoolean(AppConstants.EXTRA_KEY1)
                         countDownTimer = object : CountDownTimer(20000, 1000) {
                             override fun onFinish() {
                                 viewModel.stateBtnSendPhone.value = true
@@ -104,6 +128,9 @@ class SignupInfoFragment : BaseFragment() {
                                 }
                             }
                         }
+
+                        viewModel.validatePass.value =
+                            requireArguments().getBoolean(AppConstants.EXTRA_KEY1)
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             if (!CommonUtils.hasPermissions(
@@ -128,7 +155,6 @@ class SignupInfoFragment : BaseFragment() {
                 owner.lifecycle.removeObserver(observer)
             }
         }
-        val textStateId = remember { mutableStateOf(TextFieldValue("")) }
 
         val checkedAll = remember { mutableStateOf(false) }
         val check1 = remember { mutableStateOf(false) }
@@ -263,7 +289,7 @@ class SignupInfoFragment : BaseFragment() {
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
 
-                    HandleInputId(textStateId)
+                    HandleInputId(viewModel.stateEdtNameID)
                     AnimatedVisibility(
                         visible = (viewModel.stateErrorId.value != null &&
                                 viewModel.stateErrorId.value!!.isNotEmpty())
@@ -276,52 +302,54 @@ class SignupInfoFragment : BaseFragment() {
                         )
                     }
 
-                    //TODO: Password
-                    Text(
-                        stringResource(R.string.password),
-                        fontWeight = FontWeight.Black,
-                        style = text14_222,
-                        modifier = Modifier.padding(top = 20.dp)
-                    )
-                    Text(
-                        stringResource(R.string.guide_input_password),
-                        fontSize = 10.sp,
-                        color = ColorUtils.gray_222222,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                    val textStatePw = remember { viewModel.stateEdtPw }
-                    HandleInputPassword(textStatePw)
-                    AnimatedVisibility(
-                        visible = (viewModel.stateErrorPw.value != null &&
-                                viewModel.stateErrorPw.value!!.isNotEmpty())
-                    ) {
+                    AnimatedVisibility(!isSNS) {
+                        //TODO: Password
                         Text(
-                            text = viewModel.stateErrorPw.value ?: "",
-                            modifier = Modifier.padding(top = 4.dp),
-                            fontSize = 12.sp,
-                            color = ColorUtils.pink_FF1E54
+                            stringResource(R.string.password),
+                            fontWeight = FontWeight.Black,
+                            style = text14_222,
+                            modifier = Modifier.padding(top = 20.dp)
                         )
-                    }
+                        Text(
+                            stringResource(R.string.guide_input_password),
+                            fontSize = 10.sp,
+                            color = ColorUtils.gray_222222,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+                        val textStatePw = remember { viewModel.stateEdtPw }
+                        HandleInputPassword(textStatePw)
+                        AnimatedVisibility(
+                            visible = (viewModel.stateErrorPw.value != null &&
+                                    viewModel.stateErrorPw.value!!.isNotEmpty())
+                        ) {
+                            Text(
+                                text = viewModel.stateErrorPw.value ?: "",
+                                modifier = Modifier.padding(top = 4.dp),
+                                fontSize = 12.sp,
+                                color = ColorUtils.pink_FF1E54
+                            )
+                        }
 
-                    //TODO: Re-password
-                    Text(
-                        stringResource(R.string.confirm_password),
-                        style = text14_222,
-                        fontWeight = FontWeight.Black,
-                        modifier = Modifier.padding(top = 20.dp)
-                    )
-                    val textStateRePw = remember { mutableStateOf(TextFieldValue("")) }
-                    HandleInputConfirmPassword(textStateRePw)
-                    AnimatedVisibility(
-                        visible = (viewModel.stateErrorRePw.value != null &&
-                                viewModel.stateErrorRePw.value!!.isNotEmpty())
-                    ) {
+                        //TODO: Re-password
                         Text(
-                            text = viewModel.stateErrorRePw.value ?: "",
-                            modifier = Modifier.padding(top = 4.dp),
-                            fontSize = 12.sp,
-                            color = ColorUtils.pink_FF1E54
+                            stringResource(R.string.confirm_password),
+                            style = text14_222,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.padding(top = 20.dp)
                         )
+                        val textStateRePw = remember { mutableStateOf(TextFieldValue("")) }
+                        HandleInputConfirmPassword(textStateRePw)
+                        AnimatedVisibility(
+                            visible = (viewModel.stateErrorRePw.value != null &&
+                                    viewModel.stateErrorRePw.value!!.isNotEmpty())
+                        ) {
+                            Text(
+                                text = viewModel.stateErrorRePw.value ?: "",
+                                modifier = Modifier.padding(top = 4.dp),
+                                fontSize = 12.sp,
+                                color = ColorUtils.pink_FF1E54
+                            )
+                        }
                     }
 
                     //TODO: Phone
@@ -531,9 +559,9 @@ class SignupInfoFragment : BaseFragment() {
                         .background(if (btnSignupState.value) ColorUtils.blue_2177E4 else ColorUtils.gray_E1E1E1)
                         .noRippleClickable {
                             if (btnSignupState.value) {
-                                viewModel.authWithId(UserDetail().apply {
-                                    name = textStateId.value.text
-                                })
+                                if (!isSNS)
+                                    viewModel.authWithId()
+                                else accessToken?.let { viewModel.updateInfoSNS(it) }
                             }
                         },
                     contentAlignment = Alignment.Center

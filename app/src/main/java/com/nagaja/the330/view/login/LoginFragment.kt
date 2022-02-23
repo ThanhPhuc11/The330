@@ -77,18 +77,26 @@ class LoginFragment : BaseFragment() {
 
         viewModel.callbackLoginKaKaoSuccess.observe(viewLifecycleOwner) {
             DataStorePref(requireContext()).setToken(it)
-            it.accessToken?.let { generalViewModel.getUserDetails(accessToken!!) }
+            it.accessToken?.let { token -> generalViewModel.getUserDetails("Bearer $token") }
         }
         viewModel.callbackLoginIdSuccess.observe(viewLifecycleOwner) {
             DataStorePref(requireContext()).setToken(it)
-            it.accessToken?.let { generalViewModel.getUserDetails(accessToken!!) }
+            it.accessToken?.let { token -> generalViewModel.getUserDetails("Bearer $token") }
         }
         generalViewModel.callbackUserDetails.observe(viewLifecycleOwner) {
-            DataStorePref(requireContext()).setUserDetail(it)
-            viewController?.pushFragment(
-                ScreenId.SCREEN_MAIN,
-                MainFragment.newInstance()
-            )
+            if (it.agreePolicy == true) {
+                DataStorePref(requireContext()).setUserDetail(it)
+                viewController?.pushFragment(
+                    ScreenId.SCREEN_MAIN,
+                    MainFragment.newInstance()
+                )
+            } else {
+                viewController?.pushFragment(
+                    ScreenId.SCREEN_SIGNUP_MAIL,
+                    SignupInfoFragment.newInstance(viewModel.snsType.isNotEmpty())
+                )
+            }
+            viewModel.snsType = ""
         }
     }
 

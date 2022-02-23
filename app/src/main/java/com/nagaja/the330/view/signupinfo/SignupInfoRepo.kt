@@ -21,4 +21,8 @@ class SignupInfoRepo(private val apiService: ApiService) {
     suspend fun authWithId(user: UserDetail) = flow {
         emit(apiService.authWithId(user))
     }
+
+    suspend fun editUser(token: String, body: UserDetail) = flow {
+        emit(apiService.editUser(token, body))
+    }
 }

@@ -105,9 +105,9 @@ class MainActivity : AppCompatActivity() {
                             ScreenId.SCREEN_LOGIN,
                             LoginFragment.newInstance()
                         )
+                        this@launch.coroutineContext.job.cancel()
                     } else {
                         val accessToken = formatToken(tokenModel!!.accessToken)
-                        Log.e("PHUCDZ", accessToken)
                         generalViewModel.getUserDetails(accessToken)
                         this@launch.coroutineContext.job.cancel()
                     }

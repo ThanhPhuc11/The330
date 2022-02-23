@@ -10,7 +10,6 @@ import com.nagaja.the330.model.AuthTokenModel
 import com.nagaja.the330.model.PhoneAvailableModel
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.CommonUtils
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -18,6 +17,12 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
+    var authen_request = ""
+    var please_enter_id = ""
+    var guide_input_id = ""
+    var please_enter_password = ""
+    var password_error_format = ""
+    var password_do_not_match_please_check_again = ""
     val stateErrorId: MutableState<String?> = mutableStateOf(null)
     val stateErrorPw: MutableState<String?> = mutableStateOf(null)
     val stateErrorRePw: MutableState<String?> = mutableStateOf(null)
@@ -29,13 +34,14 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     var long: Float = 0f
 
     val stateEdtRealName = mutableStateOf(TextFieldValue(""))
+    val stateEdtNameID = mutableStateOf(TextFieldValue(""))
     val stateEdtPw = mutableStateOf(TextFieldValue(""))
 
     // Phone
     val stateEdtPhone = mutableStateOf(TextFieldValue(""))
     val stateEnableFocusPhone = mutableStateOf(true)
     val stateBtnSendPhone = mutableStateOf(false)
-    val cbNumberCoundown = mutableStateOf("인증요청")
+    val cbNumberCoundown = mutableStateOf(authen_request)
 
     // OTP
     val stateEdtOTP = mutableStateOf(TextFieldValue(""))
@@ -56,15 +62,17 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     val stateEdtAddressDetail = mutableStateOf(TextFieldValue(""))
 
     val callbackRegisSuccess = MutableLiveData<AuthTokenModel>()
+    val callbackUpdateSNSInfoSuccess = MutableLiveData<Unit>()
 
 
     //    이미 가입된 아이디입니다.
     fun checkInputId(it: String?) {
         if (it.isNullOrBlank()) {
-            stateErrorId.value = "아이디를 입력해 주세요."
+            stateErrorId.value = please_enter_id
             validateId.value = false
         } else if (it.length < 5) {
-            stateErrorId.value = "아이디는 5~20자의 영문 소문자, 숫자 조합으로 입력해 주세요."
+//            stateErrorId.value = "아이디는 5~20자의 영문 소문자, 숫자 조합으로 입력해 주세요."
+            stateErrorId.value = guide_input_id
             validateId.value = false
         } else {
             stateErrorId.value = ""
@@ -74,9 +82,9 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
 
     fun checkInputPw(it: String) {
         if (it.isBlank()) {
-            stateErrorPw.value = "비밀번호를 입력해 주세요."
+            stateErrorPw.value = please_enter_password
         } else if (it.length < 8 || !CommonUtils.isPasswordValid(it)) {
-            stateErrorPw.value = "비밀번호는 8~15자의 영어 대소문자, 숫자, 특수문자 조합으로 입력해주세요."
+            stateErrorPw.value = password_error_format
         } else {
             stateErrorPw.value = ""
         }
@@ -86,7 +94,7 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     fun checkInputRePw() {
         if (confirmPw == null) return
         if (confirmPw != stateEdtPw.value.text) {
-            stateErrorRePw.value = "비밀번호가 일치하지 않습니다. 다시 한번 확인해주세요."
+            stateErrorRePw.value = password_do_not_match_please_check_again
         } else {
             stateErrorRePw.value = ""
         }
@@ -107,20 +115,28 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
 
     fun checkExistByPhone() {
         val phone = stateEdtPhone.value.text
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.checkExistPhone(PhoneAvailableModel(phone = phone))
+        val nationNum = stateNationNum.value
+        viewModelScope.launch {
+            repo.checkExistPhone(PhoneAvailableModel(phone = phone, nationNumber = nationNum))
                 .onStart { }
                 .onCompletion { }
                 .catch { }
                 .collect {
-                    sendPhone()
+                    if (it.available) {
+                        sendPhone()
+                    } else {
+                        stateEnableFocusPhone.value = true
+                        cbActivePhoneButtonTimer.value = false
+                        cbNumberCoundown.value = authen_request
+                        showMessCallback.value = "phone number already in use!"
+                    }
                 }
         }
     }
 
     private fun sendPhone() {
         val phone = stateEdtPhone.value.text
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             repo.sendPhone(PhoneAvailableModel(phone = phone, nationNumber = stateNationNum.value))
                 .onStart {
                     stateEnableFocusPhone.value = false
@@ -141,7 +157,7 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     fun sendOTP() {
         val otp = stateEdtOTP.value.text
         val phone = stateEdtPhone.value.text
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             repo.sendOTP(
                 PhoneAvailableModel(
                     phone = phone,
@@ -168,11 +184,11 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
         }
     }
 
-    fun authWithId(userDetail: UserDetail) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun authWithId() {
+        viewModelScope.launch {
             repo.authWithId(UserDetail().apply {
                 realName = stateEdtRealName.value.text
-                name = userDetail.name
+                name = stateEdtNameID.value.text
                 password = stateEdtPw.value.text
                 nationNumber = stateNationNum.value
                 phone = stateEdtPhone.value.text
@@ -188,6 +204,32 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
                 .catch { }
                 .collect {
                     callbackRegisSuccess.value = it
+                }
+        }
+    }
+
+    fun updateInfoSNS(token: String) {
+        viewModelScope.launch {
+            repo.editUser(token, UserDetail().apply {
+                realName = stateEdtRealName.value.text
+                name = stateEdtNameID.value.text
+                nationNumber = stateNationNum.value
+                phone = stateEdtPhone.value.text
+                nation = this@SignupInfoVM.nation
+                address = stateEdtAddress.value.text + stateEdtAddressDetail.value.text
+                latitude = lat
+                longitude = long
+                agreePolicy = true
+                otp = _otp
+                userEditType = "SIGN_UP_WITH_SNS"
+            })
+                .onStart { }
+                .onCompletion { }
+                .catch { }
+                .collect {
+                    if (it.raw().isSuccessful && it.raw().code == 204) {
+                        callbackUpdateSNSInfoSuccess.value = Unit
+                    }
                 }
         }
     }

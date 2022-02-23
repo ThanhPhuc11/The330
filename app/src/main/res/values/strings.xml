@@ -17,6 +17,7 @@
     <string name="please_enter_id">아이디를 입력해 주세요.</string>
     <string name="password">비밀번호</string>
     <string name="guide_input_password">8~15자의 영어 대소문자, 숫자, 특수문자 조합으로 입력해 주세요.</string>
+    <string name="password_error_format">비밀번호는 8~15자의 영어 대소문자, 숫자, 특수문자 조합으로 입력해주세요.</string>
     <string name="hint_input_password">아이디를 입력하세요.</string>
     <string name="confirm_password">비밀번호 확인</string>
     <string name="hint_input_confirm_password">비밀번호를 다시 입력하세요.</string>
