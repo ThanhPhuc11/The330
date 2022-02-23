@@ -12,7 +12,6 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -40,6 +39,10 @@ object CommonUtils {
     val takePicturePermission = arrayOf(
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.CAMERA
+    )
+    val locationPermission = arrayOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
     )
     const val REQUEST_PERMISSION_KEY = 1
 

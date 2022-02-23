@@ -1,6 +1,14 @@
 package com.nagaja.the330.view.signupinfo
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
+import android.os.Build
 import android.os.CountDownTimer
+import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -26,6 +34,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelStoreOwner
@@ -37,6 +46,7 @@ import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.CommonUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 
@@ -92,6 +102,18 @@ class SignupInfoFragment : BaseFragment() {
                                 }".also {
                                     viewModel.cbNumberCoundown.value = it
                                 }
+                            }
+                        }
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (!CommonUtils.hasPermissions(
+                                    context,
+                                    CommonUtils.locationPermission
+                                )
+                            ) {
+                                callbackPermissionLocation.launch(CommonUtils.locationPermission)
+                            } else {
+                                getLocation()
                             }
                         }
                     }
@@ -897,6 +919,52 @@ class SignupInfoFragment : BaseFragment() {
             modifier = Modifier
                 .padding(top = 8.dp)
         )
+    }
+
+    val callbackPermissionLocation =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+//            permissions.entries.forEach {
+//                Log.e("DEBUG", "${it.key} = ${it.value}")
+//            }
+            if (permissions.entries.any { it.value }) {
+                getLocation()
+            }
+        }
+
+    private fun getLocation() {
+        val location = getLastKnownLocation()
+        val longitude = location?.longitude ?: 0f
+        val latitude = location?.latitude ?: 0f
+        viewModel.lat = latitude.toFloat()
+        viewModel.long = longitude.toFloat()
+        Log.e("PHUC", "$longitude : $latitude")
+    }
+
+    private fun getLastKnownLocation(): Location? {
+        val mLocationManager: LocationManager = context?.getSystemService(
+            AppCompatActivity.LOCATION_SERVICE
+        ) as LocationManager
+        val providers: List<String> = mLocationManager.getProviders(true)
+        var bestLocation: Location? = null
+        for (provider in providers) {
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                break
+            }
+            val l: Location = mLocationManager.getLastKnownLocation(provider)
+                ?: continue
+            if (bestLocation == null || l.accuracy < bestLocation.accuracy) {
+                // Found best last known location: %s", l);
+                bestLocation = l
+            }
+        }
+        return bestLocation
     }
 
     fun numberFormat2Digit(number: Int): String {
