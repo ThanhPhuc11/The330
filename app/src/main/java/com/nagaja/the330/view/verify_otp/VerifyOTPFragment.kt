@@ -31,7 +31,7 @@ import com.nagaja.the330.view.reset_templace.ResetTemplaceShareVM
 
 class VerifyOTPFragment : BaseFragment() {
     private lateinit var viewModel: VerifyOTPVM
-    private lateinit var shareViewModel: ResetTemplaceShareVM
+//    private lateinit var shareViewModel: ResetTemplaceShareVM
     private var countDownTimer: CountDownTimer? = null
     var callbackResult: ((Boolean, String?, String?, Int?) -> Unit)? = null
 
@@ -42,12 +42,12 @@ class VerifyOTPFragment : BaseFragment() {
     @Composable
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[VerifyOTPVM::class.java]
-        shareViewModel =
-            ViewModelProvider(
-                activity?.supportFragmentManager?.findFragmentByTag(
-                    ScreenId.SCREEN_FIND_RESET_TEMPLACE
-                )!!
-            )[ResetTemplaceShareVM::class.java]
+//        shareViewModel =
+//            ViewModelProvider(
+//                activity?.supportFragmentManager?.findFragmentByTag(
+//                    ScreenId.SCREEN_FIND_RESET_TEMPLACE
+//                )!!
+//            )[ResetTemplaceShareVM::class.java]
 
         viewController = (activity as MainActivity).viewController
 
@@ -114,7 +114,7 @@ class VerifyOTPFragment : BaseFragment() {
             }
         }
         LayoutTheme330 {
-            Header("title") {
+            Header("") {
                 viewController?.popFragment()
             }
             Column(

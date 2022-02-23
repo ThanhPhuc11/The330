@@ -21,7 +21,7 @@ class EditProfileVM(
     val userDetailState: MutableState<UserDetail?> = mutableStateOf(null)
 
     val stateEdtName = mutableStateOf(userDetailState.value?.realName ?: "")
-    val stateEdtNationPhone = mutableStateOf(userDetailState.value?.nationNumber ?: "")
+    val stateEdtNationNum = mutableStateOf(userDetailState.value?.nationNumber ?: "")
     val stateEdtPhone = mutableStateOf(userDetailState.value?.phone ?: "")
     val stateEdtNation = mutableStateOf(userDetailState.value?.nation ?: "")
     val stateEdtAddress = mutableStateOf(userDetailState.value?.address ?: "")
@@ -58,6 +58,30 @@ class EditProfileVM(
     fun editUser(token: String) {
         val body = UserDetail().apply {
             realName = stateEdtName.value
+            address = stateEdtAddress.value
+        }
+        viewModelScope.launch {
+            repo.editUser(token, body)
+                .onStart {
+                    callbackStart.value = Unit
+                }
+                .onCompletion { }
+                .catch {
+//                    handleError(it)
+//                    callbackUserFail.value = Unit
+                }
+                .collect {
+                    callbackSuccess.value = Unit
+//                    userDetailState.value = it
+                }
+        }
+    }
+
+    fun edtUserWithPhone(token: String) {
+        val body = UserDetail().apply {
+            realName = stateEdtName.value
+            nationNumber = stateEdtNationNum.value
+            phone = stateEdtPhone.value
             address = stateEdtAddress.value
         }
         viewModelScope.launch {

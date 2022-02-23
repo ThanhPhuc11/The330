@@ -38,10 +38,12 @@ import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.data.dataStore
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
+import com.nagaja.the330.view.verify_otp.VerifyOTPFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -49,7 +51,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class EditProfileFragment : BaseFragment() {
-    private lateinit var vm: EditProfileVM
+    private lateinit var viewModel: EditProfileVM
     private var userDetail: UserDetail? = null
 
     companion object {
@@ -58,8 +60,19 @@ class EditProfileFragment : BaseFragment() {
 
     @Composable
     override fun SetupViewModel() {
-        vm = getViewModelProvider(this)[EditProfileVM::class.java]
+        viewModel = getViewModelProvider(this)[EditProfileVM::class.java]
         viewController = (activity as MainActivity).viewController
+
+        viewModel.cbNextScreen.observe(viewLifecycleOwner) {
+            viewController?.pushFragment(
+                ScreenId.SCREEN_VERIFY_OTP,
+                VerifyOTPFragment.newInstance().apply {
+                    callbackResult = { isSuccess, nationNum, phoneNum, otp ->
+                        accessToken?.let { it1 -> viewModel.edtUserWithPhone(it1) }
+                    }
+                }
+            )
+        }
     }
 
     @Preview
@@ -68,11 +81,12 @@ class EditProfileFragment : BaseFragment() {
         val context = LocalContext.current
         val owner = LocalLifecycleOwner.current
 
-        LaunchedEffect(vm.userDetailState.value) {
-            vm.stateEdtName.value = vm.userDetailState.value?.realName ?: ""
-            vm.stateEdtPhone.value = vm.userDetailState.value?.phone ?: ""
-            vm.stateEdtAddress.value = vm.userDetailState.value?.address ?: ""
-            Log.e("User Local", vm.userDetailState.value?.id.toString())
+        LaunchedEffect(viewModel.userDetailState.value) {
+            viewModel.stateEdtName.value = viewModel.userDetailState.value?.realName ?: ""
+            viewModel.stateEdtNationNum.value = viewModel.userDetailState.value?.nationNumber ?: ""
+            viewModel.stateEdtPhone.value = viewModel.userDetailState.value?.phone ?: ""
+            viewModel.stateEdtAddress.value = viewModel.userDetailState.value?.address ?: ""
+            Log.e("User Local", viewModel.userDetailState.value?.id.toString())
         }
 
 
@@ -83,9 +97,6 @@ class EditProfileFragment : BaseFragment() {
                         Log.e("EDIT", "onStart")
 
                         getUserDetailFromDataStore(context)
-                        vm.cbNextScreen.observe(viewLifecycleOwner) {
-                            viewController?.popFragment()
-                        }
                     }
                     Lifecycle.Event.ON_STOP -> {
                         Log.e("EDIT", "onStop")
@@ -137,7 +148,7 @@ class EditProfileFragment : BaseFragment() {
                         .padding(horizontal = 8.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    Text(vm.userDetailState.value?.name ?: "", style = text14_222)
+                    Text(viewModel.userDetailState.value?.name ?: "", style = text14_222)
                 }
                 //TODO: Name
                 Text(
@@ -146,7 +157,7 @@ class EditProfileFragment : BaseFragment() {
                     modifier = Modifier.padding(top = 20.dp)
                 )
                 TextFieldCustom(
-                    textStateId = vm.stateEdtName,
+                    textStateId = viewModel.stateEdtName,
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 //TODO: PhoneNumber
@@ -160,6 +171,15 @@ class EditProfileFragment : BaseFragment() {
                         .fillMaxWidth()
                         .padding(top = 4.dp)
                 ) {
+                    val options = GetDummyData.getCountryNumber()
+                    var expanded by remember { mutableStateOf(false) }
+                    val selectedCountryNum = remember { mutableStateOf(options[0]) }
+                    LaunchedEffect(viewModel.userDetailState.value?.nationNumber) {
+                        viewModel.userDetailState.value?.nationNumber?.let { nationNum ->
+                            selectedCountryNum.value =
+                                options.firstOrNull { nationNum == it.id } ?: options[0]
+                        }
+                    }
                     Box(
                         Modifier
                             .padding(end = 4.dp)
@@ -169,14 +189,35 @@ class EditProfileFragment : BaseFragment() {
                                 color = ColorUtils.gray_E1E1E1,
                                 shape = RoundedCornerShape(4.dp)
                             )
-                    )
+                            .noRippleClickable {
+                                expanded = !expanded
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = selectedCountryNum.value.name!!, style = text14_222)
+                        DropdownMenu(expanded = expanded,
+                            onDismissRequest = {
+                                expanded = false
+                            }
+                        ) {
+                            options.forEach { selectedOption ->
+                                DropdownMenuItem(onClick = {
+                                    selectedCountryNum.value = selectedOption
+                                    expanded = false
+                                    viewModel.stateEdtNationNum.value = selectedOption.id ?: ""
+                                }) {
+                                    Text(selectedOption.name!!)
+                                }
+                            }
+                        }
+                    }
                     HandleInputPhoneNumber(
-                        vm.stateEdtPhone,
+                        viewModel.stateEdtPhone,
                         modifier = Modifier.weight(1f)
                     )
                 }
 
-                HandleChooseAddress(vm.stateEdtAddress)
+                HandleChooseAddress(viewModel.stateEdtAddress)
 
                 Spacer(
                     modifier = Modifier
@@ -192,7 +233,7 @@ class EditProfileFragment : BaseFragment() {
                     .height(52.dp)
                     .background(ColorUtils.blue_2177E4)
                     .noRippleClickable {
-                        accessToken?.let { vm.checkChangePhone(it) }
+                        accessToken?.let { viewModel.checkChangePhone(it) }
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -310,7 +351,7 @@ class EditProfileFragment : BaseFragment() {
                 get[DataStorePref.USER_DETAIL] ?: ""
             }.collect {
                 val userDetail = Gson().fromJson(it, UserDetail::class.java)
-                userDetail?.let { vm.userDetailState.value = userDetail }
+                userDetail?.let { viewModel.userDetailState.value = userDetail }
             }
         }
     }
