@@ -16,10 +16,22 @@ interface ApiService {
     @POST("auth/naver")
     suspend fun authWithNaver(@Body body: AuthRequest): AuthTokenModel
 
+    @POST("auth/google")
+    suspend fun authWithGoogle(@Body body: AuthRequest): AuthTokenModel
+
+    @POST("auth/facebook")
+    suspend fun authWithFb(@Body body: AuthRequest): AuthTokenModel
+
     @POST("auth/registration/userId")
     suspend fun authWithId(
         @Body body: UserDetail
     ): AuthTokenModel //201
+
+    @POST
+    suspend fun loginGoogleAuth2(
+        @Url fullUrl: String?,
+        @Body file: RequestBody
+    ): GoogleResponse
 
     @POST("auth/userId")
     suspend fun loginWithId(

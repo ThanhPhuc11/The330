@@ -1,8 +1,12 @@
 <resources>
     <string name="app_name" translatable="false">The330</string>
+    <string name="app_name_dev_version" translatable="false">The330 DEV</string>
+
     <string name="kakao_native_app_key" translatable="false">a1a9aaac7ab844f2d427fa32bff4fc14</string>
     <string name="naver_client_id" translatable="false">VOvlcYMktVhQETBCWWUy</string>
     <string name="naver_client_secret" translatable="false">u_v__E6r0m</string>
+    <string name="google_server_client_id" translatable="false">538711966081-2bh871ur8ij6crnn0m6ok7d8s2demnpe.apps.googleusercontent.com</string>
+    <string name="google_server_client_secret" translatable="false">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</string>
 
     <!--login, sign-up, general-->
     <string name="confirm">확인</string>

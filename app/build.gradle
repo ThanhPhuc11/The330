@@ -4,6 +4,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        signkeyNagaja {
+            storeFile file('../app/nagajaKey.jks')
+            storePassword '123456'
+            keyAlias 'key0'
+            keyPassword '123456'
+        }
+    }
     compileSdk 31
 
     defaultConfig {
@@ -24,8 +32,14 @@ android {
 
     buildTypes {
         release {
+            signingConfig signingConfigs.signkeyNagaja
+            manifestPlaceholders = [app_name: "@string/app_name"]
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.signkeyNagaja
+            manifestPlaceholders = [app_name: "@string/app_name_dev_version"]
         }
     }
     compileOptions {

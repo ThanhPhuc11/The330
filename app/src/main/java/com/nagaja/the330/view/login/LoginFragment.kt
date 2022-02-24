@@ -1,7 +1,11 @@
 package com.nagaja.the330.view.login
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.util.Log
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,20 +17,26 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.*
+import com.google.android.gms.common.Scopes
+import com.google.android.gms.common.api.Scope
 import com.kakao.sdk.auth.LoginClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.KakaoSdk
@@ -52,11 +62,14 @@ import com.nhn.android.naverlogin.data.OAuthLoginState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.FormBody
+import okhttp3.RequestBody
 
 class LoginFragment : BaseFragment() {
     private lateinit var viewModel: LoginViewModel
     private lateinit var generalViewModel: GeneralViewModel
     private lateinit var mOAuthLoginModule: OAuthLogin
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
     private var userType = AppConstants.GENERAL
 
     companion object {
@@ -102,6 +115,27 @@ class LoginFragment : BaseFragment() {
     @Preview(showBackground = true)
     @Composable
     override fun UIData() {
+        val owner = LocalLifecycleOwner.current
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+                        //GG
+                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestScopes(Scope(Scopes.DRIVE_APPFOLDER))
+                            .requestServerAuthCode(getString(R.string.google_server_client_id))
+                            .requestEmail()
+                            .build()
+                        mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
         LayoutTheme330(
             Modifier
                 .background(ColorUtils.white_FFFFFF)
@@ -306,7 +340,7 @@ class LoginFragment : BaseFragment() {
                         .padding(8.dp)
                         .size(48.dp)
                         .noRippleClickable {
-
+                            snsGoogleLogin(mGoogleSignInClient)
                         }
                 )
                 IconLogin(ColorUtils.blue_3B5998, R.drawable.ic_facebook, null)
@@ -376,6 +410,43 @@ class LoginFragment : BaseFragment() {
 
     private fun snsNaverLogin() {
         mOAuthLoginModule.startOauthLoginActivity(activity, mNaverOAuthLoginHandler)
+    }
+
+    private fun snsGoogleLogin(mGoogleSignInClient: GoogleSignInClient) {
+        val signInIntent: Intent = mGoogleSignInClient.signInIntent
+        startForResultCallback.launch(signInIntent)
+    }
+
+    private val startForResultCallback =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val resultCode = result.resultCode
+            val data = result.data
+            if (resultCode == Activity.RESULT_OK) {
+                val ggResult =
+                    data?.let { Auth.GoogleSignInApi.getSignInResultFromIntent(it) }
+                handleGoogleSignInResult(ggResult!!)
+            }
+        }
+
+    private fun handleGoogleSignInResult(result: GoogleSignInResult) {
+        val acct: GoogleSignInAccount? = result.signInAccount
+        val authCode = acct?.serverAuthCode
+
+        val requestBody: RequestBody = FormBody.Builder()
+            .add("grant_type", "authorization_code")
+            .add(
+                "client_id",
+                getString(R.string.google_server_client_id)
+            )
+            .add(
+                "client_secret",
+                getString(R.string.google_server_client_secret)
+            )
+            .add("redirect_uri", "")
+            .add("code", "$authCode")
+            .add("id_token", "${acct?.idToken}")
+            .build()
+        viewModel.loginGoogleAuth2(requestBody, userType)
     }
 
     private val mNaverOAuthLoginHandler: OAuthLoginHandler = @SuppressLint("HandlerLeak")

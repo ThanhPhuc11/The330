@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "538711966081",
+    "project_id": "nagaja-2e397",
+    "storage_bucket": "nagaja-2e397.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:538711966081:android:2a8e906366f5b53f156880",
+        "android_client_info": {
+          "package_name": "com.nagaja.the330"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "538711966081-2bh871ur8ij6crnn0m6ok7d8s2demnpe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtpnJluyjNE2SJQzJCuPcm0U4lRQp-K9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "538711966081-2bh871ur8ij6crnn0m6ok7d8s2demnpe.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "538711966081-42vdctkht630indpiejqd14cac0686it.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nagaja.the330"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
