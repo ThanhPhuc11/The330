@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -99,6 +98,18 @@ class LoginFragment : BaseFragment() {
             DataStorePref(requireContext()).setToken(it)
             it.accessToken?.let { token -> generalViewModel.getUserDetails("Bearer $token") }
         }
+        viewModel.callbackLoginNaverSuccess.observe(viewLifecycleOwner) {
+            DataStorePref(requireContext()).setToken(it)
+            it.accessToken?.let { token -> generalViewModel.getUserDetails("Bearer $token") }
+        }
+        viewModel.callbackLoginGGSuccess.observe(viewLifecycleOwner) {
+            DataStorePref(requireContext()).setToken(it)
+            it.accessToken?.let { token -> generalViewModel.getUserDetails("Bearer $token") }
+        }
+        viewModel.callbackLoginFbSuccess.observe(viewLifecycleOwner) {
+            DataStorePref(requireContext()).setToken(it)
+            it.accessToken?.let { token -> generalViewModel.getUserDetails("Bearer $token") }
+        }
         viewModel.callbackLoginIdSuccess.observe(viewLifecycleOwner) {
             DataStorePref(requireContext()).setToken(it)
             it.accessToken?.let { token -> generalViewModel.getUserDetails("Bearer $token") }
@@ -128,6 +139,17 @@ class LoginFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        //KaKao
+                        KakaoSdk.init(requireContext(), getString(R.string.kakao_native_app_key))
+
+                        //Naver
+                        mOAuthLoginModule = OAuthLogin.getInstance()
+                        mOAuthLoginModule.init(
+                            activity,
+                            getString(R.string.naver_client_id),
+                            getString(R.string.naver_client_secret),
+                            "나가자 nagaja"
+                        )
                         //GG
                         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                             .requestScopes(Scope(Scopes.DRIVE_APPFOLDER))
@@ -140,7 +162,25 @@ class LoginFragment : BaseFragment() {
                         callbackManager = CallbackManager.Factory.create()
                         FacebookSdk.sdkInitialize(activity?.applicationContext)
                         AppEventsLogger.activateApp(activity?.application)
-                        LoginManager.getInstance().registerCallback(callbackManager, cbFb)
+                        LoginManager.getInstance().registerCallback(callbackManager,
+                            object : FacebookCallback<LoginResult?> {
+                                override fun onSuccess(loginResult: LoginResult?) {
+                                    // App code
+                                    Log.e("Facebook", "successs")
+                                    viewModel.loginWithFb(
+                                        loginResult?.accessToken?.token.toString(),
+                                        userType
+                                    )
+                                }
+
+                                override fun onCancel() {
+                                    Log.e("Facebook", "cancel")
+                                }
+
+                                override fun onError(exception: FacebookException) {
+                                    Log.e("Facebook", "error")
+                                }
+                            })
                     }
                     else -> {}
                 }
@@ -320,18 +360,6 @@ class LoginFragment : BaseFragment() {
 
     @Composable
     fun LoginSocial() {
-        //KaKao
-        val context = LocalContext.current
-        KakaoSdk.init(context, getString(R.string.kakao_native_app_key))
-
-        //Naver
-        mOAuthLoginModule = OAuthLogin.getInstance()
-        mOAuthLoginModule.init(
-            activity,
-            stringResource(R.string.naver_client_id),
-            stringResource(R.string.naver_client_secret),
-            "나가자 nagaja"
-        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
@@ -450,25 +478,9 @@ class LoginFragment : BaseFragment() {
             }
         }
 
-    private val cbFb =
-        object : FacebookCallback<LoginResult?> {
-            override fun onSuccess(loginResult: LoginResult?) {
-                // App code
-                Log.e("Facebook", "successs")
-                viewModel.loginWithFb(
-                    loginResult?.accessToken?.token.toString(),
-                    userType
-                )
-            }
-
-            override fun onCancel() {
-                Log.e("Facebook", "cancel")
-            }
-
-            override fun onError(exception: FacebookException) {
-                Log.e("Facebook", "error")
-            }
-        }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        callbackManager.onActivityResult(requestCode, resultCode, data)
+    }
 
     private fun handleGoogleSignInResult(result: GoogleSignInResult) {
         val acct: GoogleSignInAccount? = result.signInAccount
