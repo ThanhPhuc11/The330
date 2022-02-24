@@ -33,6 +33,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.Scopes
@@ -70,6 +77,7 @@ class LoginFragment : BaseFragment() {
     private lateinit var generalViewModel: GeneralViewModel
     private lateinit var mOAuthLoginModule: OAuthLogin
     private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private lateinit var callbackManager: CallbackManager //Facebook callback
     private var userType = AppConstants.GENERAL
 
     companion object {
@@ -127,6 +135,12 @@ class LoginFragment : BaseFragment() {
                             .requestEmail()
                             .build()
                         mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+
+                        //Fb
+                        callbackManager = CallbackManager.Factory.create()
+                        FacebookSdk.sdkInitialize(activity?.applicationContext)
+                        AppEventsLogger.activateApp(activity?.application)
+                        LoginManager.getInstance().registerCallback(callbackManager, cbFb)
                     }
                     else -> {}
                 }
@@ -340,10 +354,18 @@ class LoginFragment : BaseFragment() {
                         .padding(8.dp)
                         .size(48.dp)
                         .noRippleClickable {
+                            mGoogleSignInClient.signOut()
                             snsGoogleLogin(mGoogleSignInClient)
                         }
                 )
-                IconLogin(ColorUtils.blue_3B5998, R.drawable.ic_facebook, null)
+                IconLogin(ColorUtils.blue_3B5998, R.drawable.ic_facebook) {
+                    LoginManager.getInstance().logOut()
+                    LoginManager.getInstance()
+                        .logInWithReadPermissions(
+                            this@LoginFragment,
+                            mutableListOf("public_profile")
+                        )
+                }
             }
             Text(
                 stringResource(R.string.use_as_a_non_member),
@@ -425,6 +447,26 @@ class LoginFragment : BaseFragment() {
                 val ggResult =
                     data?.let { Auth.GoogleSignInApi.getSignInResultFromIntent(it) }
                 handleGoogleSignInResult(ggResult!!)
+            }
+        }
+
+    private val cbFb =
+        object : FacebookCallback<LoginResult?> {
+            override fun onSuccess(loginResult: LoginResult?) {
+                // App code
+                Log.e("Facebook", "successs")
+                viewModel.loginWithFb(
+                    loginResult?.accessToken?.token.toString(),
+                    userType
+                )
+            }
+
+            override fun onCancel() {
+                Log.e("Facebook", "cancel")
+            }
+
+            override fun onError(exception: FacebookException) {
+                Log.e("Facebook", "error")
             }
         }
 
