@@ -25,6 +25,8 @@ import com.nagaja.the330.view.resetpassword.ResetPwRepo
 import com.nagaja.the330.view.resetpassword.ResetPwVM
 import com.nagaja.the330.view.signupinfo.SignupInfoRepo
 import com.nagaja.the330.view.signupinfo.SignupInfoVM
+import com.nagaja.the330.view.usage.UsageRepo
+import com.nagaja.the330.view.usage.UsageVM
 import com.nagaja.the330.view.verify_otp.VerifyOTPRepo
 import com.nagaja.the330.view.verify_otp.VerifyOTPVM
 
@@ -56,6 +58,8 @@ class ViewModelFactory(apiService: ApiService) :
             EditProfileVM(EditProfileRepo(apiService))
         creators[FavCompanyVM::class.java] =
             FavCompanyVM(FavCompanyRepo(apiService))
+        creators[UsageVM::class.java] =
+            UsageVM(UsageRepo(apiService))
         creators[ApplyCompanyVM::class.java] =
             ApplyCompanyVM(ApplyCompanyRepo(apiService))
         creators[ProductCompanyVM::class.java] =

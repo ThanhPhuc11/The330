@@ -139,6 +139,9 @@ class LoginFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        backSystemHandler {
+                            activity?.finish()
+                        }
                         //KaKao
                         KakaoSdk.init(requireContext(), getString(R.string.kakao_native_app_key))
 

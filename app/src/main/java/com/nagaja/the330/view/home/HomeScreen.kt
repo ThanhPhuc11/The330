@@ -59,7 +59,7 @@ fun HomeScreen(accessToken: String) {
     DisposableEffect(owner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_START -> {
+                Lifecycle.Event.ON_CREATE -> {
                     viewModel.getCategory(accessToken, "MAIN")
                 }
                 Lifecycle.Event.ON_STOP -> {
