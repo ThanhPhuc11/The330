@@ -115,4 +115,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onBackPressed() {
+        val count = supportFragmentManager.backStackEntryCount
+        if (supportFragmentManager.fragments[count - 1].tag == ScreenId.SCREEN_LOGIN) {
+            finish()
+        } else {
+            super.onBackPressed()
+        }
+    }
 }

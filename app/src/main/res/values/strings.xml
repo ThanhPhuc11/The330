@@ -9,6 +9,7 @@
     <string name="google_server_client_secret" translatable="false">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</string>
     <string name="facebook_app_id">1019611541945421</string>
     <string name="fb_login_protocol_scheme">fb1019611541945421</string>
+    <string name="google_map_key">AIzaSyAvNR5fVxEY8Wg_QADKCjku166MAoOWXwc</string>
 
     <!--login, sign-up, general-->
     <string name="confirm">확인</string>

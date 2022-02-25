@@ -59,6 +59,7 @@ import com.nagaja.the330.view.main.MainFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.reset_templace.ResetTemplaceFragment
 import com.nagaja.the330.view.resetpassword.InputIDFragment
+import com.nagaja.the330.view.signupinfo.GoogleMapFragment
 import com.nagaja.the330.view.signupinfo.SignupInfoFragment
 import com.nagaja.the330.view.text14_222
 import com.nagaja.the330.view.text14_62
@@ -139,9 +140,6 @@ class LoginFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        backSystemHandler {
-                            activity?.finish()
-                        }
                         //KaKao
                         KakaoSdk.init(requireContext(), getString(R.string.kakao_native_app_key))
 
@@ -204,7 +202,18 @@ class LoginFragment : BaseFragment() {
                 stringResource(R.string.login),
                 color = ColorUtils.gray_222222,
                 fontSize = 24.sp,
-                modifier = Modifier.padding(top = screenHeight / 10)
+                modifier = Modifier
+                    .padding(top = screenHeight / 10)
+                    .noRippleClickable {
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_FIND_ID,
+                            GoogleMapFragment.newInstance().apply {
+                                callbackLocation = { lat, long ->
+                                    showMessDEBUG("$lat - $long")
+                                }
+                            }
+                        )
+                    }
             )
 
             //TODO: login
