@@ -40,6 +40,7 @@ import com.nagaja.the330.view.applycompany.ApplyCompanyFragment
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.secondhand.SecondHandFragment
 import com.nagaja.the330.view.text14_222
 import com.nagaja.the330.view.usage.UsageFragment
 import kotlinx.coroutines.CoroutineScope
@@ -64,6 +65,12 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
         viewController?.pushFragment(
             ScreenId.SCREEN_USAGE,
             UsageFragment.newInstance()
+        )
+    }
+    val clickSecondHandPurchase: () -> Unit = {
+        viewController?.pushFragment(
+            ScreenId.SCREEN_SECONDHAND_PURCHARGE,
+            SecondHandFragment.newInstance()
         )
     }
     val viewModelStoreOwner: ViewModelStoreOwner =
@@ -165,7 +172,7 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
                 MypageOptionItem(
                     R.drawable.ic_secondhand_purchase_opt,
                     stringResource(R.string.option_secondhand_purchase_list),
-                    clickFavorite
+                    clickSecondHandPurchase
                 )
                 MypageOptionItem(
                     R.drawable.ic_job_opt,
