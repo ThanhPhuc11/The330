@@ -7,4 +7,8 @@ class OtherSettingRepo(private val apiService: ApiService) {
     suspend fun logout(token: String) = flow {
         emit(apiService.logout(token))
     }
+
+    suspend fun withdraw(token: String) = flow {
+        emit(apiService.deleteUser(token))
+    }
 }

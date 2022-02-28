@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import com.google.gson.Gson
+import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.data.DataStorePref.Companion.AUTH_TOKEN
 import com.nagaja.the330.data.dataStore
 import com.nagaja.the330.model.AuthTokenModel
@@ -119,7 +120,7 @@ abstract class BaseFragment : Fragment() {
     }
 
     open fun showMessDEBUG(str: String?) {
-        Toast.makeText(context, str ?: "", Toast.LENGTH_LONG).show()
+        if (BuildConfig.DEBUG) Toast.makeText(context, str ?: "", Toast.LENGTH_LONG).show()
     }
 
     open fun getAccessToken() {

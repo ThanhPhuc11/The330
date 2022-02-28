@@ -9,19 +9,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
+import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
-import com.nagaja.the330.view.Header
-import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.*
 import com.nagaja.the330.view.login.LoginFragment
-import com.nagaja.the330.view.noRippleClickable
-import com.nagaja.the330.view.text16_black
 
 class OtherSettingFragment : BaseFragment() {
     private lateinit var viewModel: OtherSettingVM
@@ -37,6 +36,16 @@ class OtherSettingFragment : BaseFragment() {
         viewModel.callbackLogoutSuccess.observe(viewLifecycleOwner) {
             DataStorePref(requireContext()).setToken(null)
             showMess("로그아웃이 완료되었습니다")
+            viewController?.popAllFragment()
+            viewController?.pushFragment(
+                ScreenId.SCREEN_LOGIN,
+                LoginFragment.newInstance()
+            )
+        }
+
+        viewModel.callbackWithDrawSuccess.observe(viewLifecycleOwner) {
+            DataStorePref(requireContext()).setToken(null)
+            showMess("탈퇴가 완료되었습니다.")
             viewController?.popAllFragment()
             viewController?.pushFragment(
                 ScreenId.SCREEN_LOGIN,
@@ -137,11 +146,32 @@ class OtherSettingFragment : BaseFragment() {
 
                 Divider(color = ColorUtils.gray_E1E1E1, modifier = Modifier.padding(top = 20.dp))
 
+                val state = remember {
+                    mutableStateOf(false)
+                }
+                if (state.value) {
+                    Dialog2Button(
+                        state = state,
+                        title = "회원 탈퇴 하시겠습니까?",
+                        content = "회원 탈퇴 시 모든 정보가 초기화 되며\n 재가입 및 복구가 불가능합니다.",
+                        leftText = "취소",
+                        rightText = "확인",
+                        onClick = {
+                            if (it) {
+                                accessToken?.let { it1 -> viewModel.withdraw(it1) }
+                            }
+                        }
+                    )
+                }
                 Text(
                     "회원탈퇴",
                     color = ColorUtils.black_000000,
                     style = text16_black,
-                    modifier = Modifier.padding(top = 20.dp)
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .noRippleClickable {
+                            state.value = true
+                        }
                 )
 
                 Text(

@@ -41,6 +41,13 @@ android {
             signingConfig signingConfigs.signkeyNagaja
             manifestPlaceholders = [app_name: "@string/app_name_dev_version"]
         }
+
+        applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                def name = "The330-v${variant.versionName}.apk"
+                output.outputFileName = name
+            }
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

@@ -31,6 +31,7 @@ import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.CommonUtils
 import com.nagaja.the330.utils.ScreenId
+import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.login.LoginFragment
 import com.nagaja.the330.view.noRippleClickable
 
@@ -64,15 +65,7 @@ class PermissionFragment : BaseFragment() {
     @Preview
     @Composable
     fun PreviewUI() {
-        Column(
-            Modifier
-                .fillMaxSize()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {}
-                .background(ColorUtils.white_FFFFFF)
-        ) {
+        LayoutTheme330 {
             Column(
                 Modifier
                     .padding(dimensionResource(R.dimen.dp_16))

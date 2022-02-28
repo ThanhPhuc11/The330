@@ -84,6 +84,11 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<Unit> // 204
 
+     @DELETE("users")
+    suspend fun deleteUser(
+        @Header("Authorization") token: String
+    ): Response<Unit> // 204
+
     @GET("main_categories")
     suspend fun getCategory(
         @Header("Authorization") token: String,

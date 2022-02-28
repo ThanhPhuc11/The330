@@ -13,6 +13,7 @@ class OtherSettingVM(
     private val repo: OtherSettingRepo
 ) : BaseViewModel() {
     val callbackLogoutSuccess = MutableLiveData<Unit>()
+    val callbackWithDrawSuccess = MutableLiveData<Unit>()
 
     fun logout(token: String) {
         viewModelScope.launch {
@@ -26,6 +27,25 @@ class OtherSettingVM(
                     if (it.raw().isSuccessful && it.raw().code == 204) {
                         callbackSuccess.value = Unit
                         callbackLogoutSuccess.value = Unit
+                    } else {
+                        handleError2(it)
+                    }
+                }
+        }
+    }
+
+    fun withdraw(token: String) {
+        viewModelScope.launch {
+            repo.withdraw(token)
+                .onStart { callbackStart.value = Unit }
+                .onCompletion { }
+                .catch {
+                    handleError(it)
+                }
+                .collect {
+                    if (it.raw().isSuccessful && it.raw().code == 204) {
+                        callbackSuccess.value = Unit
+                        callbackWithDrawSuccess.value = Unit
                     } else {
                         handleError2(it)
                     }

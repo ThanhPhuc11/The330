@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
@@ -29,12 +30,15 @@ class LangFragment : BaseFragment() {
     }
 
     override fun SetupViewModel() {
-//        TODO("Not yet implemented")
+        viewController = (activity as MainActivity).viewController
     }
 
     @Composable
     override fun UIData() {
-        viewController = (activity as MainActivity).viewController
+        val systemUiController = rememberSystemUiController()
+        systemUiController.setSystemBarsColor(
+            color = ColorUtils.white_FFFFFF
+        )
         Column(
             Modifier
                 .background(color = ColorUtils.white_FFFFFF)
