@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.PhoneAvailableModel
-import com.nagaja.the330.model.UserDetail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -43,7 +42,7 @@ class VerifyOTPVM(private val repo: VerifyOTPRepo) : BaseViewModel() {
         stateBtnSendOTP.value = stateEdtOTP.value.text.isNotBlank()
     }
 
-    fun checkExistByPhone() {
+    fun checkExistByPhone(isCheckOldPhone: Boolean) {
         val phone = stateEdtPhone.value.text
         viewModelScope.launch(Dispatchers.IO) {
             repo.checkExistPhone(PhoneAvailableModel(phone = phone, nationNumber = _nationalNumber))
@@ -51,7 +50,7 @@ class VerifyOTPVM(private val repo: VerifyOTPRepo) : BaseViewModel() {
                 .onCompletion { }
                 .catch { }
                 .collect {
-                    if (!it.available) {
+                    if ((isCheckOldPhone && !it.available) || (!isCheckOldPhone && it.available)) {
                         _snsType = it.snsInfo?.type
                         sendPhone()
                     }

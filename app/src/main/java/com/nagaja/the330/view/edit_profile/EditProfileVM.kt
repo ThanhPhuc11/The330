@@ -1,10 +1,7 @@
 package com.nagaja.the330.view.edit_profile
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
@@ -25,6 +22,7 @@ class EditProfileVM(
     val stateEdtPhone = mutableStateOf(userDetailState.value?.phone ?: "")
     val stateEdtNation = mutableStateOf(userDetailState.value?.nation ?: "")
     val stateEdtAddress = mutableStateOf(userDetailState.value?.address ?: "")
+    val stateEdtDetailAddress = mutableStateOf(userDetailState.value?.detailAddress ?: "")
 
     var otp: Int? = null
 
@@ -61,7 +59,9 @@ class EditProfileVM(
     fun editUser(token: String) {
         val body = UserDetail().apply {
             realName = stateEdtName.value
-            address = stateEdtAddress.value
+            nation = stateEdtNation.value
+            address = if (stateEdtNation.value == "KOREA") stateEdtAddress.value else ""
+            detailAddress = stateEdtDetailAddress.value
             userEditType = "EDIT_MEMBER_INFO_WITHOUT_CHANGE_PHONE"
         }
         viewModelScope.launch {
@@ -71,13 +71,15 @@ class EditProfileVM(
                 }
                 .onCompletion { }
                 .catch {
-//                    handleError(it)
+                    handleError(it)
 //                    callbackUserFail.value = Unit
                 }
                 .collect {
                     if (it.raw().isSuccessful && it.raw().code == 204) {
                         callbackSuccess.value = Unit
                         cbUpdateSuccess.value = Unit
+                    } else {
+                        handleError2(it)
                     }
                 }
         }
@@ -88,7 +90,9 @@ class EditProfileVM(
             realName = stateEdtName.value
             nationNumber = stateEdtNationNum.value
             phone = stateEdtPhone.value
-            address = stateEdtAddress.value
+            nation = stateEdtNation.value
+            address = if (stateEdtNation.value == "KOREA") stateEdtAddress.value else ""
+            detailAddress = stateEdtAddress.value
             otp = this@EditProfileVM.otp
             userEditType = "EDIT_MEMBER_INFO"
         }
@@ -99,20 +103,16 @@ class EditProfileVM(
                 }
                 .onCompletion { }
                 .catch {
-//                    handleError(it)
-//                    callbackUserFail.value = Unit
+                    handleError(it)
                 }
                 .collect {
                     if (it.raw().isSuccessful && it.raw().code == 204) {
                         callbackSuccess.value = Unit
                         cbUpdateSuccess.value = Unit
+                    } else {
+                        handleError2(it)
                     }
                 }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.e("EDIT", "onCleared")
     }
 }

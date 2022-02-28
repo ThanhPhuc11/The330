@@ -22,7 +22,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,6 +45,7 @@ import com.nagaja.the330.view.text14_222
 import com.nagaja.the330.view.verify_otp.VerifyOTPFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -65,7 +65,7 @@ class EditProfileFragment : BaseFragment() {
         viewModel.cbNextScreen.observe(viewLifecycleOwner) {
             viewController?.pushFragment(
                 ScreenId.SCREEN_VERIFY_OTP,
-                VerifyOTPFragment.newInstance().apply {
+                VerifyOTPFragment.newInstance(false).apply {
                     callbackResult = { isSuccess, nationNum, phoneNum, otp ->
                         viewModel.otp = otp
                         accessToken?.let { it1 -> viewModel.edtUserWithPhone(it1) }
@@ -74,7 +74,11 @@ class EditProfileFragment : BaseFragment() {
             )
         }
         viewModel.cbUpdateSuccess.observe(viewLifecycleOwner) {
-            viewController?.popFragment()
+            showMess("Update info success!")
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(1500)
+                viewController?.popFragment()
+            }
         }
     }
 
@@ -89,6 +93,9 @@ class EditProfileFragment : BaseFragment() {
             viewModel.stateEdtNationNum.value = viewModel.userDetailState.value?.nationNumber ?: ""
             viewModel.stateEdtPhone.value = viewModel.userDetailState.value?.phone ?: ""
             viewModel.stateEdtAddress.value = viewModel.userDetailState.value?.address ?: ""
+            viewModel.stateEdtDetailAddress.value =
+                viewModel.userDetailState.value?.detailAddress ?: ""
+
             Log.e("User Local", viewModel.userDetailState.value?.id.toString())
         }
 
@@ -96,9 +103,7 @@ class EditProfileFragment : BaseFragment() {
         DisposableEffect(owner) {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
-                    Lifecycle.Event.ON_START -> {
-                        Log.e("EDIT", "onStart")
-
+                    Lifecycle.Event.ON_CREATE -> {
                         getUserDetailFromDataStore(context)
                     }
                     Lifecycle.Event.ON_STOP -> {
@@ -273,7 +278,6 @@ class EditProfileFragment : BaseFragment() {
             fontWeight = FontWeight.Black,
             modifier = Modifier.padding(top = 20.dp)
         )
-        val edtFullAddress = remember { mutableStateOf(TextFieldValue("")) }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -282,7 +286,14 @@ class EditProfileFragment : BaseFragment() {
         ) {
             val options = GetDummyData.getCoutryAdrressSignup()
             var expanded by remember { mutableStateOf(false) }
-            var selectedOptionText by remember { mutableStateOf(options[0]) }
+            var selectedOptionText = remember { mutableStateOf(options[0]) }
+            LaunchedEffect(viewModel.userDetailState.value?.nation) {
+                viewModel.userDetailState.value?.nation?.let { nation ->
+                    selectedOptionText.value =
+                        options.firstOrNull { nation == it.id } ?: options[0]
+                    viewModel.stateEdtNation.value = selectedOptionText.value.id!!
+                }
+            }
             Box(
                 modifier = Modifier
                     .padding(end = 4.dp)
@@ -299,7 +310,7 @@ class EditProfileFragment : BaseFragment() {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    selectedOptionText.name!!,
+                    selectedOptionText.value.name!!,
                     style = text14_222
                 )
                 DropdownMenu(
@@ -311,8 +322,9 @@ class EditProfileFragment : BaseFragment() {
                     options.forEach { selectionOption ->
                         DropdownMenuItem(
                             onClick = {
-                                selectedOptionText = selectionOption
+                                selectedOptionText.value = selectionOption
                                 expanded = false
+                                viewModel.stateEdtNation.value = selectedOptionText.value.id ?: ""
                             }
                         ) {
                             Text(text = selectionOption.name!!)
@@ -324,7 +336,7 @@ class EditProfileFragment : BaseFragment() {
 
             Row(modifier = Modifier.weight(5f), verticalAlignment = Alignment.CenterVertically) {
                 AnimatedVisibility(
-                    visible = selectedOptionText.id == "KOREA",
+                    visible = selectedOptionText.value.id == "KOREA",
                     modifier = Modifier.weight(1f)
                 ) {
                     TextFieldCustom(
@@ -342,7 +354,7 @@ class EditProfileFragment : BaseFragment() {
 
         }
         TextFieldCustom(
-            textStateId = mutableState,
+            textStateId = viewModel.stateEdtDetailAddress,
             hint = stringResource(R.string.hint_input_full_address),
             modifier = Modifier
                 .padding(top = 8.dp)

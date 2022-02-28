@@ -28,6 +28,7 @@ class UserDetail {
     var longitude: Float? = null
     var nation: String? = null
     var address: String? = null
+    var detailAddress: String? = null
     var userEditType: String? = null
 
     //    var popularArea: Any? = null

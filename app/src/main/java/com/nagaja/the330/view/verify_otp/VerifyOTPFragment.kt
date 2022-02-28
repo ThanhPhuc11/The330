@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.verify_otp
 
+import android.os.Bundle
 import android.os.CountDownTimer
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -19,24 +20,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.ViewModelProvider
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
-import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
-import com.nagaja.the330.view.reset_templace.ResetTemplaceShareVM
 
 class VerifyOTPFragment : BaseFragment() {
     private lateinit var viewModel: VerifyOTPVM
-//    private lateinit var shareViewModel: ResetTemplaceShareVM
+
+    //    private lateinit var shareViewModel: ResetTemplaceShareVM
     private var countDownTimer: CountDownTimer? = null
     var callbackResult: ((Boolean, String?, String?, Int?) -> Unit)? = null
 
     companion object {
-        fun newInstance() = VerifyOTPFragment()
+        fun newInstance(isCheckOldPhoneNumber: Boolean = true) = VerifyOTPFragment().apply {
+            arguments = Bundle().apply {
+                putBoolean(AppConstants.EXTRA_KEY1, isCheckOldPhoneNumber)
+            }
+        }
     }
 
     override fun SetupViewModel() {
@@ -174,7 +178,7 @@ class VerifyOTPFragment : BaseFragment() {
                     )
                 }
                 DrawRequestPhoneButton(viewModel.stateBtnSendPhone.value) {
-                    viewModel.checkExistByPhone()
+                    viewModel.checkExistByPhone(requireArguments().getBoolean(AppConstants.EXTRA_KEY1))
                 }
 
                 //TODO: OTP
