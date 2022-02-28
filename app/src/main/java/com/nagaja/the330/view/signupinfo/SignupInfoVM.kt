@@ -193,7 +193,8 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
                 nationNumber = stateNationNum.value
                 phone = stateEdtPhone.value.text
                 nation = this@SignupInfoVM.nation
-                address = stateEdtAddress.value.text + stateEdtAddressDetail.value.text
+                address = stateEdtAddress.value.text
+                address = stateEdtAddressDetail.value.text
                 latitude = lat
                 longitude = long
                 agreePolicy = true
@@ -216,7 +217,8 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
                 nationNumber = stateNationNum.value
                 phone = stateEdtPhone.value.text
                 nation = this@SignupInfoVM.nation
-                address = stateEdtAddress.value.text + stateEdtAddressDetail.value.text
+                address = stateEdtAddress.value.text
+                detailAddress = stateEdtAddressDetail.value.text
                 latitude = lat
                 longitude = long
                 agreePolicy = true

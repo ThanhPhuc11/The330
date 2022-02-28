@@ -20,6 +20,7 @@ import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.general.GeneralViewModel
+import com.nagaja.the330.view.language.LangFragment
 import com.nagaja.the330.view.login.LoginFragment
 import com.nagaja.the330.view.main.MainFragment
 import kotlinx.coroutines.*
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         viewController = ViewController(R.id.flContainer, supportFragmentManager, this)
         generalViewModel = getViewModelProvider()[GeneralViewModel::class.java]
 
-        checkOrFakeToken()
+        checkFirstRunApp()
 
         WindowCompat.setDecorFitsSystemWindows(window, true)
         ViewCompat.getWindowInsetsController(window.decorView).let { controller ->
@@ -90,6 +91,25 @@ class MainActivity : AppCompatActivity() {
                     ?.create(ApiService::class.java)!!
             )
         )
+    }
+
+    private fun checkFirstRunApp() {
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore.data.map { get ->
+                get[DataStorePref.CHECK_FIRST] ?: true
+            }.collect {
+                if (it) {
+                    viewController.pushFragment(
+                        ScreenId.SCREEN_LANGUAGE_FIRST,
+                        LangFragment.newInstance()
+                    )
+                    this@launch.coroutineContext.job.cancel()
+                } else {
+                    checkOrFakeToken()
+                    this@launch.coroutineContext.job.cancel()
+                }
+            }
+        }
     }
 
     private fun checkOrFakeToken() {

@@ -342,10 +342,10 @@ class LoginFragment : BaseFragment() {
                     modifier = Modifier
                         .weight(1f)
                         .noRippleClickable {
-                            viewController?.pushFragment(
-                                ScreenId.SCREEN_RESET_INPUT_ID,
-                                InputIDFragment.newInstance()
-                            )
+//                            viewController?.pushFragment(
+//                                ScreenId.SCREEN_RESET_INPUT_ID,
+//                                InputIDFragment.newInstance()
+//                            )
                         })
                 Box(
                     modifier = Modifier

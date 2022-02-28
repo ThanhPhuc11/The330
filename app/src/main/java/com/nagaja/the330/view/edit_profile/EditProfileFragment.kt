@@ -109,18 +109,11 @@ class EditProfileFragment : BaseFragment() {
                     Lifecycle.Event.ON_CREATE -> {
                         getUserDetailFromDataStore(context)
                     }
-                    Lifecycle.Event.ON_STOP -> {
-                        Log.e("EDIT", "onStop")
-                    }
-                    Lifecycle.Event.ON_DESTROY -> {
-                        Log.e("EDIT", "onDestroy")
-                    }
                     else -> {}
                 }
             }
             owner.lifecycle.addObserver(observer)
             onDispose {
-                Log.e("EDIT", "onDispose")
                 owner.lifecycle.removeObserver(observer)
             }
         }

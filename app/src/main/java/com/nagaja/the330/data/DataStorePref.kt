@@ -3,6 +3,7 @@ package com.nagaja.the330.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -18,8 +19,17 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "TH
 
 class DataStorePref(val context: Context) {
     companion object {
+        val CHECK_FIRST = booleanPreferencesKey("CHECK_FIRST")
         val AUTH_TOKEN = stringPreferencesKey("AUTH_TOKEN")
         val USER_DETAIL = stringPreferencesKey("USER_DETAIL")
+    }
+
+    fun setFirst(isFirst: Boolean) {
+        CoroutineScope(Dispatchers.IO).launch {
+            context.dataStore.edit { set ->
+                set[CHECK_FIRST] = isFirst
+            }
+        }
     }
 
     fun setUserDetail(obj: UserDetail?) {
