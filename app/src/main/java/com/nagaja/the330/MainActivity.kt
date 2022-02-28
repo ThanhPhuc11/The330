@@ -1,8 +1,9 @@
 package com.nagaja.the330
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -22,13 +23,13 @@ import com.nagaja.the330.view.general.GeneralViewModel
 import com.nagaja.the330.view.login.LoginFragment
 import com.nagaja.the330.view.main.MainFragment
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 
 class MainActivity : AppCompatActivity() {
     lateinit var viewController: ViewController
     lateinit var generalViewModel: GeneralViewModel
+    private var doubleBackToExitPressedOnce = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -118,8 +119,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val count = supportFragmentManager.backStackEntryCount
-        if (supportFragmentManager.fragments[count - 1].tag == ScreenId.SCREEN_LOGIN) {
-            finish()
+        if (supportFragmentManager.fragments[count - 1].tag == ScreenId.SCREEN_LOGIN
+            || supportFragmentManager.fragments[count - 1].tag == ScreenId.SCREEN_MAIN
+            || supportFragmentManager.fragments.size == 1
+        ) {
+            if (doubleBackToExitPressedOnce) {
+                finish()
+                return
+            }
+            this.doubleBackToExitPressedOnce = true
+//            Toast.makeText(this, "Double click to exit", Toast.LENGTH_SHORT).show()
+            Handler(Looper.getMainLooper()).postDelayed(
+                { doubleBackToExitPressedOnce = false },
+                2000
+            )
         } else {
             super.onBackPressed()
         }
