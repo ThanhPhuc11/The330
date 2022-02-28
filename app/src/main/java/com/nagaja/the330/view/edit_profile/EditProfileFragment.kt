@@ -54,6 +54,8 @@ class EditProfileFragment : BaseFragment() {
     private lateinit var viewModel: EditProfileVM
     private var userDetail: UserDetail? = null
 
+    var callbackUpdate: (() -> Unit)? = null
+
     companion object {
         fun newInstance() = EditProfileFragment()
     }
@@ -77,6 +79,7 @@ class EditProfileFragment : BaseFragment() {
             showMess("Update info success!")
             CoroutineScope(Dispatchers.Main).launch {
                 delay(1500)
+                callbackUpdate?.invoke()
                 viewController?.popFragment()
             }
         }
@@ -226,7 +229,7 @@ class EditProfileFragment : BaseFragment() {
                     )
                 }
 
-                HandleChooseAddress(viewModel.stateEdtAddress)
+                HandleChooseAddress()
 
                 Spacer(
                     modifier = Modifier
@@ -271,7 +274,7 @@ class EditProfileFragment : BaseFragment() {
     }
 
     @Composable
-    private fun HandleChooseAddress(mutableState: MutableState<String>) {
+    private fun HandleChooseAddress() {
         Text(
             stringResource(R.string.address),
             style = text14_222,
@@ -341,6 +344,7 @@ class EditProfileFragment : BaseFragment() {
                 ) {
                     TextFieldCustom(
                         hint = stringResource(R.string.hint_input_address),
+                        textStateId = viewModel.stateEdtAddress
                     )
                 }
                 Image(

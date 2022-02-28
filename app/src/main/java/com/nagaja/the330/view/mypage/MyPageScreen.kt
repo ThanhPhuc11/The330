@@ -95,6 +95,11 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
     DisposableEffect(owner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+                    viewModel.cbUpdateUserDataStore.observe(owner) {
+                        DataStorePref(context).setUserDetail(it)
+                    }
+                }
                 Lifecycle.Event.ON_START -> {
                     getUserDetailFromDataStore(context)
                     viewModel.getUserDetails(accessToken)
@@ -237,7 +242,13 @@ private fun MyInfo(viewController: ViewController?) {
                 .noRippleClickable {
                     viewController?.pushFragment(
                         ScreenId.SCREEN_EDIT_PROFILE,
-                        EditProfileFragment.newInstance()
+                        EditProfileFragment
+                            .newInstance()
+                            .apply {
+                                callbackUpdate = {
+                                    accessToken?.let { viewModel.getUserDetails(it) }
+                                }
+                            }
                     )
                 },
             contentAlignment = Alignment.Center

@@ -17,7 +17,7 @@ class MyPageScreenVM(
     private val repo: MyPageScreenRepo
 ) : BaseViewModel() {
     val userDetailState: MutableState<UserDetail?> = mutableStateOf(null)
-    val cbUpdateUserDataStore = MutableLiveData<Unit>()
+    val cbUpdateUserDataStore = MutableLiveData<UserDetail>()
     fun getUserDetails(token: String) {
         viewModelScope.launch {
             repo.getUserDetails(token)
@@ -32,7 +32,7 @@ class MyPageScreenVM(
                 .collect {
                     callbackSuccess.value = Unit
                     userDetailState.value = it
-                    cbUpdateUserDataStore.value = Unit
+                    cbUpdateUserDataStore.value = it
                 }
         }
     }
