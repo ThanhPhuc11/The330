@@ -40,6 +40,7 @@ import com.nagaja.the330.view.applycompany.ApplyCompanyFragment
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.othersetting.OtherSettingFragment
 import com.nagaja.the330.view.secondhand.SecondHandFragment
 import com.nagaja.the330.view.text14_222
 import com.nagaja.the330.view.usage.UsageFragment
@@ -71,6 +72,12 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
         viewController?.pushFragment(
             ScreenId.SCREEN_SECONDHAND_PURCHARGE,
             SecondHandFragment.newInstance()
+        )
+    }
+    val clickOtherSetting: () -> Unit = {
+        viewController?.pushFragment(
+            ScreenId.SCREEN_OTHER_SETTING,
+            OtherSettingFragment.newInstance()
         )
     }
     val viewModelStoreOwner: ViewModelStoreOwner =
@@ -187,7 +194,7 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
                 MypageOptionItem(
                     R.drawable.ic_other_setting_opt,
                     stringResource(R.string.option_other_setting),
-                    clickFavorite
+                    clickOtherSetting
                 )
             }
         }

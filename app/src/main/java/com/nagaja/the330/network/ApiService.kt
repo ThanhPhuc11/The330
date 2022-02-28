@@ -79,6 +79,11 @@ interface ApiService {
         @Body body: UserDetail
     ): Response<Unit> //204
 
+    @GET("users/logout")
+    suspend fun logout(
+        @Header("Authorization") token: String
+    ): Response<Unit> // 204
+
     @GET("main_categories")
     suspend fun getCategory(
         @Header("Authorization") token: String,

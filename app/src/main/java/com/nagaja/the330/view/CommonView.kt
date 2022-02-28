@@ -241,6 +241,13 @@ val text14_62 = TextStyle(
     textAlign = TextAlign.Center
 )
 
+val text16_black = TextStyle(
+//    fontFamily = FontFamily.Default,
+//    fontWeight = FontWeight.Light,
+    color = ColorUtils.black_000000,
+    fontSize = 16.sp
+)
+
 val text14_222 = TextStyle(
 //    fontFamily = FontFamily.Default,
 //    fontWeight = FontWeight.Light,
