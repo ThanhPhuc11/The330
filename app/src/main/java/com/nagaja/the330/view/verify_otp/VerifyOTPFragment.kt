@@ -73,7 +73,7 @@ class VerifyOTPFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        countDownTimer = object : android.os.CountDownTimer(20000, 1000) {
+                        countDownTimer = object : android.os.CountDownTimer(300000, 1000) {
                             override fun onFinish() {
                                 viewModel.stateBtnSendPhone.value = true
                                 viewModel.stateEnableFocusPhone.value = true

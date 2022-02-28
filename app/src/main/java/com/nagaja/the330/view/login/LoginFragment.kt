@@ -206,7 +206,7 @@ class LoginFragment : BaseFragment() {
                     .padding(top = screenHeight / 10)
                     .noRippleClickable {
                         viewController?.pushFragment(
-                            ScreenId.SCREEN_FIND_ID,
+                            ScreenId.SCREEN_GOOGLE_MAP,
                             GoogleMapFragment.newInstance().apply {
                                 callbackLocation = { lat, long ->
                                     showMessDEBUG("$lat - $long")

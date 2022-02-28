@@ -30,8 +30,8 @@ class SignupInfoVM(private val repo: SignupInfoRepo) : BaseViewModel() {
     var confirmPw: String? = null
     var nation: String? = "KOREA"
     var _otp: Int? = null
-    var lat: Float = 0f
-    var long: Float = 0f
+    var lat: Double = 0.0
+    var long: Double = 0.0
 
     val stateEdtRealName = mutableStateOf(TextFieldValue(""))
     val stateEdtNameID = mutableStateOf(TextFieldValue(""))

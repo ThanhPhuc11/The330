@@ -38,8 +38,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
@@ -108,7 +106,7 @@ class SignupInfoFragment : BaseFragment() {
                             getString(R.string.password_do_not_match_please_check_again)
 
                         isSNS = requireArguments().getBoolean(AppConstants.EXTRA_KEY1)
-                        countDownTimer = object : CountDownTimer(20000, 1000) {
+                        countDownTimer = object : CountDownTimer(300000, 1000) {
                             override fun onFinish() {
                                 viewModel.stateBtnSendPhone.value = true
                                 viewModel.stateEnableFocusPhone.value = true
@@ -936,6 +934,20 @@ class SignupInfoFragment : BaseFragment() {
                     modifier = Modifier
                         .wrapContentWidth()
                         .padding(horizontal = 8.dp)
+                        .noRippleClickable {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_GOOGLE_MAP,
+                                GoogleMapFragment
+                                    .newInstance()
+                                    .apply {
+                                        callbackLocation = { lat, long ->
+                                            showMessDEBUG("$lat - $long")
+                                            viewModel.lat = lat
+                                            viewModel.long = long
+                                        }
+                                    }
+                            )
+                        }
                 )
             }
 
@@ -948,7 +960,7 @@ class SignupInfoFragment : BaseFragment() {
         )
     }
 
-    val callbackPermissionLocation =
+    private val callbackPermissionLocation =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
 //            permissions.entries.forEach {
 //                Log.e("DEBUG", "${it.key} = ${it.value}")
@@ -960,10 +972,10 @@ class SignupInfoFragment : BaseFragment() {
 
     private fun getLocation() {
         val location = getLastKnownLocation()
-        val longitude = location?.longitude ?: 0f
-        val latitude = location?.latitude ?: 0f
-        viewModel.lat = latitude.toFloat()
-        viewModel.long = longitude.toFloat()
+        val longitude = location?.longitude ?: 0.0
+        val latitude = location?.latitude ?: 0.0
+        viewModel.lat = latitude
+        viewModel.long = longitude
         Log.e("PHUC", "$longitude : $latitude")
     }
 

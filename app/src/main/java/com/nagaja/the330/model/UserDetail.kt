@@ -24,8 +24,8 @@ class UserDetail {
     var numberFollowers: Int? = null
     var numberFollowing: Int? = null
     var googleMapInfo: String? = null
-    var latitude: Float? = null
-    var longitude: Float? = null
+    var latitude: Double? = null
+    var longitude: Double? = null
     var nation: String? = null
     var address: String? = null
     var detailAddress: String? = null
