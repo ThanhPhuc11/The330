@@ -78,6 +78,47 @@ fun Header(title: String = "title", clickBack: (() -> Unit)? = null) {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun HeaderOption(
+    title: String = "title",
+    clickBack: (() -> Unit)? = null,
+    optionText: String = "right",
+    clickOption: (() -> Unit)? = null
+) {
+    Box(
+        modifier = Modifier
+            .background(ColorUtils.white_FFFFFF)
+            .fillMaxWidth()
+            .height(44.dp),
+    ) {
+        Text(
+            title,
+            fontSize = 17.sp,
+            color = ColorUtils.black_000000,
+            modifier = Modifier.align(Alignment.Center)
+        )
+        Image(
+            painter = painterResource(R.drawable.ic_back),
+            contentDescription = "",
+            Modifier
+                .padding(horizontal = 19.dp)
+                .align(Alignment.CenterStart)
+                .noRippleClickable { clickBack?.invoke() }
+        )
+        Text(
+            optionText,
+            fontSize = 14.sp,
+            color = ColorUtils.blue_2177E4,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(horizontal = 16.dp)
+                .noRippleClickable { clickOption?.invoke() }
+        )
+    }
+}
+
 @Composable
 fun TextFieldCustom(
     modifier: Modifier = Modifier,

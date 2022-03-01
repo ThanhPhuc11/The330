@@ -56,22 +56,24 @@ object AppConstants {
         const val EVENT = "EVENT"
     }
 
-    object ExerciseClass {
-        const val INSTANT_MATCHING = "INSTANT_MATCHING"
-        const val CLASS_NOW = "CLASS_NOW"
-        const val RESERVATION = "RESERVATION"
-        const val INIT = "INIT"
-        const val MIN_30 = "MIN_30"
-        const val MIN_5 = "MIN_5"
-        const val AVAILABLE = "AVAILABLE"
-        const val NONE = "NONE"
-        const val LIVE = "LIVE"
-        const val COMPLETE = "COMPLETE"
-        const val FORCE_COMPLETE = "FORCE_COMPLETE"
-        const val INTERRUPT = "INTERRUPT"
-        const val CANCELED_TIME_EXCEEDED = "CANCELED_TIME_EXCEEDED"
-        const val CANCELED_PAYMENT_TIMEOUT = "CANCELED_PAYMENT_TIMEOUT"
-        const val DELETED = "DELETED"
+    object SecondhandCategory {
+        const val DIGITAL_DEVICE = "DIGITAL_DEVICE"
+        const val HOME_APPLIANCES = "HOME_APPLIANCES"
+        const val FURNITURE_INTERIOR = "FURNITURE_INTERIOR"
+        const val BABY_PRODUCT = "BABY_PRODUCT"
+        const val LIVING_PROCESSED_FOOD = "LIVING_PROCESSED_FOOD"
+        const val SPORT_LEISURE = "SPORT_LEISURE"
+        const val WOMEN_MISCELLANEOUS_GOOD = "WOMEN_MISCELLANEOUS_GOOD"
+        const val WOMEN_CLOTHING = "WOMEN_CLOTHING"
+        const val MEN_FASHION = "MEN_FASHION"
+        const val MEN_ACCESSORIES = "MEN_ACCESSORIES"
+        const val GAME_HOBBIES = "GAME_HOBBIES"
+        const val BEAUTY = "BEAUTY"
+        const val PET_PRODUCT = "PET_PRODUCT"
+        const val BOOK_TICKET_ALBUM = "BOOK_TICKET_ALBUM"
+        const val PLANT = "PLANT"
+        const val OTHER = "OTHER"
+        const val BUY = "BUY"
     }
 
     object Accrual {
