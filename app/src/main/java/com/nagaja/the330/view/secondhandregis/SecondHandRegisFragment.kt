@@ -15,11 +15,14 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
@@ -28,10 +31,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.FileModel
+import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.RealPathUtil
 import com.nagaja.the330.view.HeaderOption
@@ -58,6 +65,21 @@ class SecondHandRegisFragment : BaseFragment() {
     @Preview
     @Composable
     override fun UIData() {
+        val owner = LocalLifecycleOwner.current
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+                        accessToken?.let { viewModel.getCity(it) }
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
         LayoutTheme330 {
             HeaderOption(
                 title = "문의하기",
@@ -72,7 +94,7 @@ class SecondHandRegisFragment : BaseFragment() {
                     .background(ColorUtils.blue_2177E4_opacity_5)
                     .padding(vertical = 6.dp, horizontal = 16.dp)
             ) {
-                BaseDropDown()
+                BaseDropDown(listData = GetDummyData.getSecondHandCategory())
             }
 
             val stateEdtTitle = remember { mutableStateOf(TextFieldValue("")) }
@@ -85,9 +107,20 @@ class SecondHandRegisFragment : BaseFragment() {
                 BaseDropDown(
                     modifier = Modifier
                         .padding(end = 8.dp)
-                        .weight(1f)
+                        .weight(1f),
+                    listData = viewModel.listCity.map { cityModel ->
+                        KeyValueModel(cityModel.id.toString(), cityModel.name?.get(0)?.name)
+                    }.toMutableList(),
+                    onClick = { id ->
+                        viewModel.getDistrict(accessToken!!, id.toInt())
+                    }
                 )
-                BaseDropDown(modifier = Modifier.weight(1f))
+                BaseDropDown(
+                    modifier = Modifier.weight(1f),
+                    listData = viewModel.listDistrict.map { district ->
+                        KeyValueModel(district.id.toString(), district.name?.get(0)?.name)
+                    }.toMutableList(),
+                )
             }
 
             Row(Modifier.padding(vertical = 8.dp)) {
@@ -322,7 +355,17 @@ class SecondHandRegisFragment : BaseFragment() {
     }
 
     @Composable
-    private fun BaseDropDown(modifier: Modifier = Modifier) {
+    private fun BaseDropDown(
+        modifier: Modifier = Modifier,
+        listData: MutableList<KeyValueModel>? = null,
+        onClick: ((String) -> Unit)? = null
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+        val itemSelected = remember { mutableStateOf(KeyValueModel()) }
+        LaunchedEffect(listData) {
+            itemSelected.value =
+                if ((listData?.size ?: 0) > 0) listData!![0] else KeyValueModel()
+        }
         Row(
             modifier
                 .fillMaxWidth()
@@ -333,11 +376,14 @@ class SecondHandRegisFragment : BaseFragment() {
                     color = ColorUtils.blue_2177E4_opacity_10,
                     shape = RoundedCornerShape(4.dp)
                 )
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp)
+                .noRippleClickable {
+                    expanded = true
+                },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                "반려동물용품",
+                itemSelected.value.name ?: "",
                 style = text14_62,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Start
@@ -346,6 +392,27 @@ class SecondHandRegisFragment : BaseFragment() {
                 painter = painterResource(R.drawable.ic_arrow_dropdown),
                 contentDescription = null
             )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                }
+            ) {
+                listData?.forEach { selectionOption ->
+                    DropdownMenuItem(
+                        onClick = {
+//                            viewModel.selectedOptionCategory.value = selectionOption
+                            itemSelected.value = selectionOption
+                            expanded = false
+                            onClick?.invoke(selectionOption.id ?: "null")
+                            showMessDEBUG(itemSelected.value.id)
+                        }
+                    ) {
+                        Text(text = selectionOption.name!!)
+                    }
+                }
+            }
         }
     }
 }

@@ -38,10 +38,10 @@ import com.nagaja.the330.utils.ColorUtils
 @Composable
 fun LayoutTheme330(modifier: Modifier = Modifier, layout: @Composable ColumnScope.() -> Unit) {
 //    val focusManager = LocalFocusManager.current
-    val systemUiController = rememberSystemUiController()
-    systemUiController.setSystemBarsColor(
-        color = ColorUtils.white_FFFFFF
-    )
+//    val systemUiController = rememberSystemUiController()
+//    systemUiController.setSystemBarsColor(
+//        color = ColorUtils.white_FFFFFF
+//    )
     Column(
         modifier = modifier
             .background(ColorUtils.white_FFFFFF)

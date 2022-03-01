@@ -126,4 +126,16 @@ interface ApiService {
         @Url fullUrl: String?,
         @Body file: RequestBody
     ): Response<Unit>
+
+
+    @GET("areas/city")
+    suspend fun getCity(
+        @Header("Authorization") token: String,
+    ): ResponseModel<MutableList<CityModel>>
+
+    @GET("areas/district")
+    suspend fun getDistrict(
+        @Header("Authorization") token: String,
+        @Query("cityId") cityId: Int
+    ): ResponseModel<MutableList<DistrictModel>>
 }

@@ -42,6 +42,7 @@ import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
 import com.nagaja.the330.view.secondhand.SecondHandFragment
+import com.nagaja.the330.view.secondhandregis.SecondHandRegisFragment
 import com.nagaja.the330.view.text14_222
 import com.nagaja.the330.view.usage.UsageFragment
 import kotlinx.coroutines.CoroutineScope
@@ -78,6 +79,13 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
         viewController?.pushFragment(
             ScreenId.SCREEN_OTHER_SETTING,
             OtherSettingFragment.newInstance()
+        )
+    }
+
+    val clickReport: () -> Unit = {
+        viewController?.pushFragment(
+            ScreenId.SCREEN_OTHER_SETTING,
+            SecondHandRegisFragment.newInstance()
         )
     }
     val viewModelStoreOwner: ViewModelStoreOwner =
@@ -194,7 +202,7 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
                 MypageOptionItem(
                     R.drawable.ic_report_opt,
                     stringResource(R.string.option_report_list),
-                    clickFavorite
+                    clickReport
                 )
                 MypageOptionItem(
                     R.drawable.ic_other_setting_opt,

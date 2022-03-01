@@ -1,10 +1,10 @@
 package com.nagaja.the330.view.secondhandregis
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
-import com.nagaja.the330.model.CompanyFavoriteModel
+import com.nagaja.the330.model.CityModel
+import com.nagaja.the330.model.DistrictModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -14,16 +14,32 @@ import kotlinx.coroutines.launch
 class SecondHandRegisVM(
     private val repo: SecondHandRegisRepo
 ) : BaseViewModel() {
-    val listCompany = mutableStateListOf<CompanyFavoriteModel>()
+    val listCity = mutableStateListOf<CityModel>()
+    val listDistrict = mutableStateListOf<DistrictModel>()
 
-    fun getFavoriteCompany(token: String, page: Int, sort: String) {
+    fun getCity(token: String) {
         viewModelScope.launch {
-            repo.getFavoriteCompany(token, page, 10, sort)
+            repo.getCity(token)
                 .onStart { }
                 .onCompletion { }
                 .catch { }
                 .collect {
-                    it.content?.let { it1 -> listCompany.addAll(it1) }
+                    it.content?.let { it1 -> listCity.addAll(it1) }
+                }
+        }
+    }
+
+    fun getDistrict(token: String, cityId: Int) {
+        viewModelScope.launch {
+            repo.getDistrict(token, cityId)
+                .onStart { }
+                .onCompletion { }
+                .catch { }
+                .collect {
+                    it.content?.let { it1 ->
+                        listDistrict.clear()
+                        listDistrict.addAll(it1)
+                    }
                 }
         }
     }

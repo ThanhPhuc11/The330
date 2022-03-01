@@ -3,6 +3,7 @@ package com.nagaja.the330.data
 import android.content.Context
 import com.nagaja.the330.R
 import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.utils.AppConstants
 
 object GetDummyData {
     fun getCoutryAdrressSignup(): MutableList<KeyValueModel> {
@@ -52,6 +53,28 @@ object GetDummyData {
             add(KeyValueModel("21", "21:00"))
             add(KeyValueModel("22", "22:00"))
             add(KeyValueModel("23", "23:00"))
+        }
+    }
+
+    fun getSecondHandCategory(): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel(AppConstants.SecondhandCategory.DIGITAL_DEVICE, "디지털기기"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.HOME_APPLIANCES, "생활가전"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.FURNITURE_INTERIOR, "가구/인테리어"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.BABY_PRODUCT, "유아용품"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.LIVING_PROCESSED_FOOD, "생활/가공식품"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.SPORT_LEISURE, "스포츠/레저"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.WOMEN_MISCELLANEOUS_GOOD, "여성잡화"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.WOMEN_CLOTHING, "여성의류"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.MEN_FASHION, "남성패션"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.MEN_ACCESSORIES, "남성잡화"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.GAME_HOBBIES, "게임/취미"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.BEAUTY, "뷰티/미용"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.PET_PRODUCT, "반려동물용품"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.BOOK_TICKET_ALBUM, "도서/티켓/음반"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.PLANT, "식물"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.OTHER, "기타중고물품"))
+            add(KeyValueModel(AppConstants.SecondhandCategory.BUY, "삽니다"))
         }
     }
 }

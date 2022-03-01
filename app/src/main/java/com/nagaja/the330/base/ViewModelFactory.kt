@@ -27,6 +27,8 @@ import com.nagaja.the330.view.resetpassword.ResetPwRepo
 import com.nagaja.the330.view.resetpassword.ResetPwVM
 import com.nagaja.the330.view.secondhand.SecondHandRepo
 import com.nagaja.the330.view.secondhand.SecondHandVM
+import com.nagaja.the330.view.secondhandregis.SecondHandRegisRepo
+import com.nagaja.the330.view.secondhandregis.SecondHandRegisVM
 import com.nagaja.the330.view.signupinfo.SignupInfoRepo
 import com.nagaja.the330.view.signupinfo.SignupInfoVM
 import com.nagaja.the330.view.usage.UsageRepo
@@ -66,6 +68,8 @@ class ViewModelFactory(apiService: ApiService) :
             UsageVM(UsageRepo(apiService))
         creators[SecondHandVM::class.java] =
             SecondHandVM(SecondHandRepo(apiService))
+        creators[SecondHandRegisVM::class.java] =
+            SecondHandRegisVM(SecondHandRegisRepo(apiService))
         creators[OtherSettingVM::class.java] =
             OtherSettingVM(OtherSettingRepo(apiService))
         creators[ApplyCompanyVM::class.java] =
