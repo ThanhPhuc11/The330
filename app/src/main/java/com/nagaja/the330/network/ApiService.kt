@@ -138,4 +138,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("cityId") cityId: Int
     ): ResponseModel<MutableList<DistrictModel>>
+
+    @POST("secondhand_posts")
+    suspend fun makeSecondhandPost(
+        @Header("Authorization") token: String,
+        @Body body: SecondHandRequest
+    ): SecondHandPostResponse
 }

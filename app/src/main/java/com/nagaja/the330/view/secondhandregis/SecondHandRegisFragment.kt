@@ -1,6 +1,7 @@
 package com.nagaja.the330.view.secondhandregis
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -25,6 +27,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,23 +36,34 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.google.gson.Gson
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.data.dataStore
 import com.nagaja.the330.model.FileModel
 import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.NameUtils
 import com.nagaja.the330.utils.RealPathUtil
 import com.nagaja.the330.view.HeaderOption
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_62
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.io.File
 
 class SecondHandRegisFragment : BaseFragment() {
     private lateinit var viewModel: SecondHandRegisVM
+    private var userDetail: UserDetail? = null
     private var callbackListImage: ((Uri?) -> Unit)? = null
     private var onClickRemove: ((Int) -> Unit)? = null
 
@@ -60,17 +74,37 @@ class SecondHandRegisFragment : BaseFragment() {
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[SecondHandRegisVM::class.java]
         viewController = (activity as MainActivity).viewController
+
+        viewModel.callbackPostSuccess.observe(viewLifecycleOwner) {
+            showMessDEBUG("Success")
+        }
+
+        viewModel.callbackStart.observe(viewLifecycleOwner) {
+            showLoading()
+        }
+        viewModel.callbackSuccess.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.callbackFail.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.showMessCallback.observe(viewLifecycleOwner) {
+            showMess(it)
+        }
     }
 
     @Preview
     @Composable
     override fun UIData() {
         val owner = LocalLifecycleOwner.current
+        val listCategory = GetDummyData.getSecondHandCategory()
         DisposableEffect(Unit) {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        viewModel.category = listCategory[0].id!!
                         accessToken?.let { viewModel.getCity(it) }
+                        getUserDetailFromDataStore(requireContext())
                     }
                     else -> {}
                 }
@@ -85,7 +119,9 @@ class SecondHandRegisFragment : BaseFragment() {
                 title = "문의하기",
                 clickBack = { viewController?.popFragment() },
                 optionText = "등록",
-                clickOption = {})
+                clickOption = {
+                    accessToken?.let { viewModel.register(it) }
+                })
 
             //TODO: Category dropdown
             Box(
@@ -94,16 +130,20 @@ class SecondHandRegisFragment : BaseFragment() {
                     .background(ColorUtils.blue_2177E4_opacity_5)
                     .padding(vertical = 6.dp, horizontal = 16.dp)
             ) {
-                BaseDropDown(listData = GetDummyData.getSecondHandCategory())
+                BaseDropDown(listData = listCategory,
+                    onClick = {
+                        viewModel.category = it
+                    })
             }
 
-            val stateEdtTitle = remember { mutableStateOf(TextFieldValue("")) }
+            val stateEdtTitle = viewModel.stateEdtTitle
             Row(
                 Modifier
                     .fillMaxWidth()
                     .background(ColorUtils.white_FFFFFF)
                     .padding(vertical = 8.dp, horizontal = 16.dp),
             ) {
+                //TODO: City
                 BaseDropDown(
                     modifier = Modifier
                         .padding(end = 8.dp)
@@ -112,20 +152,29 @@ class SecondHandRegisFragment : BaseFragment() {
                         KeyValueModel(cityModel.id.toString(), cityModel.name?.get(0)?.name)
                     }.toMutableList(),
                     onClick = { id ->
+                        viewModel.city = id
                         viewModel.getDistrict(accessToken!!, id.toInt())
                     },
                     hintText = "시/도",
                     hasDefaultFirstItem = false
                 )
+                //TODO: District
+                LaunchedEffect(viewModel.listDistrict) {
+                    viewModel.district = viewModel.listDistrict.getOrNull(0)?.id.toString()
+                }
                 BaseDropDown(
                     modifier = Modifier.weight(1f),
                     listData = viewModel.listDistrict.map { district ->
                         KeyValueModel(district.id.toString(), district.name?.get(0)?.name)
                     }.toMutableList(),
-                    hintText = "구/군"
+                    hintText = "구/군",
+                    onClick = {
+                        viewModel.district = it
+                    }
                 )
             }
 
+            //TODO: Choose image
             Row(Modifier.padding(vertical = 8.dp)) {
                 val listImage = remember {
                     mutableStateListOf<FileModel>()
@@ -138,12 +187,12 @@ class SecondHandRegisFragment : BaseFragment() {
                         )
                     )
                     listImage.add(FileModel(url = uri.toString()))
-//                    viewModel.listImageRepresentative.add(
-//                        FileModel(
-//                            fileName = NameUtils.setFileName(userDetail?.id, fileTemp),
-//                            url = fileTemp.path
-//                        )
-//                    )
+                    viewModel.listImage.add(
+                        FileModel(
+                            fileName = NameUtils.setFileName(userDetail?.id, fileTemp),
+                            url = fileTemp.path
+                        )
+                    )
                 }
                 val count = remember { mutableStateOf(listImage.size) }
                 LaunchedEffect(listImage.size) {
@@ -163,7 +212,7 @@ class SecondHandRegisFragment : BaseFragment() {
                 }
                 onClickRemove = { index ->
                     listImage.removeAt(index)
-//                    viewModel.listImageRepresentative.removeAt(index)
+                    viewModel.listImage.removeAt(index)
                 }
                 LazyRow {
                     itemsIndexed(listImage) { index, obj ->
@@ -244,7 +293,8 @@ class SecondHandRegisFragment : BaseFragment() {
 //                    )
 //                }
 
-                val stateEdtPurchase = remember { mutableStateOf(TextFieldValue("")) }
+                //TODO: Edt Purchase
+                val stateEdtPurchase = viewModel.stateEdtPurchase
                 BasicTextField(
                     value = stateEdtPurchase.value,
                     onValueChange = {
@@ -257,9 +307,10 @@ class SecondHandRegisFragment : BaseFragment() {
                     textStyle = TextStyle(
                         color = ColorUtils.black_000000
                     ),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     decorationBox = { innerTextField ->
                         Row {
-                            if (stateEdtTitle.value.text.isEmpty()) {
+                            if (stateEdtPurchase.value.text.isEmpty()) {
                                 Text(
                                     "판매 금액을 입력하세요.",
                                     color = ColorUtils.gray_BEBEBE,
@@ -273,7 +324,7 @@ class SecondHandRegisFragment : BaseFragment() {
             }
             Divider(color = ColorUtils.gray_BEBEBE, modifier = Modifier.padding(horizontal = 16.dp))
 
-            val stateEdtBodyPost = remember { mutableStateOf(TextFieldValue("")) }
+            val stateEdtBodyPost = viewModel.stateEdtBody
             BasicTextField(
                 value = stateEdtBodyPost.value,
                 onValueChange = {
@@ -288,7 +339,7 @@ class SecondHandRegisFragment : BaseFragment() {
                 ),
                 decorationBox = { innerTextField ->
                     Row {
-                        if (stateEdtTitle.value.text.isEmpty()) {
+                        if (stateEdtBodyPost.value.text.isEmpty()) {
                             Text(
                                 "게시글의 본문을 입력하세요.",
                                 color = ColorUtils.gray_BEBEBE,
@@ -440,6 +491,17 @@ class SecondHandRegisFragment : BaseFragment() {
                         Text(text = selectionOption.name!!)
                     }
                 }
+            }
+        }
+    }
+
+    private fun getUserDetailFromDataStore(context: Context) {
+        CoroutineScope(Dispatchers.IO).launch {
+            context.dataStore.data.map { get ->
+                get[DataStorePref.USER_DETAIL] ?: ""
+            }.collect {
+                val userDetail = Gson().fromJson(it, UserDetail::class.java)
+                userDetail?.let { this@SecondHandRegisFragment.userDetail = userDetail }
             }
         }
     }
