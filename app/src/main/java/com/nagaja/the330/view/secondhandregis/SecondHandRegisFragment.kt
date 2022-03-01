@@ -113,13 +113,16 @@ class SecondHandRegisFragment : BaseFragment() {
                     }.toMutableList(),
                     onClick = { id ->
                         viewModel.getDistrict(accessToken!!, id.toInt())
-                    }
+                    },
+                    hintText = "시/도",
+                    hasDefaultFirstItem = false
                 )
                 BaseDropDown(
                     modifier = Modifier.weight(1f),
                     listData = viewModel.listDistrict.map { district ->
                         KeyValueModel(district.id.toString(), district.name?.get(0)?.name)
                     }.toMutableList(),
+                    hintText = "구/군"
                 )
             }
 
@@ -200,8 +203,9 @@ class SecondHandRegisFragment : BaseFragment() {
                 Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    Modifier
+                BaseDropDown(
+                    isUseOtherModifier = true,
+                    modifier = Modifier
                         .padding(end = 8.dp)
                         .width(100.dp)
                         .height(36.dp)
@@ -212,19 +216,33 @@ class SecondHandRegisFragment : BaseFragment() {
                             shape = RoundedCornerShape(4.dp)
                         )
                         .padding(horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        "P",
-                        style = text14_62,
-                        modifier = Modifier.weight(1f),
-                        textAlign = TextAlign.Start
-                    )
-                    Image(
-                        painter = painterResource(R.drawable.ic_arrow_dropdown),
-                        contentDescription = null
-                    )
-                }
+                    listData = GetDummyData.getMoneyType()
+                )
+//                Row(
+//                    Modifier
+//                        .padding(end = 8.dp)
+//                        .width(100.dp)
+//                        .height(36.dp)
+//                        .background(ColorUtils.white_FFFFFF)
+//                        .border(
+//                            width = 1.dp,
+//                            color = ColorUtils.gray_E1E1E1,
+//                            shape = RoundedCornerShape(4.dp)
+//                        )
+//                        .padding(horizontal = 8.dp),
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Text(
+//                        "P",
+//                        style = text14_62,
+//                        modifier = Modifier.weight(1f),
+//                        textAlign = TextAlign.Start
+//                    )
+//                    Image(
+//                        painter = painterResource(R.drawable.ic_arrow_dropdown),
+//                        contentDescription = null
+//                    )
+//                }
 
                 val stateEdtPurchase = remember { mutableStateOf(TextFieldValue("")) }
                 BasicTextField(
@@ -357,29 +375,39 @@ class SecondHandRegisFragment : BaseFragment() {
     @Composable
     private fun BaseDropDown(
         modifier: Modifier = Modifier,
+        isUseOtherModifier: Boolean = false,
         listData: MutableList<KeyValueModel>? = null,
-        onClick: ((String) -> Unit)? = null
+        onClick: ((String) -> Unit)? = null,
+        hintText: String? = null,
+        hasDefaultFirstItem: Boolean = true
     ) {
         var expanded by remember { mutableStateOf(false) }
-        val itemSelected = remember { mutableStateOf(KeyValueModel()) }
-        LaunchedEffect(listData) {
-            itemSelected.value =
-                if ((listData?.size ?: 0) > 0) listData!![0] else KeyValueModel()
-        }
+        val itemSelected = remember { mutableStateOf(KeyValueModel(hintText, hintText)) }
+        if (hasDefaultFirstItem)
+            LaunchedEffect(listData) {
+                itemSelected.value =
+                    if ((listData?.size ?: 0) > 0) listData!![0] else KeyValueModel(
+                        hintText,
+                        hintText
+                    )
+            }
         Row(
-            modifier
-                .fillMaxWidth()
-                .height(36.dp)
-                .background(ColorUtils.white_FFFFFF)
-                .border(
-                    width = 1.dp,
-                    color = ColorUtils.blue_2177E4_opacity_10,
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .padding(horizontal = 8.dp)
-                .noRippleClickable {
-                    expanded = true
-                },
+            modifier = if (isUseOtherModifier) modifier.noRippleClickable {
+                expanded = true
+            } else
+                modifier
+                    .fillMaxWidth()
+                    .height(36.dp)
+                    .background(ColorUtils.white_FFFFFF)
+                    .border(
+                        width = 1.dp,
+                        color = ColorUtils.blue_2177E4_opacity_10,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp)
+                    .noRippleClickable {
+                        expanded = true
+                    },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(

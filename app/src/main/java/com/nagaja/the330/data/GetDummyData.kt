@@ -20,6 +20,13 @@ object GetDummyData {
         }
     }
 
+    fun getMoneyType(): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel("peso", "₱"))
+            add(KeyValueModel("dollar", "$"))
+        }
+    }
+
     fun getSortFavoriteCompany(context: Context): MutableList<KeyValueModel> {
         return mutableListOf<KeyValueModel>().apply {
             add(KeyValueModel("CREATED_ON", context.getString(R.string.sort_create_on)))
