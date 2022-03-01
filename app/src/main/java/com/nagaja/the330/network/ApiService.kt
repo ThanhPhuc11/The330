@@ -144,4 +144,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body body: SecondHandRequest
     ): SecondHandPostResponse
+
+    @POST("secondhand_posts/viewDetail")
+    suspend fun viewDetailSecondhandPost(
+        @Header("Authorization") token: String,
+        @Query("id") id: Int
+    ): SecondHandModel
 }

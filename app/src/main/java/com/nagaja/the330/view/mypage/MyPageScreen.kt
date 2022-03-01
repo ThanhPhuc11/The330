@@ -42,6 +42,7 @@ import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
 import com.nagaja.the330.view.secondhand.SecondHandFragment
+import com.nagaja.the330.view.secondhanddetail.SecondHandDetailFragment
 import com.nagaja.the330.view.secondhandregis.SecondHandRegisFragment
 import com.nagaja.the330.view.text14_222
 import com.nagaja.the330.view.usage.UsageFragment
@@ -84,8 +85,8 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
 
     val clickReport: () -> Unit = {
         viewController?.pushFragment(
-            ScreenId.SCREEN_OTHER_SETTING,
-            SecondHandRegisFragment.newInstance()
+            ScreenId.SCREEN_SECONDHAND_DETAIL,
+            SecondHandDetailFragment.newInstance(6)
         )
     }
     val viewModelStoreOwner: ViewModelStoreOwner =

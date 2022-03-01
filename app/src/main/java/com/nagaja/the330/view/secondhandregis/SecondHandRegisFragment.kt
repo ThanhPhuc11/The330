@@ -49,9 +49,11 @@ import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.NameUtils
 import com.nagaja.the330.utils.RealPathUtil
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.HeaderOption
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.secondhanddetail.SecondHandDetailFragment
 import com.nagaja.the330.view.text14_62
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
@@ -76,6 +78,10 @@ class SecondHandRegisFragment : BaseFragment() {
         viewController = (activity as MainActivity).viewController
 
         viewModel.callbackPostSuccess.observe(viewLifecycleOwner) {
+            viewController?.pushFragment(
+                ScreenId.SCREEN_SECONDHAND_DETAIL,
+                SecondHandDetailFragment.newInstance(it)
+            )
             showMessDEBUG("Success")
         }
 

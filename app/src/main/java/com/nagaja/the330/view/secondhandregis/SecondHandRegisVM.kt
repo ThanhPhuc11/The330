@@ -38,7 +38,7 @@ class SecondHandRegisVM(
     val listCity = mutableStateListOf<CityModel>()
     val listDistrict = mutableStateListOf<DistrictModel>()
 
-    val callbackPostSuccess = MutableLiveData<Unit>()
+    val callbackPostSuccess = MutableLiveData<Int>()
 
     fun getCity(token: String) {
         viewModelScope.launch {
@@ -106,7 +106,7 @@ class SecondHandRegisVM(
                             }
                         }
                     } else {
-                        callbackPostSuccess.value = Unit
+                        callbackPostSuccess.value = 6
                     }
                 }
         }
@@ -134,7 +134,7 @@ class SecondHandRegisVM(
                         handleError2(it)
                     }
                     if (countImageUploadDone == countImageUpload) {
-                        callbackPostSuccess.value = Unit
+                        callbackPostSuccess.value = 6
                     }
                 }
         }
