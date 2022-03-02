@@ -33,7 +33,9 @@ import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.SecondHandModel
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.secondhandregis.SecondHandRegisFragment
 import com.skydoves.landscapist.glide.GlideImage
 
 class SecondHandMarketFragment : BaseFragment() {
@@ -133,13 +135,16 @@ class SecondHandMarketFragment : BaseFragment() {
                     .padding(vertical = 8.dp, horizontal = 16.dp),
             ) {
                 //TODO: City
+                val listCity = remember {
+                    viewModel.listCity.map { cityModel ->
+                        KeyValueModel(cityModel.id.toString(), cityModel.name?.get(0)?.name)
+                    }.toMutableList()
+                }
                 BaseDropDown(
                     modifier = Modifier
                         .padding(end = 8.dp)
                         .weight(1f),
-                    listData = viewModel.listCity.map { cityModel ->
-                        KeyValueModel(cityModel.id.toString(), cityModel.name?.get(0)?.name)
-                    }.toMutableList(),
+                    listData = listCity,
                     onClick = { id ->
                         viewModel.city = id
                         viewModel.getDistrict(accessToken!!, id.toInt())
@@ -148,14 +153,17 @@ class SecondHandMarketFragment : BaseFragment() {
                     hasDefaultFirstItem = false
                 )
                 //TODO: District
+                val listDistrictInput = remember {
+                    viewModel.listDistrict.map { district ->
+                        KeyValueModel(district.id.toString(), district.name?.get(0)?.name)
+                    }.toMutableList()
+                }
                 LaunchedEffect(viewModel.listDistrict) {
                     viewModel.district = viewModel.listDistrict.getOrNull(0)?.id?.toString()
                 }
                 BaseDropDown(
                     modifier = Modifier.weight(1f),
-                    listData = viewModel.listDistrict.map { district ->
-                        KeyValueModel(district.id.toString(), district.name?.get(0)?.name)
-                    }.toMutableList(),
+                    listData = listDistrictInput,
                     hintText = "구/군",
                     onClick = {
                         viewModel.district = it
@@ -173,14 +181,22 @@ class SecondHandMarketFragment : BaseFragment() {
                         .background(
                             color = ColorUtils.blue_2177E4,
                             shape = RoundedCornerShape(2.dp)
-                        ),
+                        )
+                        .noRippleClickable {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_SECONDHAND_POST,
+                                SecondHandRegisFragment.newInstance()
+                            )
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Text("중고판매등록", color = ColorUtils.white_FFFFFF, fontSize = 14.sp)
                 }
                 Spacer(modifier = Modifier.weight(1f))
 
-                val listSort = GetDummyData.getSortSecondHandMarket()
+                val listSort = remember {
+                    GetDummyData.getSortSecondHandMarket()
+                }
                 var expanded1 by remember { mutableStateOf(false) }
                 val itemSelected = remember { mutableStateOf(KeyValueModel()) }
                 LaunchedEffect(listSort) {

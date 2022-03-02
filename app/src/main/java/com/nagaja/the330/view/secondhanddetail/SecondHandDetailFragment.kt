@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
@@ -101,7 +102,7 @@ class SecondHandDetailFragment : BaseFragment() {
                     val configuration = LocalConfiguration.current
                     val screenWidth = configuration.screenWidthDp.dp
                     GlideImage(
-                        imageModel = "",
+                        imageModel = "${BuildConfig.BASE_S3}${viewModel.secondhandDetail.value.images?.getOrNull(0)?.url}",
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(screenWidth),

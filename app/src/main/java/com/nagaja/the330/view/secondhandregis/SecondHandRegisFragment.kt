@@ -258,6 +258,9 @@ class SecondHandRegisFragment : BaseFragment() {
                 Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val listCurrencyInput = remember {
+                    GetDummyData.getMoneyType()
+                }
                 BaseDropDown(
                     isUseOtherModifier = true,
                     modifier = Modifier
@@ -271,7 +274,10 @@ class SecondHandRegisFragment : BaseFragment() {
                             shape = RoundedCornerShape(4.dp)
                         )
                         .padding(horizontal = 8.dp),
-                    listData = GetDummyData.getMoneyType()
+                    listData = listCurrencyInput,
+                    onClick = {
+                        viewModel.isPeso = it == GetDummyData.getMoneyType()[0].id
+                    }
                 )
 //                Row(
 //                    Modifier

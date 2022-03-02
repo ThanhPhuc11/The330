@@ -39,6 +39,7 @@ class SecondHandRegisVM(
     val listDistrict = mutableStateListOf<DistrictModel>()
 
     val callbackPostSuccess = MutableLiveData<Int>()
+    var justSuccessId: Int? = null
 
     fun getCity(token: String) {
         viewModelScope.launch {
@@ -93,6 +94,7 @@ class SecondHandRegisVM(
                 .catch { handleError(it) }
                 .collect {
                     callbackSuccess.value = Unit
+                    justSuccessId = it.id
                     if (it.presignedList?.isNotEmpty() == true) {
                         countImageUpload = it.presignedList!!.size
                         it.presignedList!!.forEach { fileModel ->
@@ -106,7 +108,7 @@ class SecondHandRegisVM(
                             }
                         }
                     } else {
-                        callbackPostSuccess.value = 6
+                        callbackPostSuccess.value = justSuccessId
                     }
                 }
         }
@@ -134,7 +136,7 @@ class SecondHandRegisVM(
                         handleError2(it)
                     }
                     if (countImageUploadDone == countImageUpload) {
-                        callbackPostSuccess.value = 6
+                        callbackPostSuccess.value = justSuccessId
                     }
                 }
         }
