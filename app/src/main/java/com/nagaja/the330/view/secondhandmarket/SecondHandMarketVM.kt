@@ -1,33 +1,29 @@
 package com.nagaja.the330.view.secondhandmarket
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.toMutableStateList
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
-import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.model.*
+import com.nagaja.the330.model.CityModel
+import com.nagaja.the330.model.DistrictModel
+import com.nagaja.the330.model.FileModel
+import com.nagaja.the330.model.SecondHandModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
 
 class SecondHandMarketVM(
     private val repo: SecondHandMarketRepo
 ) : BaseViewModel() {
-    var category: String = ""
+    var category: String? = null
     var city: String? = null
     var district: String? = null
+    var listData = mutableListOf<SecondHandModel>()
+    var stateListData = mutableStateListOf<SecondHandModel>()
 
-    val secondhandDetail = mutableStateOf(SecondHandModel())
+
     val listImage = mutableStateListOf<FileModel>()
     val listCity = mutableStateListOf<CityModel>()
     val listDistrict = mutableStateListOf<DistrictModel>()
@@ -61,15 +57,34 @@ class SecondHandMarketVM(
         }
     }
 
-    fun getDetail(token: String, id: Int) {
+    fun secondHandMarket(
+        token: String,
+//        secondhandCategoryType: String?,
+//        page: Int,
+//        size: Int,
+//        sort: String
+    ) {
         viewModelScope.launch {
-            repo.viewDetailSecondhandPost(token, id)
+            repo.secondHandMarket(
+                token = token,
+                cityId = city?.toInt(),
+                districtId = district?.toInt(),
+                secondhandCategoryType = category,
+                page = 0,
+                size = 10,
+                sort = "LASTEST"
+            )
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }
                 .catch { handleError(it) }
                 .collect {
                     callbackSuccess.value = Unit
-                    secondhandDetail.value = it
+                    listData.clear()
+                    it.content?.let { it1 ->
+                        listData.addAll(it1)
+                        stateListData.clear()
+                        stateListData.addAll(listData)
+                    }
                 }
         }
     }

@@ -15,12 +15,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
@@ -48,6 +52,27 @@ class SecondHandMarketFragment : BaseFragment() {
     @Preview
     @Composable
     override fun UIData() {
+        val owner = LocalLifecycleOwner.current
+//        val listCategory = GetDummyData.getSecondHandCategory()
+
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+//                        viewModel.category = listCategory[0].id!!
+                        accessToken?.let {
+                            viewModel.getCity(it)
+                            viewModel.secondHandMarket(it)
+                        }
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
         LayoutTheme330 {
             HeaderSearch(
                 clickBack = {
@@ -160,13 +185,12 @@ class SecondHandMarketFragment : BaseFragment() {
             Box(
                 Modifier
                     .padding(horizontal = 16.dp)
-                    .background(ColorUtils.gray_E7E7E7)) {
-                val listSecondHand = mutableListOf<SecondHandModel>().apply {
-                    add(SecondHandModel())
-                }
+                    .background(ColorUtils.gray_E7E7E7)
+            ) {
+                val listSecondHand = viewModel.stateListData
                 LazyColumn(state = rememberLazyListState()) {
                     itemsIndexed(listSecondHand) { index, obj ->
-                        ItemSecondHand()
+                        ItemSecondHand(obj)
                     }
                 }
             }
@@ -283,9 +307,8 @@ class SecondHandMarketFragment : BaseFragment() {
         }
     }
 
-    @Preview
     @Composable
-    private fun ItemSecondHand() {
+    private fun ItemSecondHand(obj: SecondHandModel) {
         Column(
             Modifier
                 .padding(bottom = 1.dp)
@@ -293,9 +316,13 @@ class SecondHandMarketFragment : BaseFragment() {
                 .background(ColorUtils.white_FFFFFF)
                 .padding(vertical = 20.dp)
         ) {
-            Row() {
+            Row {
                 GlideImage(
-                    imageModel = "",
+                    imageModel = try {
+                        "${BuildConfig.BASE_S3}${obj.images?.get(0)?.url ?: ""}"
+                    } catch (e: Exception) {
+                        ""
+                    },
                     Modifier
                         .size(96.dp)
                         .clip(RoundedCornerShape(4.dp)),
@@ -309,7 +336,7 @@ class SecondHandMarketFragment : BaseFragment() {
                         .height(96.dp)
                 ) {
                     Text(
-                        "[여성잡화] 흰색 단화 230",
+                        "[${obj.type}] ${obj.title}",
                         color = ColorUtils.black_000000,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
@@ -317,15 +344,11 @@ class SecondHandMarketFragment : BaseFragment() {
                     )
                     Row {
                         Text(
-                            try {
-                                AppDateUtils.changeDateFormat(
-                                    AppDateUtils.FORMAT_16,
-                                    AppDateUtils.FORMAT_15,
-                                    viewModel.secondhandDetail.value.createdOn ?: ""
-                                )
-                            } catch (e: Exception) {
-                                ""
-                            },
+                            AppDateUtils.changeDateFormat(
+                                AppDateUtils.FORMAT_16,
+                                AppDateUtils.FORMAT_15,
+                                obj.createdOn ?: ""
+                            ),
                             color = ColorUtils.gray_9F9F9F,
                             fontSize = 12.sp,
                         )
@@ -338,7 +361,7 @@ class SecondHandMarketFragment : BaseFragment() {
                             colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
                         )
                         Text(
-                            "조회수 {viewModel.secondhandDetail.value.viewCount ?: 0}",
+                            "조회수 ${obj.viewCount ?: 0}",
                             color = ColorUtils.gray_9F9F9F,
                             fontSize = 12.sp,
                         )
@@ -350,7 +373,7 @@ class SecondHandMarketFragment : BaseFragment() {
                         contentAlignment = Alignment.BottomEnd
                     ) {
                         Text(
-                            "\$ 19.00 ",
+                            price(obj),
                             color = ColorUtils.black_000000,
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Medium
@@ -359,12 +382,19 @@ class SecondHandMarketFragment : BaseFragment() {
                 }
             }
             Text(
-                "발이 너무 작아서 사이즈 미스로 팔아요ㅠㅠ\n" +
-                        "한 번도 안신었고 첫 번째 사진은 쇼핑몰 사진입니다 230...",
+                obj.body ?: "",
                 style = text14_62,
                 modifier = Modifier.padding(top = 16.dp),
                 textAlign = TextAlign.Start
             )
+        }
+    }
+
+    private fun price(secondhand: SecondHandModel): String {
+        return if ((secondhand.dollar ?: 0.0) > 0) {
+            GetDummyData.getMoneyType()[1].name!!.plus(" ").plus(secondhand.dollar)
+        } else {
+            GetDummyData.getMoneyType()[0].name!!.plus(" ").plus(secondhand.peso)
         }
     }
 }

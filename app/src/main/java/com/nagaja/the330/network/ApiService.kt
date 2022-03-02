@@ -84,7 +84,7 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<Unit> // 204
 
-     @DELETE("users")
+    @DELETE("users")
     suspend fun deleteUser(
         @Header("Authorization") token: String
     ): Response<Unit> // 204
@@ -150,4 +150,15 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("id") id: Int
     ): SecondHandModel
+
+    @GET("secondhand_posts/in_main")
+    suspend fun secondHandMarket(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String,
+        @Query("cityId") cityId: Int?,
+        @Query("districtId") districtId: Int?,
+        @Query("secondhandCategoryType") secondhandCategoryType: String?,
+    ): ResponseModel<MutableList<SecondHandModel>>
 }

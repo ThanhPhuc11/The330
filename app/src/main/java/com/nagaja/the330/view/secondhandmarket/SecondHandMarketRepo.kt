@@ -1,9 +1,7 @@
 package com.nagaja.the330.view.secondhandmarket
 
-import com.nagaja.the330.model.SecondHandRequest
 import com.nagaja.the330.network.ApiService
 import kotlinx.coroutines.flow.flow
-import okhttp3.RequestBody
 
 class SecondHandMarketRepo(private val apiService: ApiService) {
     suspend fun getCity(token: String) = flow {
@@ -14,7 +12,25 @@ class SecondHandMarketRepo(private val apiService: ApiService) {
         emit(apiService.getDistrict(token, cityId))
     }
 
-    suspend fun viewDetailSecondhandPost(token: String, id: Int) = flow {
-        emit(apiService.viewDetailSecondhandPost(token, id))
+    suspend fun secondHandMarket(
+        token: String,
+        cityId: Int?,
+        districtId: Int?,
+        secondhandCategoryType: String?,
+        page: Int,
+        size: Int,
+        sort: String
+    ) = flow {
+        emit(
+            apiService.secondHandMarket(
+                token = token,
+                cityId = cityId,
+                districtId = districtId,
+                secondhandCategoryType = secondhandCategoryType,
+                page = page,
+                size = size,
+                sort = sort
+            )
+        )
     }
 }
