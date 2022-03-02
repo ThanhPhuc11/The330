@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.nagaja.the330.R
 import com.nagaja.the330.utils.ColorUtils
 
@@ -116,6 +116,78 @@ fun HeaderOption(
                 .padding(horizontal = 16.dp)
                 .noRippleClickable { clickOption?.invoke() }
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HeaderSearch(clickBack: (() -> Unit)? = null, clickSearch: ((String) -> Unit)? = null) {
+    val stateEdtInput = remember { mutableStateOf(TextFieldValue("")) }
+    Row(
+        modifier = Modifier
+            .background(ColorUtils.white_FFFFFF)
+            .fillMaxWidth()
+            .height(44.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_back),
+            contentDescription = "",
+            Modifier
+                .padding(horizontal = 19.dp)
+                .noRippleClickable { clickBack?.invoke() }
+        )
+        Row(
+            Modifier
+                .padding(end = 16.dp)
+                .fillMaxWidth()
+                .height(36.dp)
+                .background(ColorUtils.blue_2177E4_opacity_5)
+                .border(
+                    width = 1.dp,
+                    color = ColorUtils.blue_2177E4_opacity_10,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .padding(horizontal = 5.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_search),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(horizontal = 9.dp)
+                    .noRippleClickable {
+                        clickSearch?.invoke(stateEdtInput.value.text)
+                    }
+            )
+            BasicTextField(
+                value = stateEdtInput.value,
+                onValueChange = {
+                    if (it.text.length <= 100) stateEdtInput.value = it
+                },
+                Modifier
+                    .fillMaxWidth(),
+                singleLine = true,
+                keyboardActions = KeyboardActions(onSearch = {
+                    clickSearch?.invoke(stateEdtInput.value.text)
+                }),
+                textStyle = TextStyle(
+                    color = ColorUtils.black_000000
+                ),
+                decorationBox = { innerTextField ->
+                    Row {
+                        if (stateEdtInput.value.text.isEmpty()) {
+                            Text(
+                                text = "검색어를 입력해 보세요.",
+                                color = ColorUtils.gray_565656,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                    innerTextField()
+                }
+            )
+        }
     }
 }
 

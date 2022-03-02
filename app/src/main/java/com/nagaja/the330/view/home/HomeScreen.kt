@@ -29,19 +29,23 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
+import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
 import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.secondhandmarket.SecondHandMarketFragment
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun HomeScreen(accessToken: String) {
+fun HomeScreen(accessToken: String, viewController: ViewController?) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
     val viewModelStoreOwner: ViewModelStoreOwner =
@@ -83,7 +87,7 @@ fun HomeScreen(accessToken: String) {
                 .weight(1f)
                 .verticalScroll(state = rememberScrollState())
         ) {
-            CategoryMain(viewModel)
+            CategoryMain(viewModel, viewController)
             ExchangeDollar()
             BannerEvent()
             Row(
@@ -222,7 +226,7 @@ private fun BoxSearch(modifier: Modifier = Modifier, options: MutableList<KeyVal
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun CategoryMain(homeVM: HomeScreenVM) {
+private fun CategoryMain(homeVM: HomeScreenVM, viewController: ViewController?) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -238,7 +242,12 @@ private fun CategoryMain(homeVM: HomeScreenVM) {
                 .wrapContentHeight()
         ) {
             items(homeVM.listCategoryState.value) { obj ->
-                IconCategory(url = obj.image ?: "", title = obj.name ?: "")
+                IconCategory(obj) {
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_SECONDHAND_MARKET,
+                        SecondHandMarketFragment.newInstance()
+                    )
+                }
             }
         }
     }
@@ -246,13 +255,17 @@ private fun CategoryMain(homeVM: HomeScreenVM) {
 }
 
 @Composable
-fun IconCategory(url: String, title: String) {
+fun IconCategory(obj: CategoryModel, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(top = 20.dp)
+        modifier = Modifier
+            .padding(top = 20.dp)
+            .noRippleClickable {
+                onClick.invoke()
+            }
     ) {
         GlideImage(
-            imageModel = "${BuildConfig.BASE_S3}$url",
+            imageModel = "${BuildConfig.BASE_S3}${obj.image ?: ""}",
             // Crop, Fit, Inside, FillHeight, FillWidth, None
             contentScale = ContentScale.Fit,
 //            circularReveal = CircularReveal(duration = 250),
@@ -261,7 +274,7 @@ fun IconCategory(url: String, title: String) {
             modifier = Modifier.size(36.dp)
         )
         Text(
-            title,
+            obj.name ?: "",
             fontSize = 12.sp,
             color = ColorUtils.gray_222222,
             fontWeight = FontWeight(700),

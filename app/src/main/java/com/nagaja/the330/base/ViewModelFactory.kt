@@ -29,6 +29,8 @@ import com.nagaja.the330.view.secondhand.SecondHandRepo
 import com.nagaja.the330.view.secondhand.SecondHandVM
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailRepo
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailVM
+import com.nagaja.the330.view.secondhandmarket.SecondHandMarketRepo
+import com.nagaja.the330.view.secondhandmarket.SecondHandMarketVM
 import com.nagaja.the330.view.secondhandregis.SecondHandRegisRepo
 import com.nagaja.the330.view.secondhandregis.SecondHandRegisVM
 import com.nagaja.the330.view.signupinfo.SignupInfoRepo
@@ -70,6 +72,8 @@ class ViewModelFactory(apiService: ApiService) :
             UsageVM(UsageRepo(apiService))
         creators[SecondHandVM::class.java] =
             SecondHandVM(SecondHandRepo(apiService))
+        creators[SecondHandMarketVM::class.java] =
+            SecondHandMarketVM(SecondHandMarketRepo(apiService))
         creators[SecondHandRegisVM::class.java] =
             SecondHandRegisVM(SecondHandRegisRepo(apiService))
         creators[SecondHandDetailVM::class.java] =

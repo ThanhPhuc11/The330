@@ -133,7 +133,7 @@ class MainFragment : BaseFragment() {
 
     @Composable
     fun HomeTab() {
-        accessToken?.let { HomeScreen(it) }
+        accessToken?.let { HomeScreen(it, viewController) }
     }
 
     @Composable
