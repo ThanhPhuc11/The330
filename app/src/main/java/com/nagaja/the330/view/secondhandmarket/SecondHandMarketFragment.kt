@@ -39,6 +39,7 @@ import com.skydoves.landscapist.glide.GlideImage
 class SecondHandMarketFragment : BaseFragment() {
     private lateinit var viewModel: SecondHandMarketVM
     private var onClickChoose: ((Int) -> Unit)? = null
+    private var onClickSort: ((String) -> Unit)? = null
 
     companion object {
         fun newInstance() = SecondHandMarketFragment()
@@ -62,7 +63,7 @@ class SecondHandMarketFragment : BaseFragment() {
 //                        viewModel.category = listCategory[0].id!!
                         accessToken?.let {
                             viewModel.getCity(it)
-                            viewModel.secondHandMarket(it)
+                            viewModel.getListSecondHandMarket(it)
                         }
                     }
                     else -> {}
@@ -148,7 +149,7 @@ class SecondHandMarketFragment : BaseFragment() {
                 )
                 //TODO: District
                 LaunchedEffect(viewModel.listDistrict) {
-                    viewModel.district = viewModel.listDistrict.getOrNull(0)?.id.toString()
+                    viewModel.district = viewModel.listDistrict.getOrNull(0)?.id?.toString()
                 }
                 BaseDropDown(
                     modifier = Modifier.weight(1f),
@@ -178,8 +179,45 @@ class SecondHandMarketFragment : BaseFragment() {
                     Text("중고판매등록", color = ColorUtils.white_FFFFFF, fontSize = 14.sp)
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Image(painter = painterResource(R.drawable.ic_sort), contentDescription = null)
-                Text("최신순", style = text14_222)
+
+                val listSort = GetDummyData.getSortSecondHandMarket()
+                var expanded1 by remember { mutableStateOf(false) }
+                val itemSelected = remember { mutableStateOf(KeyValueModel()) }
+                LaunchedEffect(listSort) {
+                    itemSelected.value =
+                        if (listSort.size > 0) listSort[0] else KeyValueModel()
+                }
+                onClickSort = { id ->
+                    viewModel.getListSecondHandMarket(accessToken!!, id)
+                }
+                Row {
+                    Image(painter = painterResource(R.drawable.ic_sort), contentDescription = null)
+                    Text(
+                        itemSelected.value.name ?: "",
+                        style = text14_222,
+                        modifier = Modifier.noRippleClickable {
+                            expanded1 = true
+                        })
+                    DropdownMenu(
+                        expanded = expanded1,
+                        onDismissRequest = {
+                            expanded1 = false
+                        }
+                    ) {
+                        listSort.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    itemSelected.value = selectionOption
+                                    expanded1 = false
+                                    onClickSort?.invoke(selectionOption.id ?: "null")
+                                    showMessDEBUG(itemSelected.value.id)
+                                }
+                            ) {
+                                Text(text = selectionOption.name!!)
+                            }
+                        }
+                    }
+                }
             }
             Divider(color = ColorUtils.gray_BEBEBE, modifier = Modifier.padding(horizontal = 16.dp))
             Box(
@@ -318,11 +356,7 @@ class SecondHandMarketFragment : BaseFragment() {
         ) {
             Row {
                 GlideImage(
-                    imageModel = try {
-                        "${BuildConfig.BASE_S3}${obj.images?.get(0)?.url ?: ""}"
-                    } catch (e: Exception) {
-                        ""
-                    },
+                    imageModel = "${BuildConfig.BASE_S3}${obj.images?.getOrNull(0)?.url ?: ""}",
                     Modifier
                         .size(96.dp)
                         .clip(RoundedCornerShape(4.dp)),

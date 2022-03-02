@@ -57,12 +57,12 @@ class SecondHandMarketVM(
         }
     }
 
-    fun secondHandMarket(
+    fun getListSecondHandMarket(
         token: String,
 //        secondhandCategoryType: String?,
 //        page: Int,
 //        size: Int,
-//        sort: String
+        sort: String = "LASTEST"
     ) {
         viewModelScope.launch {
             repo.secondHandMarket(
@@ -72,7 +72,7 @@ class SecondHandMarketVM(
                 secondhandCategoryType = category,
                 page = 0,
                 size = 10,
-                sort = "LASTEST"
+                sort = sort
             )
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }

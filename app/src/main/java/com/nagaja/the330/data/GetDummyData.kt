@@ -84,4 +84,13 @@ object GetDummyData {
             add(KeyValueModel(AppConstants.SecondhandCategory.BUY, "삽니다"))
         }
     }
+
+    fun getSortSecondHandMarket(): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel("LASTEST", "최신순"))
+            add(KeyValueModel("NEAREST", "가까운 순"))
+            add(KeyValueModel("PRICE_DESC", "저가 순"))
+            add(KeyValueModel("PRICE_ASC", "고가 순"))
+        }
+    }
 }
