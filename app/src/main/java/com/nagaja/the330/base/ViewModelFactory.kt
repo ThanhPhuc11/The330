@@ -17,6 +17,8 @@ import com.nagaja.the330.view.general.GeneralRepository
 import com.nagaja.the330.view.general.GeneralViewModel
 import com.nagaja.the330.view.home.HomeScreenRepo
 import com.nagaja.the330.view.home.HomeScreenVM
+import com.nagaja.the330.view.localnews.LocalNewsRepo
+import com.nagaja.the330.view.localnews.LocalNewsVM
 import com.nagaja.the330.view.login.LoginRepository
 import com.nagaja.the330.view.login.LoginViewModel
 import com.nagaja.the330.view.mypage.MyPageScreenRepo
@@ -84,6 +86,8 @@ class ViewModelFactory(apiService: ApiService) :
             ApplyCompanyVM(ApplyCompanyRepo(apiService))
         creators[ProductCompanyVM::class.java] =
             ProductCompanyVM(ProductCompanyRepo(apiService))
+        creators[LocalNewsVM::class.java] =
+            LocalNewsVM(LocalNewsRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
