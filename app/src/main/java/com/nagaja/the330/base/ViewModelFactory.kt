@@ -13,6 +13,8 @@ import com.nagaja.the330.view.favoritecompany.FavCompanyRepo
 import com.nagaja.the330.view.favoritecompany.FavCompanyVM
 import com.nagaja.the330.view.findId.FindIdRepo
 import com.nagaja.the330.view.findId.FindIdVM
+import com.nagaja.the330.view.freenoticeboard.FreeNoticeRepo
+import com.nagaja.the330.view.freenoticeboard.FreeNoticeVM
 import com.nagaja.the330.view.general.GeneralRepository
 import com.nagaja.the330.view.general.GeneralViewModel
 import com.nagaja.the330.view.home.HomeScreenRepo
@@ -92,6 +94,8 @@ class ViewModelFactory(apiService: ApiService) :
             LocalNewsVM(LocalNewsRepo(apiService))
         creators[LocalNewsDetailVM::class.java] =
             LocalNewsDetailVM(LocalNewsDetailRepo(apiService))
+        creators[FreeNoticeVM::class.java] =
+            FreeNoticeVM(FreeNoticeRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

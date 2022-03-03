@@ -176,4 +176,13 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("id") id: Int,
     ): LocalNewsModel
+
+    @GET("free_notice_boards")
+    suspend fun getFreeNoticeBoard(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String,
+        @Query("all") all: String?,
+    ): ResponseModel<MutableList<FreeNoticeModel>>
 }

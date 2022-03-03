@@ -1,5 +1,6 @@
 package com.nagaja.the330.view
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -121,7 +122,11 @@ fun HeaderOption(
 
 @Preview(showBackground = true)
 @Composable
-fun HeaderSearch(clickBack: (() -> Unit)? = null, clickSearch: ((String) -> Unit)? = null) {
+fun HeaderSearch(
+    clickBack: (() -> Unit)? = null,
+    clickSearch: ((String) -> Unit)? = null,
+    textSearch: String? = null
+) {
     val stateEdtInput = remember { mutableStateOf(TextFieldValue("")) }
     Row(
         modifier = Modifier
@@ -140,7 +145,7 @@ fun HeaderSearch(clickBack: (() -> Unit)? = null, clickSearch: ((String) -> Unit
         Row(
             Modifier
                 .padding(end = 16.dp)
-                .fillMaxWidth()
+                .weight(1f)
                 .height(36.dp)
                 .background(ColorUtils.blue_2177E4_opacity_5)
                 .border(
@@ -186,6 +191,19 @@ fun HeaderSearch(clickBack: (() -> Unit)? = null, clickSearch: ((String) -> Unit
                     }
                     innerTextField()
                 }
+            )
+        }
+        AnimatedVisibility(visible = textSearch != null) {
+            Text(
+                textSearch ?: "",
+                color = ColorUtils.blue_2177E4,
+                fontSize = 14.sp,
+                fontWeight = FontWeight(500),
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .noRippleClickable {
+                        clickSearch?.invoke(stateEdtInput.value.text)
+                    }
             )
         }
     }
