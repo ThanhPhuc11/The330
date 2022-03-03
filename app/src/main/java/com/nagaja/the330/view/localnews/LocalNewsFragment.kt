@@ -34,7 +34,9 @@ import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.LocalNewsModel
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.localnewsdetail.LocalNewsDetailFragment
 import com.skydoves.landscapist.glide.GlideImage
 
 class LocalNewsFragment : BaseFragment() {
@@ -155,6 +157,12 @@ class LocalNewsFragment : BaseFragment() {
                 .fillMaxWidth()
                 .background(ColorUtils.white_FFFFFF)
                 .padding(vertical = 20.dp)
+                .noRippleClickable {
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_LOCALNEWS_DETAIL,
+                        LocalNewsDetailFragment.newInstance(obj.id!!)
+                    )
+                }
         ) {
             GlideImage(
 //                    imageModel = "${BuildConfig.BASE_S3}${obj.images?.getOrNull(0)?.url ?: ""}",

@@ -170,4 +170,10 @@ interface ApiService {
         @Query("sort") sort: String,
         @Query("all") all: String?,
     ): ResponseModel<MutableList<LocalNewsModel>>
+
+    @POST("local_news/viewDetail")
+    suspend fun getListLocalNewsDetail(
+        @Header("Authorization") token: String,
+        @Query("id") id: Int,
+    ): LocalNewsModel
 }

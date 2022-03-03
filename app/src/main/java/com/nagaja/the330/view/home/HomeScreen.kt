@@ -39,6 +39,7 @@ import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.localnews.LocalNewsFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.secondhandmarket.SecondHandMarketFragment
 import com.nagaja.the330.view.text14_222
@@ -245,7 +246,7 @@ private fun CategoryMain(homeVM: HomeScreenVM, viewController: ViewController?) 
                 IconCategory(obj) {
                     viewController?.pushFragment(
                         ScreenId.SCREEN_SECONDHAND_MARKET,
-                        SecondHandMarketFragment.newInstance()
+                        LocalNewsFragment.newInstance()
                     )
                 }
             }
