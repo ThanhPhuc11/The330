@@ -1,15 +1,12 @@
 package com.nagaja.the330.view.localnewsdetail
 
 import android.os.Bundle
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +20,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -85,7 +83,11 @@ class LocalNewsDetailFragment : BaseFragment() {
             Header("현지뉴스") {
                 viewController?.popFragment()
             }
-            Column(Modifier.verticalScroll(rememberScrollState())) {
+            Column(
+                Modifier
+                    .verticalScroll(rememberScrollState())
+                    .weight(1f)
+            ) {
                 Column(
                     Modifier
                         .padding(horizontal = 16.dp)
@@ -193,6 +195,37 @@ class LocalNewsDetailFragment : BaseFragment() {
                         }
                         Divider(color = ColorUtils.gray_E1E1E1)
                     }
+                }
+            }
+            Box(Modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(44.dp)
+                        .border(
+                            width = 1.dp,
+                            color = ColorUtils.gray_E1E1E1,
+                            shape = RoundedCornerShape(99.dp)
+                        )
+                        .background(
+                            ColorUtils.gray_F5F5F5,
+                            shape = RoundedCornerShape(99.dp)
+                        )
+                        .padding(2.dp)
+                        .padding(start = 17.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "댓글을 입력해 보세요.",
+                        color = ColorUtils.gray_BEBEBE,
+                        fontSize = 14.sp,
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Start
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.ic_post_comment),
+                        contentDescription = null
+                    )
                 }
             }
         }
