@@ -161,4 +161,13 @@ interface ApiService {
         @Query("districtId") districtId: Int?,
         @Query("secondhandCategoryType") secondhandCategoryType: String?,
     ): ResponseModel<MutableList<SecondHandModel>>
+
+    @GET("local_news/in_main")
+    suspend fun getListLocalNews(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String,
+        @Query("all") all: String?,
+    ): ResponseModel<MutableList<LocalNewsModel>>
 }

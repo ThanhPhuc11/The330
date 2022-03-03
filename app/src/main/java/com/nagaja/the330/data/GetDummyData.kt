@@ -93,4 +93,12 @@ object GetDummyData {
             add(KeyValueModel("PRICE_ASC", "고가 순"))
         }
     }
+
+    fun getSortLocalNews(): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel("LASTEST", "최신순"))
+            add(KeyValueModel("VIEW_COUNT", "조회 순"))
+            add(KeyValueModel("COMMENT_COUNT", "댓글 순"))
+        }
+    }
 }

@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.nagaja.the330.MainActivity
@@ -31,6 +32,7 @@ import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.LocalNewsModel
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.*
 import com.skydoves.landscapist.glide.GlideImage
@@ -57,7 +59,7 @@ class LocalNewsFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-//                        viewModel.category = listCategory[0].id!!
+                        accessToken?.let { viewModel.getListLocalNews(it) }
                     }
                     else -> {}
                 }
@@ -81,7 +83,7 @@ class LocalNewsFragment : BaseFragment() {
                 Spacer(modifier = Modifier.weight(1f))
                 Row {
                     val listSort = remember {
-                        GetDummyData.getSortSecondHandMarket()
+                        GetDummyData.getSortLocalNews()
                     }
                     var expanded1 by remember { mutableStateOf(false) }
                     val itemSelected = remember { mutableStateOf(KeyValueModel()) }
@@ -90,7 +92,7 @@ class LocalNewsFragment : BaseFragment() {
                             if (listSort.size > 0) listSort[0] else KeyValueModel()
                     }
                     onClickSort = { id ->
-                        viewModel.getListSecondHandMarket(accessToken!!, id)
+                        viewModel.getListLocalNews(accessToken!!, id)
                     }
                     Image(painter = painterResource(R.drawable.ic_sort), contentDescription = null)
                     Text(
@@ -133,32 +135,20 @@ class LocalNewsFragment : BaseFragment() {
                 Modifier
                     .padding(horizontal = 16.dp)
                     .background(ColorUtils.black_000000_opacity_5)
-//                    .alpha(0.05f)
             )
             {
-                val news = remember {
-                    mutableListOf<KeyValueModel>().apply {
-                        add(KeyValueModel())
-                        add(KeyValueModel())
-                        add(KeyValueModel())
-                        add(KeyValueModel())
-                        add(KeyValueModel())
-                        add(KeyValueModel())
-                        add(KeyValueModel())
-                    }
-                }
+                val news = viewModel.stateListData
                 LazyColumn(state = rememberLazyListState()) {
                     itemsIndexed(news) { index, obj ->
-                        ItemLocalNews()
+                        ItemLocalNews(obj)
                     }
                 }
             }
         }
     }
 
-    @Preview
     @Composable
-    private fun ItemLocalNews() {
+    private fun ItemLocalNews(obj: LocalNewsModel) {
         Row(
             Modifier
                 .padding(bottom = 1.dp)
@@ -182,7 +172,7 @@ class LocalNewsFragment : BaseFragment() {
                     .height(96.dp)
             ) {
                 Text(
-                    "기사제목기사제목기사제목",
+                    obj.title ?: "",
                     color = ColorUtils.black_000000,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -190,7 +180,7 @@ class LocalNewsFragment : BaseFragment() {
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "조회수 270",
+                        "조회수 ${obj.viewCount ?: 0}",
                         color = ColorUtils.gray_9F9F9F,
                         fontSize = 12.sp,
                     )
@@ -203,7 +193,7 @@ class LocalNewsFragment : BaseFragment() {
                         colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
                     )
                     Text(
-                        "댓글 20",
+                        "댓글 ${obj.commentCount ?: 0}",
                         color = ColorUtils.gray_9F9F9F,
                         fontSize = 12.sp,
                     )
@@ -215,7 +205,8 @@ class LocalNewsFragment : BaseFragment() {
                     contentAlignment = Alignment.BottomStart
                 ) {
                     Text(
-                        "{설명내용 일부 (등록된 글의 앞부분만 표시 + …)설명내용 일부 (등록된 글의 앞...",
+                        HtmlCompat.fromHtml(obj.body ?: "", HtmlCompat.FROM_HTML_MODE_LEGACY)
+                            .toString(),
                         style = text14_62,
                         textAlign = TextAlign.Start
                     )
