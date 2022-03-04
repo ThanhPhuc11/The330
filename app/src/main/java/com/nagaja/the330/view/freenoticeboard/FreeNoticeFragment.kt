@@ -36,6 +36,7 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.HeaderSearch
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.freenoticedetail.FreeNoticeDetailFragment
 import com.nagaja.the330.view.freenoticeregis.FreeNoticeRegisFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
@@ -43,6 +44,7 @@ import com.nagaja.the330.view.text14_222
 class FreeNoticeFragment : BaseFragment() {
     private lateinit var viewModel: FreeNoticeVM
     private var onClickSort: ((String) -> Unit)? = null
+    private var onClickDetail: ((FreeNoticeModel) -> Unit)? = null
 
     companion object {
         fun newInstance() = FreeNoticeFragment()
@@ -166,6 +168,14 @@ class FreeNoticeFragment : BaseFragment() {
                     .alpha(0.05f)
             )
             val news = viewModel.stateListData
+            onClickDetail = {
+                if (it.notice != true) {
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_FREE_NOTICE_DETAIL,
+                        FreeNoticeDetailFragment.newInstance(it.id!!)
+                    )
+                }
+            }
             LazyColumn(
                 state = rememberLazyListState(),
 //                    verticalArrangement = Arrangement.spacedBy(1.dp)
@@ -216,7 +226,10 @@ class FreeNoticeFragment : BaseFragment() {
                     }
                 )
                 .padding(16.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .noRippleClickable {
+                    onClickDetail?.invoke(obj)
+                },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(Modifier.weight(1f)) {

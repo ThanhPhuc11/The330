@@ -39,6 +39,7 @@ import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.freenoticeboard.FreeNoticeFragment
 import com.nagaja.the330.view.localnews.LocalNewsFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.secondhandmarket.SecondHandMarketFragment
@@ -244,10 +245,7 @@ private fun CategoryMain(homeVM: HomeScreenVM, viewController: ViewController?) 
         ) {
             items(homeVM.listCategoryState.value) { obj ->
                 IconCategory(obj) {
-                    viewController?.pushFragment(
-                        ScreenId.SCREEN_SECONDHAND_MARKET,
-                        LocalNewsFragment.newInstance()
-                    )
+                    linkScreen(it, viewController)
                 }
             }
         }
@@ -255,14 +253,32 @@ private fun CategoryMain(homeVM: HomeScreenVM, viewController: ViewController?) 
 
 }
 
+fun linkScreen(ctype: String, viewController: ViewController?) {
+    when (ctype) {
+        "SECOND_HAND_MARKET" -> viewController?.pushFragment(
+            ScreenId.SCREEN_SECONDHAND_MARKET,
+            SecondHandMarketFragment.newInstance()
+        )
+        "LOCAL_NEWS" -> viewController?.pushFragment(
+            ScreenId.SCREEN_LOCALNEWS_LIST,
+            LocalNewsFragment.newInstance()
+        )
+        "FREE_BOARD" -> viewController?.pushFragment(
+            ScreenId.SCREEN_FREE_NOTICE_BOARD,
+            FreeNoticeFragment.newInstance()
+        )
+        else -> {}
+    }
+}
+
 @Composable
-fun IconCategory(obj: CategoryModel, onClick: () -> Unit) {
+fun IconCategory(obj: CategoryModel, onClick: (String) -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(top = 20.dp)
             .noRippleClickable {
-                onClick.invoke()
+                obj.ctype?.let { onClick.invoke(it) }
             }
     ) {
         GlideImage(
