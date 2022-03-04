@@ -33,8 +33,10 @@ import com.nagaja.the330.model.FreeNoticeModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.HeaderSearch
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.freenoticeregis.FreeNoticeRegisFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
 
@@ -49,6 +51,19 @@ class FreeNoticeFragment : BaseFragment() {
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[FreeNoticeVM::class.java]
         viewController = (activity as MainActivity).viewController
+
+        viewModel.callbackStart.observe(viewLifecycleOwner) {
+            showLoading()
+        }
+        viewModel.callbackSuccess.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.callbackFail.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.showMessCallback.observe(viewLifecycleOwner) {
+            showMess(it)
+        }
     }
 
     @Preview
@@ -79,7 +94,13 @@ class FreeNoticeFragment : BaseFragment() {
                 clickSearch = {
                     showMessDEBUG(it)
                 },
-                textSearch = "글등록"
+                textOption = "글등록",
+                clickOption = {
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_FREE_NOTICE_REGIS,
+                        FreeNoticeRegisFragment.newInstance()
+                    )
+                }
             )
             Box(
                 Modifier

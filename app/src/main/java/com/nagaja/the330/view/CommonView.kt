@@ -125,7 +125,8 @@ fun HeaderOption(
 fun HeaderSearch(
     clickBack: (() -> Unit)? = null,
     clickSearch: ((String) -> Unit)? = null,
-    textSearch: String? = null
+    textOption: String? = null,
+    clickOption: (() -> Unit)? = null
 ) {
     val stateEdtInput = remember { mutableStateOf(TextFieldValue("")) }
     Row(
@@ -193,16 +194,16 @@ fun HeaderSearch(
                 }
             )
         }
-        AnimatedVisibility(visible = textSearch != null) {
+        AnimatedVisibility(visible = textOption != null) {
             Text(
-                textSearch ?: "",
+                textOption ?: "",
                 color = ColorUtils.blue_2177E4,
                 fontSize = 14.sp,
                 fontWeight = FontWeight(500),
                 modifier = Modifier
                     .padding(end = 16.dp)
                     .noRippleClickable {
-                        clickSearch?.invoke(stateEdtInput.value.text)
+                        clickOption?.invoke()
                     }
             )
         }

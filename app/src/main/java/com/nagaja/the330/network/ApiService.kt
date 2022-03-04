@@ -185,4 +185,10 @@ interface ApiService {
         @Query("sort") sort: String,
         @Query("all") all: String?,
     ): ResponseModel<MutableList<FreeNoticeModel>>
+
+    @POST("free_notice_boards")
+    suspend fun makePostNotice(
+        @Header("Authorization") token: String,
+        @Body body: FreeNoticePostRequest
+    ): SecondHandPostResponse
 }
