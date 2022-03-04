@@ -15,6 +15,8 @@ import com.nagaja.the330.view.findId.FindIdRepo
 import com.nagaja.the330.view.findId.FindIdVM
 import com.nagaja.the330.view.freenoticeboard.FreeNoticeRepo
 import com.nagaja.the330.view.freenoticeboard.FreeNoticeVM
+import com.nagaja.the330.view.freenoticedetail.FreeNoticeDetailRepo
+import com.nagaja.the330.view.freenoticedetail.FreeNoticeDetailVM
 import com.nagaja.the330.view.freenoticeregis.FreeNoticeRegisRepo
 import com.nagaja.the330.view.freenoticeregis.FreeNoticeRegisVM
 import com.nagaja.the330.view.general.GeneralRepository
@@ -100,6 +102,8 @@ class ViewModelFactory(apiService: ApiService) :
             FreeNoticeVM(FreeNoticeRepo(apiService))
         creators[FreeNoticeRegisVM::class.java] =
             FreeNoticeRegisVM(FreeNoticeRegisRepo(apiService))
+        creators[FreeNoticeDetailVM::class.java] =
+            FreeNoticeDetailVM(FreeNoticeDetailRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

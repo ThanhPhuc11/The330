@@ -42,7 +42,9 @@ import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.NameUtils
 import com.nagaja.the330.utils.RealPathUtil
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.freenoticedetail.FreeNoticeDetailFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,6 +69,10 @@ class FreeNoticeRegisFragment : BaseFragment() {
 
         viewModel.callbackPostSuccess.observe(viewLifecycleOwner) {
             showMessDEBUG("Success")
+            viewController?.pushFragment(
+                ScreenId.SCREEN_FREE_NOTICE_DETAIL,
+                FreeNoticeDetailFragment.newInstance(it)
+            )
         }
         viewModel.callbackStart.observe(viewLifecycleOwner) {
             showLoading()

@@ -16,12 +16,12 @@ class LocalNewsDetailVM(
     var localNewsModel = mutableStateOf(LocalNewsModel())
 
 
-    fun getListLocalNewsDetail(
+    fun getLocalNewsDetail(
         token: String,
         id: Int
     ) {
         viewModelScope.launch {
-            repo.getListLocalNewsDetail(
+            repo.getLocalNewsDetail(
                 token = token, id
             )
                 .onStart { callbackStart.value = Unit }

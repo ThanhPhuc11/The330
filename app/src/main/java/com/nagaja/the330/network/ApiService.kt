@@ -172,7 +172,7 @@ interface ApiService {
     ): ResponseModel<MutableList<LocalNewsModel>>
 
     @POST("local_news/viewDetail")
-    suspend fun getListLocalNewsDetail(
+    suspend fun getLocalNewsDetail(
         @Header("Authorization") token: String,
         @Query("id") id: Int,
     ): LocalNewsModel
@@ -191,4 +191,16 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body body: FreeNoticePostRequest
     ): SecondHandPostResponse
+
+    @POST("free_notice_boards/detail")
+    suspend fun getFreeNotiDetail(
+        @Header("Authorization") token: String,
+        @Query("id") id: Int,
+    ): FreeNoticeDetailModel
+
+    @POST("free_notice_boards/report")
+    suspend fun reportFreeNotice(
+        @Header("Authorization") token: String,
+        @Body body: ReportModel
+    ): Response<Unit> //200
 }

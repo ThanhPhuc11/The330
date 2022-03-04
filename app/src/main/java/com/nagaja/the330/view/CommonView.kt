@@ -12,6 +12,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -355,6 +359,214 @@ fun Dialog2Button(
 
             )
     )
+}
+
+@Composable
+fun DialogReport(
+    state: MutableState<Boolean>,
+    onClick: ((Boolean, String) -> Unit)?
+) {
+    val textStateReason = remember { mutableStateOf(TextFieldValue("")) }
+    Dialog(
+        onDismissRequest = { state.value = false },
+        content = {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.White)
+            ) {
+                Column(
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        "신고하기",
+                        color = ColorUtils.black_000000,
+                        fontSize = 17.sp,
+                        modifier = Modifier
+                            .padding(top = 28.dp, bottom = 16.dp)
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    TextField(
+                        value = textStateReason.value,
+                        onValueChange = { if (it.text.length <= 1000) textStateReason.value = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .border(
+                                width = 1.dp,
+                                color = ColorUtils.gray_E1E1E1,
+                                shape = RoundedCornerShape(4.dp)
+                            ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = ColorUtils.white_FFFFFF,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "신고사유 직접 입력",
+                                fontSize = 14.sp,
+                                color = ColorUtils.gray_BEBEBE
+                            )
+                        }
+                    )
+
+                    Text(
+                        "※ 관리자에게 신고사유가 전달되며 관리자 확인 후 처리됩니다.",
+                        color = ColorUtils.gray_626262,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 40.dp)
+                    )
+                }
+                //TODO: Button
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                ) {
+                    Box(
+                        Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .background(ColorUtils.gray_222222)
+                            .noRippleClickable {
+                                state.value = false
+                                onClick?.invoke(false, "")
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "취소",
+                            color = ColorUtils.white_FFFFFF,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Box(
+                        Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .background(ColorUtils.blue_2177E4)
+                            .noRippleClickable {
+                                state.value = false
+                                onClick?.invoke(true, textStateReason.value.text)
+                            }, contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "확인",
+                            color = ColorUtils.white_FFFFFF,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        },
+        properties = DialogProperties(
+            dismissOnClickOutside = false,
+            dismissOnBackPress = false
+        )
+    )
+}
+
+@Preview
+@Composable
+fun view1() {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.White)
+    ) {
+        Column(
+            Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Text(
+                "신고하기",
+                color = ColorUtils.black_000000,
+                fontSize = 17.sp,
+                modifier = Modifier
+                    .padding(top = 28.dp, bottom = 16.dp)
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+            val textStateId = remember { mutableStateOf(TextFieldValue("")) }
+            TextField(
+                value = textStateId.value,
+                onValueChange = { if (it.text.length <= 200) textStateId.value = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+                    .border(
+                        width = 1.dp,
+                        color = ColorUtils.gray_E1E1E1,
+                        shape = RoundedCornerShape(4.dp)
+                    ),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = ColorUtils.white_FFFFFF,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                placeholder = {
+                    Text(
+                        text = "신고사유 직접 입력",
+                        fontSize = 14.sp,
+                        color = ColorUtils.gray_BEBEBE
+                    )
+                }
+            )
+
+            Text(
+                "※ 관리자에게 신고사유가 전달되며 관리자 확인 후 처리됩니다.",
+                color = ColorUtils.gray_626262,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 8.dp, bottom = 40.dp)
+            )
+        }
+        //TODO: Button
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+        ) {
+            Box(
+                Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .background(ColorUtils.gray_222222),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    "취소",
+                    color = ColorUtils.white_FFFFFF,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Box(
+                Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .background(ColorUtils.blue_2177E4)
+                    .noRippleClickable {
+
+                    }, contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    "확인",
+                    color = ColorUtils.white_FFFFFF,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
 }
 
 fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
