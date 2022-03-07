@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.google.gson.Gson
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
@@ -414,6 +416,12 @@ class SecondHandRegisFragment : BaseFragment() {
                 contentDescription = "",
                 placeHolder = painterResource(R.drawable.ic_default_nagaja),
                 error = painterResource(R.drawable.ic_default_nagaja),
+                requestOptions = {
+                    RequestOptions()
+                        .override(360, 360)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .centerCrop()
+                },
                 modifier = Modifier
                     .size(72.dp)
                     .constrainAs(content) {

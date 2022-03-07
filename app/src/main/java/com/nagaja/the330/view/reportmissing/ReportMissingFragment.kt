@@ -45,6 +45,7 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailFragment
+import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,6 +65,19 @@ class ReportMissingFragment : BaseFragment() {
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[ReportMissingVM::class.java]
         viewController = (activity as MainActivity).viewController
+
+        viewModel.callbackStart.observe(viewLifecycleOwner) {
+            showLoading()
+        }
+        viewModel.callbackSuccess.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.callbackFail.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.showMessCallback.observe(viewLifecycleOwner) {
+            showMess(it)
+        }
     }
 
     @Preview
@@ -96,7 +110,10 @@ class ReportMissingFragment : BaseFragment() {
                 },
                 textOption = stringResource(R.string.post_register),
                 clickOption = {
-
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_REPORT_MISSING_REGIS,
+                        ReportMissingRegisFragment.newInstance()
+                    )
                 }
             )
             Row(
@@ -390,8 +407,14 @@ class ReportMissingFragment : BaseFragment() {
                         .size(2.dp),
                     colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
                 )
+                val name = if (obj.writer?.type == "COMPANY") {
+                    obj.writer?.companyRequest?.name?.getOrNull(0)?.name
+                        ?: ""
+                } else {
+                    obj.writer?.name ?: ""
+                }
                 Text(
-                    obj.writer?.name ?: "",
+                    name,
                     color = ColorUtils.gray_9F9F9F,
                     fontSize = 12.sp,
                 )

@@ -37,6 +37,8 @@ import com.nagaja.the330.view.reportmissing.ReportMissingRepo
 import com.nagaja.the330.view.reportmissing.ReportMissingVM
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailRepo
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailVM
+import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisRepo
+import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisVM
 import com.nagaja.the330.view.resetpassword.ResetPwRepo
 import com.nagaja.the330.view.resetpassword.ResetPwVM
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailRepo
@@ -112,6 +114,8 @@ class ViewModelFactory(apiService: ApiService) :
             ReportMissingVM(ReportMissingRepo(apiService))
         creators[ReportMissingDetailVM::class.java] =
             ReportMissingDetailVM(ReportMissingDetailRepo(apiService))
+        creators[ReportMissingRegisVM::class.java] =
+            ReportMissingRegisVM(ReportMissingRegisRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

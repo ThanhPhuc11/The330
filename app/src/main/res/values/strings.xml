@@ -243,5 +243,7 @@
 
     <string name="missing">실종자</string>
     <string name="report_missing">신고/실종자</string>
+    <string name="please_enter_local_description">지역 설명을 입력하세요.</string>
+    <string name="registrant">등록자</string>
 
 </resources>

@@ -219,4 +219,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("id") id: Int,
     ): ReportMissingModel
+
+    @POST("report_missing")
+    suspend fun makePostReportMissing(
+        @Header("Authorization") token: String,
+        @Body body: ReportMissingModel
+    ): SecondHandPostResponse
 }

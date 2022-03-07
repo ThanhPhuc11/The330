@@ -49,6 +49,19 @@ class ReportMissingDetailFragment : BaseFragment() {
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[ReportMissingDetailVM::class.java]
         viewController = (activity as MainActivity).viewController
+
+        viewModel.callbackStart.observe(viewLifecycleOwner) {
+            showLoading()
+        }
+        viewModel.callbackSuccess.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.callbackFail.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.showMessCallback.observe(viewLifecycleOwner) {
+            showMess(it)
+        }
     }
 
     @Preview
@@ -146,7 +159,11 @@ class ReportMissingDetailFragment : BaseFragment() {
                     val configuration = LocalConfiguration.current
                     val screenWidth = configuration.screenWidthDp
                     GlideImage(
-                        imageModel = "${BuildConfig.BASE_S3}${""}",
+                        imageModel = "${BuildConfig.BASE_S3}${
+                            viewModel.reportMissingModel.value.images?.getOrNull(
+                                0
+                            )?.url
+                        }",
                         modifier = Modifier
                             .fillMaxWidth()
                             .height((200 * screenWidth / 343).dp)
@@ -155,8 +172,14 @@ class ReportMissingDetailFragment : BaseFragment() {
                         error = painterResource(R.drawable.ic_default_nagaja)
                     )
                     //TODO: Register (company or user)
+                    val name = if (viewModel.reportMissingModel.value.writer?.type == "COMPANY") {
+                        viewModel.reportMissingModel.value.writer?.companyRequest?.name?.getOrNull(0)?.name
+                            ?: ""
+                    } else {
+                        viewModel.reportMissingModel.value.writer?.name ?: ""
+                    }
                     Text(
-                        "등록기관: ${viewModel.reportMissingModel.value.writer?.type}",
+                        "등록기관: $name",
                         style = text14_62,
                         modifier = Modifier.padding(top = 8.dp)
                     )

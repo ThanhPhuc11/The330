@@ -35,7 +35,7 @@ class UserDetail {
     //    var popularArea: Any? = null
 //    var city: Any? = null
 //    var district: Any? = null
-//    var companyRequest: Any? = null
+    var companyRequest: CompanyModel? = null
     var follow: Boolean? = null
 
     @SerializedName("real_name")
