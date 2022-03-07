@@ -42,6 +42,7 @@ import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.freenoticeboard.FreeNoticeFragment
 import com.nagaja.the330.view.localnews.LocalNewsFragment
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.reportmissing.ReportMissingFragment
 import com.nagaja.the330.view.secondhandmarket.SecondHandMarketFragment
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
@@ -266,6 +267,10 @@ fun linkScreen(ctype: String, viewController: ViewController?) {
         "FREE_BOARD" -> viewController?.pushFragment(
             ScreenId.SCREEN_FREE_NOTICE_BOARD,
             FreeNoticeFragment.newInstance()
+        )
+        "REPORT_MISSING_PERSON" -> viewController?.pushFragment(
+            ScreenId.SCREEN_REPORT_MISSING,
+            ReportMissingFragment.newInstance()
         )
         else -> {}
     }

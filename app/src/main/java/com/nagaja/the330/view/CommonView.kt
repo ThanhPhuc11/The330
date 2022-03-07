@@ -204,7 +204,7 @@ fun HeaderSearch(
                 textOption ?: "",
                 color = ColorUtils.blue_2177E4,
                 fontSize = 14.sp,
-                fontWeight = FontWeight(500),
+                fontWeight = FontWeight(600),
                 modifier = Modifier
                     .padding(end = 16.dp)
                     .noRippleClickable {

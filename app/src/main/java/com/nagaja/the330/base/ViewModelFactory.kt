@@ -33,6 +33,8 @@ import com.nagaja.the330.view.mypage.MyPageScreenRepo
 import com.nagaja.the330.view.mypage.MyPageScreenVM
 import com.nagaja.the330.view.othersetting.OtherSettingRepo
 import com.nagaja.the330.view.othersetting.OtherSettingVM
+import com.nagaja.the330.view.reportmissing.ReportMissingRepo
+import com.nagaja.the330.view.reportmissing.ReportMissingVM
 import com.nagaja.the330.view.resetpassword.ResetPwRepo
 import com.nagaja.the330.view.resetpassword.ResetPwVM
 import com.nagaja.the330.view.secondhandmypage.SecondHandMypageRepo
@@ -104,6 +106,8 @@ class ViewModelFactory(apiService: ApiService) :
             FreeNoticeRegisVM(FreeNoticeRegisRepo(apiService))
         creators[FreeNoticeDetailVM::class.java] =
             FreeNoticeDetailVM(FreeNoticeDetailRepo(apiService))
+        creators[ReportMissingVM::class.java] =
+            ReportMissingVM(ReportMissingRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

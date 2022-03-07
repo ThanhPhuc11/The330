@@ -241,4 +241,6 @@
     <string name="company_name_2">기업명</string>
     <string name="contact">연락처</string>
 
+    <string name="missing">실종자</string>
+
 </resources>

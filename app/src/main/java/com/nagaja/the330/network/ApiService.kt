@@ -203,4 +203,14 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body body: ReportModel
     ): Response<Unit> //200
+
+    @GET("report_missing/in_main")
+    suspend fun getReportMissingList(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String,
+        @Query("type") type: String,
+        @Query("all") all: String?,
+    ): ResponseModel<MutableList<ReportMissingModel>>
 }
