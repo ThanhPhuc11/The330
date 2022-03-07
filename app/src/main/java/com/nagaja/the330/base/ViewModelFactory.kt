@@ -35,14 +35,16 @@ import com.nagaja.the330.view.othersetting.OtherSettingRepo
 import com.nagaja.the330.view.othersetting.OtherSettingVM
 import com.nagaja.the330.view.reportmissing.ReportMissingRepo
 import com.nagaja.the330.view.reportmissing.ReportMissingVM
+import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailRepo
+import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailVM
 import com.nagaja.the330.view.resetpassword.ResetPwRepo
 import com.nagaja.the330.view.resetpassword.ResetPwVM
-import com.nagaja.the330.view.secondhandmypage.SecondHandMypageRepo
-import com.nagaja.the330.view.secondhandmypage.SecondHandMypageVM
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailRepo
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailVM
 import com.nagaja.the330.view.secondhandmarket.SecondHandMarketRepo
 import com.nagaja.the330.view.secondhandmarket.SecondHandMarketVM
+import com.nagaja.the330.view.secondhandmypage.SecondHandMypageRepo
+import com.nagaja.the330.view.secondhandmypage.SecondHandMypageVM
 import com.nagaja.the330.view.secondhandregis.SecondHandRegisRepo
 import com.nagaja.the330.view.secondhandregis.SecondHandRegisVM
 import com.nagaja.the330.view.signupinfo.SignupInfoRepo
@@ -108,6 +110,8 @@ class ViewModelFactory(apiService: ApiService) :
             FreeNoticeDetailVM(FreeNoticeDetailRepo(apiService))
         creators[ReportMissingVM::class.java] =
             ReportMissingVM(ReportMissingRepo(apiService))
+        creators[ReportMissingDetailVM::class.java] =
+            ReportMissingDetailVM(ReportMissingDetailRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

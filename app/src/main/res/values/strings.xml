@@ -242,5 +242,6 @@
     <string name="contact">연락처</string>
 
     <string name="missing">실종자</string>
+    <string name="report_missing">신고/실종자</string>
 
 </resources>

@@ -47,4 +47,16 @@ class ReportMissingModel {
     @SerializedName("createdOn")
     @Expose
     var createdOn: String? = null
+
+    @SerializedName("latitude")
+    @Expose
+    var latitude: Double? = null
+
+    @SerializedName("longitude")
+    @Expose
+    var longitude: Double? = null
+
+    @SerializedName("locationDescription")
+    @Expose
+    var locationDescription: String? = null
 }

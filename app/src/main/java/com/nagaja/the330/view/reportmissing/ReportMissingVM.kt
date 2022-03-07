@@ -20,7 +20,7 @@ class ReportMissingVM(
     var stateListDataMissing = mutableStateListOf<ReportMissingModel>()
 
 
-    fun getListLocalNews(
+    fun getReportMissingList(
         token: String,
 //        page: Int,
 //        size: Int,

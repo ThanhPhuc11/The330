@@ -17,6 +17,7 @@ class UserDetail {
     var snsType: String? = null
     var otp: Int? = null
     var userType: String? = null
+    var type: String? = null
     var noticeSettings: List<Int>? = null
     var agreePolicy: Boolean? = null
     var pointAmount: Int? = null

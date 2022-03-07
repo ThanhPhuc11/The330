@@ -38,12 +38,13 @@ import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.model.CompanyFavoriteModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.ReportMissingModel
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -193,7 +194,7 @@ class ReportMissingFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        viewModel.getListLocalNews(accessToken!!, "LASTEST", "REPORT")
+                        viewModel.getReportMissingList(accessToken!!, "LASTEST", "REPORT")
                     }
                     else -> {}
                 }
@@ -211,7 +212,7 @@ class ReportMissingFragment : BaseFragment() {
             val listCompany = viewModel.stateListDataReport
             LazyColumn(state = rememberLazyListState()) {
                 itemsIndexed(listCompany) { _, obj ->
-                    SecondhandItem(obj)
+                    ReportMissingItem(obj)
                     Divider(color = ColorUtils.black_000000_opacity_5)
                 }
             }
@@ -225,7 +226,7 @@ class ReportMissingFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        viewModel.getListLocalNews(accessToken!!, "LASTEST", "MISSING")
+                        viewModel.getReportMissingList(accessToken!!, "LASTEST", "MISSING")
                     }
                     else -> {}
                 }
@@ -243,7 +244,7 @@ class ReportMissingFragment : BaseFragment() {
             val listCompany = viewModel.stateListDataMissing
             LazyColumn(state = rememberLazyListState()) {
                 itemsIndexed(listCompany) { _, obj ->
-                    SecondhandItem(obj)
+                    ReportMissingItem(obj)
                     Divider(color = ColorUtils.black_000000_opacity_5)
                 }
             }
@@ -263,7 +264,7 @@ class ReportMissingFragment : BaseFragment() {
                     if (listSort.size > 0) listSort[0] else KeyValueModel()
             }
             onClickSort = { id ->
-                viewModel.getListLocalNews(accessToken!!, id)
+                viewModel.getReportMissingList(accessToken!!, id)
             }
             Image(painter = painterResource(R.drawable.ic_sort), contentDescription = null)
             Text(
@@ -296,13 +297,19 @@ class ReportMissingFragment : BaseFragment() {
     }
 
     @Composable
-    private fun SecondhandItem(obj: ReportMissingModel) {
+    private fun ReportMissingItem(obj: ReportMissingModel) {
         Column(
             Modifier
                 .background(ColorUtils.white_FFFFFF)
                 .fillMaxWidth()
                 .padding(vertical = 16.dp)
                 .padding(top = 16.dp)
+                .noRippleClickable {
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_REPORT_MISSING_DETAIL,
+                        ReportMissingDetailFragment.newInstance(obj.id!!)
+                    )
+                }
         ) {
             Row {
                 GlideImage(
