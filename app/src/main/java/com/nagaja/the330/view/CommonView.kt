@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -188,7 +189,7 @@ fun HeaderSearch(
                     Row {
                         if (stateEdtInput.value.text.isEmpty()) {
                             Text(
-                                text = "검색어를 입력해 보세요.",
+                                text = stringResource(R.string.please_enter_search_term),
                                 color = ColorUtils.gray_565656,
                                 fontSize = 14.sp
                             )
@@ -382,7 +383,7 @@ fun DialogReport(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        "신고하기",
+                        stringResource(R.string.report_it),
                         color = ColorUtils.black_000000,
                         fontSize = 17.sp,
                         modifier = Modifier
@@ -408,7 +409,7 @@ fun DialogReport(
                         ),
                         placeholder = {
                             Text(
-                                text = "신고사유 직접 입력",
+                                text = stringResource(R.string.direct_input_reason_for_reporting),
                                 fontSize = 14.sp,
                                 color = ColorUtils.gray_BEBEBE
                             )
@@ -416,7 +417,7 @@ fun DialogReport(
                     )
 
                     Text(
-                        "※ 관리자에게 신고사유가 전달되며 관리자 확인 후 처리됩니다.",
+                        stringResource(R.string.display_notice_report),
                         color = ColorUtils.gray_626262,
                         fontSize = 12.sp,
                         modifier = Modifier.padding(top = 8.dp, bottom = 40.dp)
@@ -440,7 +441,7 @@ fun DialogReport(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            "취소",
+                            stringResource(R.string.cancel),
                             color = ColorUtils.white_FFFFFF,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold
@@ -457,7 +458,7 @@ fun DialogReport(
                             }, contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            "확인",
+                            stringResource(R.string.confirm),
                             color = ColorUtils.white_FFFFFF,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold

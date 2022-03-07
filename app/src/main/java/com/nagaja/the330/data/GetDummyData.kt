@@ -85,20 +85,20 @@ object GetDummyData {
         }
     }
 
-    fun getSortSecondHandMarket(): MutableList<KeyValueModel> {
+    fun getSortSecondHandMarket(context: Context): MutableList<KeyValueModel> {
         return mutableListOf<KeyValueModel>().apply {
-            add(KeyValueModel("LASTEST", "최신순"))
-            add(KeyValueModel("NEAREST", "가까운 순"))
-            add(KeyValueModel("PRICE_DESC", "저가 순"))
-            add(KeyValueModel("PRICE_ASC", "고가 순"))
+            add(KeyValueModel("LASTEST", context.getString(R.string.lastest_order)))
+            add(KeyValueModel("NEAREST", context.getString(R.string.close_net)))
+            add(KeyValueModel("PRICE_DESC", context.getString(R.string.low_price_net)))
+            add(KeyValueModel("PRICE_ASC", context.getString(R.string.high_price)))
         }
     }
 
-    fun getSortLocalNews(): MutableList<KeyValueModel> {
+    fun getSortLocalNews(context: Context): MutableList<KeyValueModel> {
         return mutableListOf<KeyValueModel>().apply {
-            add(KeyValueModel("LASTEST", "최신순"))
-            add(KeyValueModel("VIEW_COUNT", "조회순"))
-            add(KeyValueModel("COMMENT_COUNT", "댓글순"))
+            add(KeyValueModel("LASTEST", context.getString(R.string.lastest_order)))
+            add(KeyValueModel("VIEW_COUNT", context.getString(R.string.view_order)))
+            add(KeyValueModel("COMMENT_COUNT", context.getString(R.string.comment_order)))
         }
     }
 }

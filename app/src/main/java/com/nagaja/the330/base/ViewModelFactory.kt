@@ -35,8 +35,8 @@ import com.nagaja.the330.view.othersetting.OtherSettingRepo
 import com.nagaja.the330.view.othersetting.OtherSettingVM
 import com.nagaja.the330.view.resetpassword.ResetPwRepo
 import com.nagaja.the330.view.resetpassword.ResetPwVM
-import com.nagaja.the330.view.secondhand.SecondHandRepo
-import com.nagaja.the330.view.secondhand.SecondHandVM
+import com.nagaja.the330.view.secondhandmypage.SecondHandMypageRepo
+import com.nagaja.the330.view.secondhandmypage.SecondHandMypageVM
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailRepo
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailVM
 import com.nagaja.the330.view.secondhandmarket.SecondHandMarketRepo
@@ -80,8 +80,8 @@ class ViewModelFactory(apiService: ApiService) :
             FavCompanyVM(FavCompanyRepo(apiService))
         creators[UsageVM::class.java] =
             UsageVM(UsageRepo(apiService))
-        creators[SecondHandVM::class.java] =
-            SecondHandVM(SecondHandRepo(apiService))
+        creators[SecondHandMypageVM::class.java] =
+            SecondHandMypageVM(SecondHandMypageRepo(apiService))
         creators[SecondHandMarketVM::class.java] =
             SecondHandMarketVM(SecondHandMarketRepo(apiService))
         creators[SecondHandRegisVM::class.java] =

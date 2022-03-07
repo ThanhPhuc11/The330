@@ -41,9 +41,8 @@ import com.nagaja.the330.view.edit_profile.EditProfileFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
-import com.nagaja.the330.view.secondhand.SecondHandFragment
+import com.nagaja.the330.view.secondhandmypage.SecondHandMypageFragment
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailFragment
-import com.nagaja.the330.view.secondhandregis.SecondHandRegisFragment
 import com.nagaja.the330.view.text14_222
 import com.nagaja.the330.view.usage.UsageFragment
 import kotlinx.coroutines.CoroutineScope
@@ -73,7 +72,7 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
     val clickSecondHandPurchase: () -> Unit = {
         viewController?.pushFragment(
             ScreenId.SCREEN_SECONDHAND_PURCHARGE,
-            SecondHandFragment.newInstance()
+            SecondHandMypageFragment.newInstance()
         )
     }
     val clickOtherSetting: () -> Unit = {

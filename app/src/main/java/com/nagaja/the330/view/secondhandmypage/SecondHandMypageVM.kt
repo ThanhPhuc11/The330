@@ -1,6 +1,5 @@
-package com.nagaja.the330.view.secondhand
+package com.nagaja.the330.view.secondhandmypage
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
@@ -11,8 +10,8 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-class SecondHandVM(
-    private val repo: SecondHandRepo
+class SecondHandMypageVM(
+    private val repo: SecondHandMypageRepo
 ) : BaseViewModel() {
     val listCompany = mutableStateListOf<CompanyFavoriteModel>()
 

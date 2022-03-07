@@ -1,9 +1,9 @@
-package com.nagaja.the330.view.secondhand
+package com.nagaja.the330.view.secondhandmypage
 
 import com.nagaja.the330.network.ApiService
 import kotlinx.coroutines.flow.flow
 
-class SecondHandRepo(private val apiService: ApiService) {
+class SecondHandMypageRepo(private val apiService: ApiService) {
     suspend fun getFavoriteCompany(token: String, page: Int, size: Int, sort: String) = flow {
         emit(apiService.getFavoriteCompany(token, page, size, sort))
     }

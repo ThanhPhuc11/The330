@@ -1,4 +1,4 @@
-package com.nagaja.the330.view.secondhand
+package com.nagaja.the330.view.secondhandmypage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,18 +45,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SecondHandFragment : BaseFragment() {
-    private lateinit var viewModel: SecondHandVM
+class SecondHandMypageFragment : BaseFragment() {
+    private lateinit var viewModel: SecondHandMypageVM
 
     private var options: MutableList<KeyValueModel> = mutableListOf(KeyValueModel())
 //    private var stateOptions = mutableStateOf(options)
 
     companion object {
-        fun newInstance() = SecondHandFragment()
+        fun newInstance() = SecondHandMypageFragment()
     }
 
     override fun SetupViewModel() {
-        viewModel = getViewModelProvider(this)[SecondHandVM::class.java]
+        viewModel = getViewModelProvider(this)[SecondHandMypageVM::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
@@ -89,7 +90,7 @@ class SecondHandFragment : BaseFragment() {
         }
         val pagerState = rememberPagerState(pageCount = 2)
         LayoutTheme330 {
-            Header(title = "중고 판매") {
+            Header(title = stringResource(R.string.second_hand)) {
                 viewController?.popFragment()
             }
             Row(
@@ -101,7 +102,7 @@ class SecondHandFragment : BaseFragment() {
             ) {
                 TabSelected(
                     modifier = Modifier.weight(1f),
-                    text = "중고 판매 목록",
+                    text = stringResource(R.string.secondhand_list),
                     isSelected = pagerState.currentPage == 0
                 ) {
                     CoroutineScope(Dispatchers.Main).launch {
@@ -110,7 +111,7 @@ class SecondHandFragment : BaseFragment() {
                 }
                 TabSelected(
                     modifier = Modifier.weight(1f),
-                    text = "상담 목록",
+                    text = stringResource(R.string.consultation_list),
                     isSelected = pagerState.currentPage == 1
                 ) {
                     CoroutineScope(Dispatchers.Main).launch {

@@ -1,9 +1,12 @@
 package com.nagaja.the330.view.localnewsdetail
 
 import android.os.Bundle
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -15,6 +18,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -74,7 +78,7 @@ class LocalNewsDetailFragment : BaseFragment() {
         }
 
         LayoutTheme330 {
-            Header("현지뉴스") {
+            Header(stringResource(R.string.local_news)) {
                 viewController?.popFragment()
             }
             Column(
@@ -116,7 +120,7 @@ class LocalNewsDetailFragment : BaseFragment() {
                             colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
                         )
                         Text(
-                            "조회수 ${viewModel.localNewsModel.value.commentCount ?: 0}",
+                            stringResource(R.string.views).plus(" ${viewModel.localNewsModel.value.viewCount ?: 0}"),
                             color = ColorUtils.gray_9F9F9F,
                             fontSize = 12.sp,
                         )

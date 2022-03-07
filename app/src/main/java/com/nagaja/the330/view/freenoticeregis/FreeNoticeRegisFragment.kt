@@ -20,9 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -109,7 +109,7 @@ class FreeNoticeRegisFragment : BaseFragment() {
         }
 
         LayoutTheme330 {
-            Header("등록하기") {
+            Header(stringResource(R.string.registration)) {
                 viewController?.popFragment()
             }
             Column(
@@ -120,11 +120,11 @@ class FreeNoticeRegisFragment : BaseFragment() {
             ) {
                 TextFieldCustom(
                     modifier = Modifier.padding(16.dp),
-                    hint = "게시물의 제목을 입력하세요.",
+                    hint = stringResource(R.string.enter_title_for_your_post),
                     textStateId = viewModel.stateEdtTitle
                 )
                 Text(
-                    "기업 기본 정보",
+                    stringResource(R.string.company_basic_information),
                     color = ColorUtils.gray_222222,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
@@ -135,7 +135,7 @@ class FreeNoticeRegisFragment : BaseFragment() {
 
                 //TODO: Company Name
                 Text(
-                    "기업명",
+                    stringResource(R.string.company_name_2),
                     style = text14_222,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier
@@ -151,7 +151,7 @@ class FreeNoticeRegisFragment : BaseFragment() {
 
                 //TODO: Company Address
                 Text(
-                    "주소",
+                    stringResource(R.string.address),
                     style = text14_222,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier
@@ -167,7 +167,7 @@ class FreeNoticeRegisFragment : BaseFragment() {
 
                 //TODO: Company Contact
                 Text(
-                    "연락처",
+                    stringResource(R.string.contact),
                     style = text14_222,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier
@@ -258,7 +258,7 @@ class FreeNoticeRegisFragment : BaseFragment() {
                             Row {
                                 if (stateEdtBody.value.text.isEmpty()) {
                                     Text(
-                                        text = "게시물의 본문을 입력하세요.",
+                                        text = stringResource(R.string.enter_body_of_your_post),
                                         color = ColorUtils.gray_BEBEBE,
                                         fontSize = 14.sp
                                     )
@@ -287,7 +287,7 @@ class FreeNoticeRegisFragment : BaseFragment() {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "취소",
+                        stringResource(R.string.cancel),
                         color = ColorUtils.white_FFFFFF,
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold
@@ -305,7 +305,7 @@ class FreeNoticeRegisFragment : BaseFragment() {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "등록",
+                        stringResource(R.string.register),
                         color = ColorUtils.white_FFFFFF,
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold

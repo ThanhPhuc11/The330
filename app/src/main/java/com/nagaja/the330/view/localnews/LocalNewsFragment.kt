@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -73,7 +74,7 @@ class LocalNewsFragment : BaseFragment() {
         }
 
         LayoutTheme330 {
-            Header("현지뉴스") {
+            Header(stringResource(R.string.local_news)) {
                 viewController?.popFragment()
             }
             Row(
@@ -85,7 +86,7 @@ class LocalNewsFragment : BaseFragment() {
                 Spacer(modifier = Modifier.weight(1f))
                 Row {
                     val listSort = remember {
-                        GetDummyData.getSortLocalNews()
+                        GetDummyData.getSortLocalNews(requireContext())
                     }
                     var expanded1 by remember { mutableStateOf(false) }
                     val itemSelected = remember { mutableStateOf(KeyValueModel()) }
@@ -188,7 +189,7 @@ class LocalNewsFragment : BaseFragment() {
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "조회수 ${obj.viewCount ?: 0}",
+                        stringResource(R.string.views).plus(" ${obj.viewCount ?: 0}"),
                         color = ColorUtils.gray_9F9F9F,
                         fontSize = 12.sp,
                     )
@@ -201,7 +202,7 @@ class LocalNewsFragment : BaseFragment() {
                         colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
                     )
                     Text(
-                        "댓글 ${obj.commentCount ?: 0}",
+                        stringResource(R.string.comment).plus(" ${obj.commentCount ?: 0}"),
                         color = ColorUtils.gray_9F9F9F,
                         fontSize = 12.sp,
                     )

@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -97,7 +98,7 @@ class FreeNoticeDetailFragment : BaseFragment() {
         }
 
         LayoutTheme330 {
-            Header("자유게시판") {
+            Header(stringResource(R.string.free_board)) {
                 viewController?.popFragment()
             }
             Column(
@@ -152,7 +153,8 @@ class FreeNoticeDetailFragment : BaseFragment() {
                             colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
                         )
                         Text(
-                            "조회수 ${viewModel.freeNoticeDetailModel.value.viewCount ?: 0}",
+                            stringResource(R.string.views)
+                                .plus(" ${viewModel.freeNoticeDetailModel.value.viewCount ?: 0}"),
                             color = ColorUtils.gray_9F9F9F,
                             fontSize = 12.sp,
                         )
@@ -180,10 +182,10 @@ class FreeNoticeDetailFragment : BaseFragment() {
 
                     Row(Modifier.padding(top = 25.dp)) {
                         Column(Modifier.padding(end = 30.dp)) {
-                            Text("업체명", style = text14_222)
-                            Text("주소", style = text14_222, modifier = Modifier.padding(top = 10.dp))
+                            Text(stringResource(R.string.company_name), style = text14_222)
+                            Text(stringResource(R.string.address), style = text14_222, modifier = Modifier.padding(top = 10.dp))
                             Text(
-                                "전화번호",
+                                stringResource(R.string.phone_number),
                                 style = text14_222,
                                 modifier = Modifier.padding(top = 10.dp)
                             )
@@ -226,7 +228,7 @@ class FreeNoticeDetailFragment : BaseFragment() {
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(
-                        "채팅문의",
+                        stringResource(R.string.chat_inquiry),
                         style = text14_62
                     )
                     Image(
@@ -271,7 +273,7 @@ class FreeNoticeDetailFragment : BaseFragment() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            "신고",
+                            stringResource(R.string.report),
                             style = text14_62
                         )
                         Image(

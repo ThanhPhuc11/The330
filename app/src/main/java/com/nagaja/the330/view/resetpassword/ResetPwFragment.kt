@@ -41,7 +41,7 @@ class ResetPwFragment : BaseFragment() {
         viewController = (activity as MainActivity).viewController
 
         viewModel.callbackChangeSuccess.observe(viewLifecycleOwner) {
-            showMess("변경한 비밀번호로 로그인해 주세요.")
+            showMess(getString(R.string.please_login_with_changed_password))
             viewController?.popToFragment(ScreenId.SCREEN_LOGIN)
         }
         viewModel.callbackChangeFail.observe(viewLifecycleOwner) {

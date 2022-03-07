@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -122,9 +123,9 @@ class SecondHandRegisFragment : BaseFragment() {
         }
         LayoutTheme330 {
             HeaderOption(
-                title = "문의하기",
+                title = stringResource(R.string.contact_us),
                 clickBack = { viewController?.popFragment() },
-                optionText = "등록",
+                optionText = stringResource(R.string.register),
                 clickOption = {
                     accessToken?.let { viewModel.register(it) }
                 })
@@ -161,7 +162,7 @@ class SecondHandRegisFragment : BaseFragment() {
                         viewModel.city = id
                         viewModel.getDistrict(accessToken!!, id.toInt())
                     },
-                    hintText = "시/도",
+                    hintText = stringResource(R.string.choose_city),
                     hasDefaultFirstItem = false
                 )
                 //TODO: District
@@ -173,7 +174,7 @@ class SecondHandRegisFragment : BaseFragment() {
                     listData = viewModel.listDistrict.map { district ->
                         KeyValueModel(district.id.toString(), district.name?.get(0)?.name)
                     }.toMutableList(),
-                    hintText = "구/군",
+                    hintText = stringResource(R.string.choose_district),
                     onClick = {
                         viewModel.district = it
                     }
@@ -244,7 +245,7 @@ class SecondHandRegisFragment : BaseFragment() {
                     Row {
                         if (stateEdtTitle.value.text.isEmpty()) {
                             Text(
-                                "제목을 입력하세요.",
+                                stringResource(R.string.please_enter_title),
                                 color = ColorUtils.gray_BEBEBE,
                                 fontSize = 14.sp
                             )
@@ -324,7 +325,7 @@ class SecondHandRegisFragment : BaseFragment() {
                         Row {
                             if (stateEdtPurchase.value.text.isEmpty()) {
                                 Text(
-                                    "판매 금액을 입력하세요.",
+                                    stringResource(R.string.enter_sale_amount),
                                     color = ColorUtils.gray_BEBEBE,
                                     fontSize = 14.sp
                                 )
@@ -353,7 +354,7 @@ class SecondHandRegisFragment : BaseFragment() {
                     Row {
                         if (stateEdtBodyPost.value.text.isEmpty()) {
                             Text(
-                                "게시글의 본문을 입력하세요.",
+                                stringResource(R.string.enter_body_of_post),
                                 color = ColorUtils.gray_BEBEBE,
                                 fontSize = 14.sp
                             )
@@ -390,7 +391,7 @@ class SecondHandRegisFragment : BaseFragment() {
         ) {
             Image(painter = painterResource(R.drawable.ic_choose_image), contentDescription = null)
             Text(
-                "${count.value}/5",
+                "${count.value}/10",
                 color = ColorUtils.blue_2177E4,
                 modifier = Modifier
                     .padding(top = 3.dp)

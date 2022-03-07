@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -61,16 +62,16 @@ class LangFragment : BaseFragment() {
                 )
             }
             Column(modifier = Modifier.weight(1.2f)) {
-                selectLang("한국어") {
+                selectLang(stringResource(R.string.korea)) {
                     viewController?.pushFragment(
                         ScreenId.SCREEN_PERMISSION,
                         PermissionFragment.newInstance()
                     )
                 }
-                selectLang("필리핀어")
-                selectLang("영어")
-                selectLang("중국어")
-                selectLang("일본어")
+                selectLang(stringResource(R.string.filipino))
+                selectLang(stringResource(R.string.english))
+                selectLang(stringResource(R.string.chinese))
+                selectLang(stringResource(R.string.japanese))
             }
         }
     }

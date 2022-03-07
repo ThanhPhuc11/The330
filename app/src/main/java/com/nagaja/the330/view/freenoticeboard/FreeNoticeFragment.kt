@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -96,7 +97,7 @@ class FreeNoticeFragment : BaseFragment() {
                 clickSearch = {
                     showMessDEBUG(it)
                 },
-                textOption = "글등록",
+                textOption = stringResource(R.string.post_register),
                 clickOption = {
                     viewController?.pushFragment(
                         ScreenId.SCREEN_FREE_NOTICE_REGIS,
@@ -110,7 +111,11 @@ class FreeNoticeFragment : BaseFragment() {
                     .padding(top = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("자유게시판", color = ColorUtils.black_000000, fontSize = 17.sp)
+                Text(
+                    stringResource(R.string.free_board),
+                    color = ColorUtils.black_000000,
+                    fontSize = 17.sp
+                )
             }
             Row(
                 Modifier
@@ -120,7 +125,7 @@ class FreeNoticeFragment : BaseFragment() {
             ) {
                 Spacer(modifier = Modifier.weight(1f))
                 val listSort = remember {
-                    GetDummyData.getSortLocalNews()
+                    GetDummyData.getSortLocalNews(requireContext())
                 }
                 var expanded1 by remember { mutableStateOf(false) }
                 val itemSelected = remember { mutableStateOf(KeyValueModel()) }
@@ -204,7 +209,10 @@ class FreeNoticeFragment : BaseFragment() {
                 .height(97.dp)
                 .padding(horizontal = 16.dp), contentAlignment = Alignment.CenterStart
         ) {
-            Text("관리자에 의해 비공개처리 된 게시물입니다.", style = text14_222)
+            Text(
+                stringResource(R.string.This_post_has_been_made_private_by_the_administrator),
+                style = text14_222
+            )
         }
     }
 
@@ -266,7 +274,7 @@ class FreeNoticeFragment : BaseFragment() {
                         colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
                     )
                     Text(
-                        "조회수 ${obj.viewCount ?: 0}",
+                        stringResource(R.string.views).plus(" ${obj.viewCount ?: 0}"),
                         color = ColorUtils.gray_9F9F9F,
                         fontSize = 12.sp,
                     )

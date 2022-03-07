@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -81,7 +82,7 @@ class UsageFragment : BaseFragment() {
         }
 
         LayoutTheme330 {
-            Header(title = "이용 목록") {
+            Header(title = stringResource(R.string.usage_list)) {
                 viewController?.popFragment()
             }
             Column(Modifier.fillMaxWidth()) {
@@ -91,7 +92,7 @@ class UsageFragment : BaseFragment() {
                         .padding(vertical = 12.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
-                    Text("총 30건 이용", style = text14_222)
+                    Text(stringResource(R.string.a_total_of_use, 30), style = text14_222)
                     HandleSortUI(modifier = Modifier.weight(1f))
                 }
 

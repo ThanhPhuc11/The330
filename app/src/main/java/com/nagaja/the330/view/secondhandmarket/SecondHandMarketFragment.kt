@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -149,7 +150,7 @@ class SecondHandMarketFragment : BaseFragment() {
                         viewModel.city = id
                         viewModel.getDistrict(accessToken!!, id.toInt())
                     },
-                    hintText = "시/도",
+                    hintText = stringResource(R.string.choose_city),
                     hasDefaultFirstItem = false
                 )
                 //TODO: District
@@ -164,7 +165,7 @@ class SecondHandMarketFragment : BaseFragment() {
                 BaseDropDown(
                     modifier = Modifier.weight(1f),
                     listData = listDistrictInput,
-                    hintText = "구/군",
+                    hintText = stringResource(R.string.choose_district),
                     onClick = {
                         viewModel.district = it
                     }
@@ -190,12 +191,12 @@ class SecondHandMarketFragment : BaseFragment() {
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("중고판매등록", color = ColorUtils.white_FFFFFF, fontSize = 14.sp)
+                    Text(stringResource(R.string.register_secondhand), color = ColorUtils.white_FFFFFF, fontSize = 14.sp)
                 }
                 Spacer(modifier = Modifier.weight(1f))
 
                 val listSort = remember {
-                    GetDummyData.getSortSecondHandMarket()
+                    GetDummyData.getSortSecondHandMarket(requireContext())
                 }
                 var expanded1 by remember { mutableStateOf(false) }
                 val itemSelected = remember { mutableStateOf(KeyValueModel()) }
@@ -334,7 +335,7 @@ class SecondHandMarketFragment : BaseFragment() {
                 textAlign = TextAlign.Start
             )
             Image(
-                painter = painterResource(com.nagaja.the330.R.drawable.ic_arrow_dropdown),
+                painter = painterResource(R.drawable.ic_arrow_dropdown),
                 contentDescription = null
             )
 
@@ -411,7 +412,7 @@ class SecondHandMarketFragment : BaseFragment() {
                             colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
                         )
                         Text(
-                            "조회수 ${obj.viewCount ?: 0}",
+                            stringResource(R.string.views).plus(" ${obj.viewCount ?: 0}"),
                             color = ColorUtils.gray_9F9F9F,
                             fontSize = 12.sp,
                         )

@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -102,7 +103,11 @@ class SecondHandDetailFragment : BaseFragment() {
                     val configuration = LocalConfiguration.current
                     val screenWidth = configuration.screenWidthDp.dp
                     GlideImage(
-                        imageModel = "${BuildConfig.BASE_S3}${viewModel.secondhandDetail.value.images?.getOrNull(0)?.url}",
+                        imageModel = "${BuildConfig.BASE_S3}${
+                            viewModel.secondhandDetail.value.images?.getOrNull(
+                                0
+                            )?.url
+                        }",
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(screenWidth),
@@ -159,7 +164,8 @@ class SecondHandDetailFragment : BaseFragment() {
                             colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
                         )
                         Text(
-                            "조회수 ${viewModel.secondhandDetail.value.viewCount ?: 0}",
+                            stringResource(R.string.views)
+                                .plus(" ${viewModel.secondhandDetail.value.viewCount ?: 0}"),
                             color = ColorUtils.gray_9F9F9F,
                             fontSize = 12.sp,
                         )
@@ -201,7 +207,7 @@ class SecondHandDetailFragment : BaseFragment() {
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            "상담하기",
+                            stringResource(R.string.to_consult),
                             color = ColorUtils.white_FFFFFF,
                             fontSize = 16.sp,
                             fontWeight = FontWeight(500)

@@ -73,14 +73,13 @@ class PermissionFragment : BaseFragment() {
                     .weight(1f),
             ) {
                 Text(
-                    "앱 접근권한 안내",
+                    stringResource(R.string.app_access_permission_guide),
                     fontSize = 24.sp,
                     color = ColorUtils.gray_222222,
                     modifier = Modifier.paddingFromBaseline(top = dimensionResource(R.dimen.dp_80))
                 )
                 Text(
-                    "NAGAJA을 사용하기 위해 아래의 \n" +
-                            "선택적 접근 권한을 이용하고 있습니다.",
+                    stringResource(R.string.body_content_permission),
                     color = ColorUtils.gray_626262,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(top = dimensionResource(R.dimen.dp_12))
@@ -95,7 +94,7 @@ class PermissionFragment : BaseFragment() {
                         }
                     )
                     Text(
-                        "지도",
+                        stringResource(R.string.map),
                         color = ColorUtils.gray_222222,
                         fontSize = 14.sp,
                         modifier = Modifier.constrainAs(text1) {
@@ -105,7 +104,7 @@ class PermissionFragment : BaseFragment() {
                         })
 
                     Text(
-                        "주변 업체 추천에 활용",
+                        stringResource(R.string.used_to_recomment_near_bussiness),
                         color = ColorUtils.gray_9F9F9F,
                         fontSize = 14.sp,
                         modifier = Modifier.constrainAs(text2) {
@@ -123,7 +122,7 @@ class PermissionFragment : BaseFragment() {
                         }
                     )
                     Text(
-                        "카메라",
+                        stringResource(R.string.camera),
                         color = ColorUtils.gray_222222,
                         fontSize = 14.sp,
                         modifier = Modifier.constrainAs(text1) {
@@ -133,7 +132,7 @@ class PermissionFragment : BaseFragment() {
                         })
 
                     Text(
-                        "사진, 영상 업로드",
+                        stringResource(R.string.upload_photo_and_video),
                         color = ColorUtils.gray_9F9F9F,
                         fontSize = 14.sp,
                         modifier = Modifier.constrainAs(text2) {
@@ -163,7 +162,7 @@ class PermissionFragment : BaseFragment() {
                         }
                     )
                     Text(
-                        "접근권한 변경방법",
+                        stringResource(R.string.how_to_change_access_right),
                         color = ColorUtils.gray_626262,
                         fontSize = 12.sp,
                         modifier = Modifier.constrainAs(text1) {
@@ -173,7 +172,7 @@ class PermissionFragment : BaseFragment() {
                     )
 
                     Text(
-                        "알림설정 > 각 권한 On/Off",
+                        stringResource(R.string.setting_on_off),
                         color = ColorUtils.gray_9F9F9F,
                         fontSize = 12.sp,
                         modifier = Modifier.constrainAs(text11) {
@@ -200,7 +199,7 @@ class PermissionFragment : BaseFragment() {
                         }
                     )
                     Text(
-                        "권한이 거부될 경우 기능이 정상적으로 작동하지 않을 수 있습니다.",
+                        stringResource(R.string.if_deny_app_may_not_working),
                         color = ColorUtils.gray_626262,
                         fontSize = 12.sp,
                         modifier = Modifier.constrainAs(text2) {
@@ -218,7 +217,7 @@ class PermissionFragment : BaseFragment() {
                         }
                     )
                     Text(
-                        "거부 후 설정에서 다시 허용할 수 있습니다.",
+                        stringResource(R.string.after_deny_you_can_allow_in_the_setting),
                         color = ColorUtils.gray_626262,
                         fontSize = 12.sp,
                         modifier = Modifier.constrainAs(text3) {
