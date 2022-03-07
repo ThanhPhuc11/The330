@@ -68,7 +68,7 @@ class ReportMissingRegisFragment : BaseFragment() {
         viewController = (activity as MainActivity).viewController
 
         viewModel.callbackPostSuccess.observe(viewLifecycleOwner) {
-            showMessDEBUG("Success")
+            showMess(getString(R.string.post_report_missing_success))
         }
         viewModel.callbackStart.observe(viewLifecycleOwner) {
             showLoading()
@@ -102,6 +102,11 @@ class ReportMissingRegisFragment : BaseFragment() {
             onDispose {
                 owner.lifecycle.removeObserver(observer)
             }
+        }
+        val stateBtnPost = remember { mutableStateOf(false) }
+        LaunchedEffect(viewModel.stateEdtTitle.value, viewModel.stateEdtBody.value) {
+            stateBtnPost.value =
+                (viewModel.stateEdtTitle.value.text.isNotBlank() && viewModel.stateEdtBody.value.text.isNotBlank())
         }
 
         LayoutTheme330 {
@@ -178,13 +183,23 @@ class ReportMissingRegisFragment : BaseFragment() {
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                TextFieldCustom(
-                    modifier = Modifier
+                Row(
+                    Modifier
                         .padding(horizontal = 16.dp)
                         .padding(top = 4.dp),
-                    hint = stringResource(R.string.please_enter_local_description),
-                    textStateId = viewModel.stateEdtLocalDes
-                )
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextFieldCustom(
+                        modifier = Modifier.weight(1f),
+                        hint = stringResource(R.string.please_enter_local_description),
+                        textStateId = viewModel.stateEdtLocalDes
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.ic_mark),
+                        contentDescription = null,
+                        modifier = Modifier.padding(horizontal = 11.dp)
+                    )
+                }
 
                 //TODO: Title
                 Text(
@@ -331,6 +346,7 @@ class ReportMissingRegisFragment : BaseFragment() {
                         .weight(1f)
                         .background(ColorUtils.blue_2177E4)
                         .noRippleClickable {
+                            if (!stateBtnPost.value) return@noRippleClickable
                             accessToken?.let { viewModel.makePostReportMissing(it) }
                         },
                     contentAlignment = Alignment.Center
@@ -339,7 +355,8 @@ class ReportMissingRegisFragment : BaseFragment() {
                         stringResource(R.string.register_request),
                         color = ColorUtils.white_FFFFFF,
                         fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.alpha(if (!stateBtnPost.value) 0.3f else 1f)
                     )
                 }
             }

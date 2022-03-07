@@ -2,6 +2,7 @@ package com.nagaja.the330.view.reportmissingdetail
 
 import android.os.Bundle
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -103,12 +104,37 @@ class ReportMissingDetailFragment : BaseFragment() {
                         .padding(horizontal = 16.dp)
                         .fillMaxWidth()
                 ) {
-                    Text(
-                        viewModel.reportMissingModel.value.title ?: "",
-                        color = ColorUtils.gray_222222,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(
+                        Modifier.padding(top = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            Modifier
+                                .padding(end = 8.dp)
+                                .size(55.dp, 28.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = ColorUtils.blue_2177E4,
+                                    shape = RoundedCornerShape(99.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                if (viewModel.reportMissingModel.value.type == "REPORT")
+                                    stringResource(R.string.report)
+                                else stringResource(R.string.missing),
+                                color = ColorUtils.blue_2177E4,
+                                fontSize = 14.sp
+                            )
+                        }
+
+                        Text(
+                            viewModel.reportMissingModel.value.title ?: "",
+                            color = ColorUtils.gray_222222,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
 
                     Row(
                         Modifier.padding(top = 4.dp),
