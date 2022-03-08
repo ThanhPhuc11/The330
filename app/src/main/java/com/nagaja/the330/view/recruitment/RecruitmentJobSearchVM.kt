@@ -1,6 +1,7 @@
 package com.nagaja.the330.view.recruitment
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.RecruitmentJobsModel
@@ -21,6 +22,8 @@ class RecruitmentJobSearchVM(
 
     var listDataJobs = mutableListOf<RecruitmentJobsModel>()
     var stateListDataJobs = mutableStateListOf<RecruitmentJobsModel>()
+
+    val existJobSearch = MutableLiveData<Boolean>()
 
 
     fun getRecruitmentList(
@@ -56,6 +59,19 @@ class RecruitmentJobSearchVM(
                             stateListDataJobs.addAll(listDataJobs)
                         }
                     }
+                }
+        }
+    }
+
+    fun checkExistJobSearch(token: String) {
+        viewModelScope.launch {
+            repo.checkExistJobSearch(token)
+                .onStart { callbackStart.value = Unit }
+                .onCompletion { }
+                .catch { handleError(it) }
+                .collect {
+                    callbackSuccess.value = Unit
+                    existJobSearch.value = it
                 }
         }
     }

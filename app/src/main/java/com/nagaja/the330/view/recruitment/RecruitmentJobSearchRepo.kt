@@ -14,4 +14,8 @@ class RecruitmentJobSearchRepo(private val apiService: ApiService) {
     ) = flow {
         emit(apiService.getRecruitmentList(token, page, size, sort, type, all))
     }
+
+    suspend fun checkExistJobSearch(token: String) = flow {
+        emit(apiService.checkExistJobSearch(token))
+    }
 }

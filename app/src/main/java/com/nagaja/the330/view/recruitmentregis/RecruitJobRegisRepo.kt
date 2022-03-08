@@ -1,6 +1,7 @@
 package com.nagaja.the330.view.recruitmentregis
 
 import com.nagaja.the330.model.FreeNoticePostRequest
+import com.nagaja.the330.model.RecruitmentJobsModel
 import com.nagaja.the330.model.ReportMissingModel
 import com.nagaja.the330.network.ApiService
 import kotlinx.coroutines.flow.flow
@@ -15,8 +16,8 @@ class RecruitJobRegisRepo(private val apiService: ApiService) {
         emit(apiService.getDistrict(token, cityId))
     }
 
-    suspend fun makePostReportMissing(token: String, body: ReportMissingModel) = flow {
-        emit(apiService.makePostReportMissing(token, body))
+    suspend fun makePostRecruitJobs(token: String, body: RecruitmentJobsModel) = flow {
+        emit(apiService.makePostRecruitJobs(token, body))
     }
 
     suspend fun uploadImage(url: String, body: RequestBody) = flow {

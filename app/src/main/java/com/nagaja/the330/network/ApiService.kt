@@ -235,4 +235,15 @@ interface ApiService {
         @Query("categoryType") type: String,
         @Query("all") all: String?,
     ): ResponseModel<MutableList<RecruitmentJobsModel>>
+
+    @GET("recruitment_jobs/checkExistJobSearch")
+    suspend fun checkExistJobSearch(
+        @Header("Authorization") token: String,
+    ): Boolean
+
+    @POST("recruitment_jobs")
+    suspend fun makePostRecruitJobs(
+        @Header("Authorization") token: String,
+        @Body body: RecruitmentJobsModel
+    ): SecondHandPostResponse
 }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,6 +45,7 @@ import com.nagaja.the330.data.dataStore
 import com.nagaja.the330.model.FileModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.UserDetail
+import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.NameUtils
 import com.nagaja.the330.utils.RealPathUtil
@@ -63,7 +65,11 @@ class RecruitJobRegisFragment : BaseFragment() {
     private var onClickRemove: ((Int) -> Unit)? = null
 
     companion object {
-        fun newInstance() = RecruitJobRegisFragment()
+        fun newInstance(type: String) = RecruitJobRegisFragment().apply {
+            arguments = Bundle().apply {
+                putString(AppConstants.EXTRA_KEY1, type)
+            }
+        }
     }
 
     override fun SetupViewModel() {
@@ -96,6 +102,7 @@ class RecruitJobRegisFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        viewModel.type = requireArguments().getString(AppConstants.EXTRA_KEY1, "")
                         accessToken?.let { viewModel.getCity(it) }
                         getUserDetailFromDataStore(requireContext())
                     }
@@ -108,9 +115,23 @@ class RecruitJobRegisFragment : BaseFragment() {
             }
         }
         val stateBtnPost = remember { mutableStateOf(false) }
-        LaunchedEffect(viewModel.stateEdtTitle.value, viewModel.stateEdtBody.value) {
-            stateBtnPost.value =
-                (viewModel.stateEdtTitle.value.text.isNotBlank() && viewModel.stateEdtBody.value.text.isNotBlank())
+        LaunchedEffect(
+            viewModel.stateEdtTitle.value,
+            viewModel.stateEdtBody.value,
+            viewModel.stateCity.value,
+            viewModel.stateDistrict.value,
+            viewModel.listImage.size
+        ) {
+            val conditionRecruitment =
+                (viewModel.stateEdtTitle.value.text.isNotBlank()
+                        && viewModel.stateEdtBody.value.text.isNotBlank()
+                        && viewModel.stateCity.value != null
+                        && viewModel.stateDistrict.value != null)
+            if (viewModel.type == AppConstants.JOB_SEARCH) {
+                stateBtnPost.value = conditionRecruitment && viewModel.listImage.isNotEmpty()
+            } else {
+                stateBtnPost.value = conditionRecruitment
+            }
         }
 
         LayoutTheme330 {
@@ -181,16 +202,16 @@ class RecruitJobRegisFragment : BaseFragment() {
                             KeyValueModel(cityModel.id.toString(), cityModel.name?.get(0)?.name)
                         }.toMutableList(),
                         onClick = { id ->
-                            viewModel.city = id
+                            viewModel.stateCity.value = id.toInt()
                             viewModel.getDistrict(accessToken!!, id.toInt())
                         },
                         hintText = stringResource(R.string.choose_city),
                         hasDefaultFirstItem = false
                     )
                     //TODO: District
-                    LaunchedEffect(viewModel.listDistrict) {
-                        viewModel.district = viewModel.listDistrict.getOrNull(0)?.id.toString()
-                    }
+//                    LaunchedEffect(viewModel.listDistrict) {
+//                        viewModel.stateDistrict.value = viewModel.listDistrict.getOrNull(0)?.id
+//                    }
                     BaseDropDown(
                         modifier = Modifier.weight(1f),
                         listData = viewModel.listDistrict.map { district ->
@@ -198,7 +219,7 @@ class RecruitJobRegisFragment : BaseFragment() {
                         }.toMutableList(),
                         hintText = stringResource(R.string.choose_district),
                         onClick = {
-                            viewModel.district = it
+                            viewModel.stateDistrict.value = it.toInt()
                         }
                     )
                 }
@@ -340,7 +361,7 @@ class RecruitJobRegisFragment : BaseFragment() {
                         .background(ColorUtils.blue_2177E4)
                         .noRippleClickable {
                             if (!stateBtnPost.value) return@noRippleClickable
-                            accessToken?.let { viewModel.makePostReportMissing(it) }
+                            accessToken?.let { viewModel.makePostRecruitJobs(it) }
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -354,44 +375,6 @@ class RecruitJobRegisFragment : BaseFragment() {
                 }
             }
         }
-    }
-
-    @Composable
-    private fun TabSelected(
-        modifier: Modifier = Modifier,
-        text: String,
-        isSelected: Boolean,
-        onClick: () -> Unit
-    ) {
-        if (isSelected)
-            Box(
-                modifier
-                    .background(ColorUtils.white_FFFFFF)
-                    .fillMaxHeight()
-                    .noRippleClickable {
-                        onClick.invoke()
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text, color = ColorUtils.gray_222222, fontSize = 16.sp)
-            }
-        else
-            Box(
-                modifier
-                    .background(ColorUtils.gray_222222)
-                    .fillMaxHeight()
-                    .noRippleClickable {
-                        onClick.invoke()
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text,
-                    color = ColorUtils.white_FFFFFF,
-                    fontSize = 16.sp
-                )
-            }
-
     }
 
     @Composable

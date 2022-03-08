@@ -47,7 +47,6 @@ import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.recruitmentregis.RecruitJobRegisFragment
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailFragment
-import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -89,11 +88,24 @@ class RecruitmentJobSearchFragment : BaseFragment() {
         val context = LocalContext.current
         val owner = LocalLifecycleOwner.current
         val stateOptions = remember { mutableStateOf(options) }
+        val stateOpenDialog = remember {
+            mutableStateOf(false)
+        }
         DisposableEffect(owner) {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
                         stateOptions.value = GetDummyData.getSortLocalNews(context)
+                        viewModel.existJobSearch.observe(viewLifecycleOwner) {
+                            if (!it) {
+                                viewController?.pushFragment(
+                                    ScreenId.SCREEN_RECRUITMENT_JOBSEARCH_REGIS,
+                                    RecruitJobRegisFragment.newInstance(viewModel.type)
+                                )
+                            } else {
+                                stateOpenDialog.value = true
+                            }
+                        }
                     }
                     Lifecycle.Event.ON_STOP -> {}
                     else -> {}
@@ -105,6 +117,27 @@ class RecruitmentJobSearchFragment : BaseFragment() {
             }
         }
         val pagerState = rememberPagerState(pageCount = 2)
+
+        if (stateOpenDialog.value) {
+            Dialog2Button(
+                state = stateOpenDialog,
+                title = "구인/구직 글은 1개만\n등록할 수 있습니다.",
+                content = "기존의 구직 글을 삭제하고\n" +
+                        "새로 등록하시겠습니까?\n" +
+                        "* 확인을 클릭하시면 기존 작성된\n" +
+                        "구직 글이 삭제됩니다.",
+                leftText = getString(R.string.cancel),
+                rightText = getString(R.string.confirm),
+                onClick = {
+                    if (it) {
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_RECRUITMENT_JOBSEARCH_REGIS,
+                            RecruitJobRegisFragment.newInstance(viewModel.type)
+                        )
+                    }
+                }
+            )
+        }
         LayoutTheme330 {
             HeaderSearch(
                 clickBack = {
@@ -112,10 +145,13 @@ class RecruitmentJobSearchFragment : BaseFragment() {
                 },
                 textOption = stringResource(R.string.post_register),
                 clickOption = {
-                    viewController?.pushFragment(
-                        ScreenId.SCREEN_RECRUITMENT_JOBSEARCH_REGIS,
-                        RecruitJobRegisFragment.newInstance()
-                    )
+                    if (viewModel.type == AppConstants.JOB_SEARCH) {
+                        viewModel.checkExistJobSearch(accessToken!!)
+                    } else
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_RECRUITMENT_JOBSEARCH_REGIS,
+                            RecruitJobRegisFragment.newInstance(viewModel.type)
+                        )
                 }
             )
             Row(

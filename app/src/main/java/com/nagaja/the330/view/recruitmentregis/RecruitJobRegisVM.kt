@@ -10,7 +10,8 @@ import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.CityModel
 import com.nagaja.the330.model.DistrictModel
 import com.nagaja.the330.model.FileModel
-import com.nagaja.the330.model.ReportMissingModel
+import com.nagaja.the330.model.RecruitmentJobsModel
+import com.nagaja.the330.utils.AppConstants
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -24,6 +25,7 @@ import java.io.File
 class RecruitJobRegisVM(
     private val repo: RecruitJobRegisRepo
 ) : BaseViewModel() {
+    var type: String = ""
     val listImage = mutableStateListOf<FileModel>()
     val listCity = mutableStateListOf<CityModel>()
     val listDistrict = mutableStateListOf<DistrictModel>()
@@ -31,11 +33,10 @@ class RecruitJobRegisVM(
     val stateEdtLocalDes = mutableStateOf(TextFieldValue(""))
     val stateEdtTitle = mutableStateOf(TextFieldValue(""))
     val stateEdtBody = mutableStateOf(TextFieldValue(""))
-    val stateTypeReport = mutableStateOf("REPORT")
     val stateEdtSNSInfo = mutableStateOf(TextFieldValue(""))
 
-    var city: String? = null
-    var district: String? = null
+    var stateCity = mutableStateOf<Int?>(null)
+    var stateDistrict = mutableStateOf<Int?>(null)
 
     private var countImageUpload = 0
     private var countImageUploadDone = 0
@@ -65,22 +66,33 @@ class RecruitJobRegisVM(
                     it.content?.let { it1 ->
                         listDistrict.clear()
                         listDistrict.addAll(it1)
+
+                        stateDistrict.value = listDistrict.getOrNull(0)?.id
                     }
                 }
         }
     }
 
-    fun makePostReportMissing(token: String) {
-        if (stateEdtTitle.value.text.isBlank() || stateEdtBody.value.text.isBlank()) return
-        val body = ReportMissingModel().apply {
+    fun makePostRecruitJobs(token: String) {
+        if (stateEdtTitle.value.text.isBlank() ||
+            stateEdtBody.value.text.isBlank() ||
+            stateCity.value == null ||
+            stateDistrict.value == null
+        ) return
+        if (type == AppConstants.JOB_SEARCH && listImage.isEmpty())
+            return
+        val body = RecruitmentJobsModel().apply {
             title = stateEdtTitle.value.text
             body = stateEdtBody.value.text
-            type = stateTypeReport.value
+            type = this@RecruitJobRegisVM.type
+            city = CityModel(id = this@RecruitJobRegisVM.stateCity.value!!.toInt())
+            district = DistrictModel(id = this@RecruitJobRegisVM.stateDistrict.value!!.toInt())
             images = listImage
-            locationDescription = stateEdtLocalDes.value.text
+            snsInfo = stateEdtSNSInfo.value.text
+            regionInfo = stateEdtLocalDes.value.text
         }
         viewModelScope.launch {
-            repo.makePostReportMissing(token, body)
+            repo.makePostRecruitJobs(token, body)
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }
                 .catch { handleError(it) }
