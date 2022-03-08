@@ -246,4 +246,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body body: RecruitmentJobsModel
     ): SecondHandPostResponse
+
+    @POST("recruitment_jobs/viewDetail")
+    suspend fun getRecruitJobsDetail(
+        @Header("Authorization") token: String,
+        @Query("id") id: Int,
+    ): RecruitmentJobsModel
 }

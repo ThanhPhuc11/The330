@@ -45,6 +45,7 @@ import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailFragment
 import com.nagaja.the330.view.recruitmentregis.RecruitJobRegisFragment
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailFragment
 import com.skydoves.landscapist.glide.GlideImage
@@ -373,8 +374,8 @@ class RecruitmentJobSearchFragment : BaseFragment() {
                 .padding(top = 16.dp)
                 .noRippleClickable {
                     viewController?.pushFragment(
-                        ScreenId.SCREEN_REPORT_MISSING_DETAIL,
-                        ReportMissingDetailFragment.newInstance(obj.id!!)
+                        ScreenId.SCREEN_RECRUITMENT_JOBSEARCH_DETAIL,
+                        RecruitJobsDetailFragment.newInstance(obj.id!!)
                     )
                 }
         ) {

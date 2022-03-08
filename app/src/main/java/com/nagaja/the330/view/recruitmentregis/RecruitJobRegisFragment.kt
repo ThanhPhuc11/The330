@@ -138,7 +138,6 @@ class RecruitJobRegisFragment : BaseFragment() {
             Header(stringResource(R.string.registration)) {
                 viewController?.popFragment()
             }
-            Divider(color = ColorUtils.gray_E1E1E1)
             Column(
                 Modifier
                     .fillMaxWidth()

@@ -254,5 +254,6 @@
     <string name="jobsearch">구직</string>
     <string name="add_SNS_info">SNS 정보 추가</string>
     <string name="attach_your_cv">이력서 첨부</string>
+    <string name="recruitment_jobsearch">구인/구직</string>
 
 </resources>
