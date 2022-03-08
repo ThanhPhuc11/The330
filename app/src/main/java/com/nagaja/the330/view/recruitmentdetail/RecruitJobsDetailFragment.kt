@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.recruitmentdetail
 
+import android.content.Context
 import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,6 +12,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,19 +28,34 @@ import androidx.compose.ui.unit.sp
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
+import com.google.gson.Gson
 import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.data.DataStorePref
+import com.nagaja.the330.data.dataStore
+import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class RecruitJobsDetailFragment : BaseFragment() {
     private lateinit var viewModel: RecruitJobsDetailVM
+    private var userDetail = mutableStateOf(UserDetail())
 
     companion object {
         fun newInstance(id: Int) = RecruitJobsDetailFragment().apply {
@@ -66,6 +83,7 @@ class RecruitJobsDetailFragment : BaseFragment() {
         }
     }
 
+    @OptIn(ExperimentalPagerApi::class)
     @Preview
     @Composable
     override fun UIData() {
@@ -75,6 +93,7 @@ class RecruitJobsDetailFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        getUserDetailFromDataStore(requireContext())
                         accessToken?.let {
                             viewModel.getRecruitJobsDetail(
                                 it,
@@ -130,19 +149,32 @@ class RecruitJobsDetailFragment : BaseFragment() {
                     )
                     val configuration = LocalConfiguration.current
                     val screenWidth = configuration.screenWidthDp
-                    GlideImage(
-                        imageModel = "${BuildConfig.BASE_S3}${
-                            viewModel.recruitJobsModel.value.images?.getOrNull(
-                                0
-                            )?.url
-                        }",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height((200 * screenWidth / 343).dp)
-                            .clip(RoundedCornerShape(4.dp)),
-                        placeHolder = painterResource(R.drawable.ic_default_nagaja),
-                        error = painterResource(R.drawable.ic_default_nagaja)
+                    val pagerState = rememberPagerState(
+                        pageCount = viewModel.recruitJobsModel.value.images?.size ?: 0
                     )
+                    HorizontalPager(state = pagerState) { page ->
+                        GlideImage(
+                            imageModel = "${BuildConfig.BASE_S3}${
+                                viewModel.recruitJobsModel.value.images?.getOrNull(
+                                    page
+                                )?.url
+                            }",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height((200 * screenWidth / 343).dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .noRippleClickable {
+                                    viewModel.recruitJobsModel.value.images?.let {
+                                        viewController?.pushFragment(
+                                            ScreenId.SCREEN_FIND_ID,
+                                            ImageDetailSliderFragment.newInstance(it)
+                                        )
+                                    }
+                                },
+                            placeHolder = painterResource(R.drawable.ic_default_nagaja),
+                            error = painterResource(R.drawable.ic_default_nagaja)
+                        )
+                    }
 
                     Text(
                         "${viewModel.recruitJobsModel.value.city?.name?.getOrNull(0)?.name}",
@@ -198,27 +230,56 @@ class RecruitJobsDetailFragment : BaseFragment() {
                     .fillMaxWidth()
                     .height(52.dp)
             ) {
-                ButtonFunction(
-                    Modifier.weight(1f),
-                    "수정",
-                    ColorUtils.blue_2177E4,
-                    ColorUtils.white_FFFFFF,
-                    ColorUtils.blue_2177E4
-                )
-                ButtonFunction(
-                    Modifier.weight(1f),
-                    "취소",
-                    ColorUtils.gray_222222,
-                    ColorUtils.gray_222222,
-                    ColorUtils.white_FFFFFF
-                )
-                ButtonFunction(
-                    Modifier.weight(1f),
-                    "수정",
-                    ColorUtils.blue_2177E4,
-                    ColorUtils.blue_2177E4,
-                    ColorUtils.white_FFFFFF
-                )
+                if (userDetail.value.id == viewModel.recruitJobsModel.value.writer?.id) {
+                    ButtonFunction(
+                        Modifier.weight(1f),
+                        "수정",
+                        ColorUtils.blue_2177E4,
+                        ColorUtils.white_FFFFFF,
+                        ColorUtils.blue_2177E4
+                    ) {
+                        showMessDEBUG("EDIT")
+                    }
+                    ButtonFunction(
+                        Modifier.weight(1f),
+                        "취소",
+                        ColorUtils.gray_222222,
+                        ColorUtils.gray_222222,
+                        ColorUtils.white_FFFFFF
+                    ) {
+                        showMessDEBUG("CANCEL")
+                    }
+                    ButtonFunction(
+                        Modifier.weight(1f),
+                        "수정",
+                        ColorUtils.blue_2177E4,
+                        ColorUtils.blue_2177E4,
+                        ColorUtils.white_FFFFFF
+                    ) {
+                        showMessDEBUG("CONFIRMATION_OF_EMPLOYMENT")
+                    }
+                } else {
+                    ButtonFunction(
+                        Modifier.weight(1f),
+                        "채팅 문의 하기",
+                        ColorUtils.blue_2177E4,
+                        ColorUtils.blue_2177E4,
+                        ColorUtils.white_FFFFFF
+                    ) {
+                        showMessDEBUG("CHAT_INQUIRY")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getUserDetailFromDataStore(context: Context) {
+        CoroutineScope(Dispatchers.IO).launch {
+            context.dataStore.data.map { get ->
+                get[DataStorePref.USER_DETAIL] ?: ""
+            }.collect {
+                val userDetail = Gson().fromJson(it, UserDetail::class.java)
+                userDetail?.let { this@RecruitJobsDetailFragment.userDetail.value = userDetail }
             }
         }
     }
@@ -229,7 +290,8 @@ class RecruitJobsDetailFragment : BaseFragment() {
         text: String,
         borderColor: Color,
         backgroundColor: Color,
-        textColor: Color
+        textColor: Color,
+        onClick: () -> Unit
     ) {
         Box(
             modifier
@@ -238,7 +300,10 @@ class RecruitJobsDetailFragment : BaseFragment() {
                 .border(
                     width = 1.dp,
                     color = borderColor
-                ), contentAlignment = Alignment.Center
+                )
+                .noRippleClickable {
+                    onClick.invoke()
+                }, contentAlignment = Alignment.Center
         ) {
             Text(
                 text,
