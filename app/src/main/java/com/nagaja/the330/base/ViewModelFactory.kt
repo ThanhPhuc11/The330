@@ -35,6 +35,8 @@ import com.nagaja.the330.view.othersetting.OtherSettingRepo
 import com.nagaja.the330.view.othersetting.OtherSettingVM
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchRepo
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchVM
+import com.nagaja.the330.view.recruitmentregis.RecruitJobRegisRepo
+import com.nagaja.the330.view.recruitmentregis.RecruitJobRegisVM
 import com.nagaja.the330.view.reportmissing.ReportMissingRepo
 import com.nagaja.the330.view.reportmissing.ReportMissingVM
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailRepo
@@ -120,6 +122,8 @@ class ViewModelFactory(apiService: ApiService) :
             ReportMissingRegisVM(ReportMissingRegisRepo(apiService))
         creators[RecruitmentJobSearchVM::class.java] =
             RecruitmentJobSearchVM(RecruitmentJobSearchRepo(apiService))
+        creators[RecruitJobRegisVM::class.java] =
+            RecruitJobRegisVM(RecruitJobRegisRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

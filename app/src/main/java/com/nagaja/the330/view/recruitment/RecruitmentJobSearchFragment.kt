@@ -45,6 +45,7 @@ import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.recruitmentregis.RecruitJobRegisFragment
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailFragment
 import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisFragment
 import com.skydoves.landscapist.glide.GlideImage
@@ -112,8 +113,8 @@ class RecruitmentJobSearchFragment : BaseFragment() {
                 textOption = stringResource(R.string.post_register),
                 clickOption = {
                     viewController?.pushFragment(
-                        ScreenId.SCREEN_REPORT_MISSING_REGIS,
-                        ReportMissingRegisFragment.newInstance()
+                        ScreenId.SCREEN_RECRUITMENT_JOBSEARCH_REGIS,
+                        RecruitJobRegisFragment.newInstance()
                     )
                 }
             )
