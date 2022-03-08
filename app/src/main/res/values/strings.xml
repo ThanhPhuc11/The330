@@ -246,5 +246,8 @@
     <string name="please_enter_local_description">지역 설명을 입력하세요.</string>
     <string name="registrant">등록자</string>
     <string name="post_report_missing_success">게시글 등록 요청이 완료되었습니다.\n관리자 승인 후 게시글이 등록됩니다.</string>
+    <string name="local_description">지역 설명</string>
+    <string name="post_title">게시글 제목</string>
+    <string name="content">내용</string>
 
 </resources>

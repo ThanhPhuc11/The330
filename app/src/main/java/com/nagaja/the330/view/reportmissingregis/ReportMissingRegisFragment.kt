@@ -178,7 +178,7 @@ class ReportMissingRegisFragment : BaseFragment() {
 
                 //TODO: Local Description
                 Text(
-                    "지역 설명",
+                    stringResource(R.string.local_description),
                     style = text14_222,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(horizontal = 16.dp)
@@ -203,7 +203,7 @@ class ReportMissingRegisFragment : BaseFragment() {
 
                 //TODO: Title
                 Text(
-                    "게시글 제목",
+                    stringResource(R.string.post_title),
                     style = text14_222,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier
@@ -268,7 +268,7 @@ class ReportMissingRegisFragment : BaseFragment() {
 
                 //TODO: Body
                 Text(
-                    "내용",
+                    stringResource(R.string.content),
                     style = text14_222,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier
