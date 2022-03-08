@@ -101,4 +101,11 @@ object GetDummyData {
             add(KeyValueModel("COMMENT_COUNT", context.getString(R.string.comment_order)))
         }
     }
+
+    fun getSortRecruitmentJobs(context: Context): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel("LASTEST", context.getString(R.string.lastest_order)))
+            add(KeyValueModel("VIEW_COUNT", context.getString(R.string.view_order)))
+        }
+    }
 }

@@ -11,6 +11,11 @@ object AppConstants {
     const val KEY_STORIES_LIST_DATA = "KEY_LIST_DATA"
     const val NOTIFI_TYPE = "NOTIFI_TYPE"
 
+    const val REPORT = "REPORT"
+    const val MISSING = "MISSING"
+    const val RECRUITMENT = "RECRUITMENT"
+    const val JOB_SEARCH = "JOB_SEARCH"
+
     var YES = 0
     var NO = 1
 

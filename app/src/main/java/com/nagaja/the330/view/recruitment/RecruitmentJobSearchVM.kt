@@ -1,9 +1,9 @@
-package com.nagaja.the330.view.reportmissing
+package com.nagaja.the330.view.recruitment
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
-import com.nagaja.the330.model.ReportMissingModel
+import com.nagaja.the330.model.RecruitmentJobsModel
 import com.nagaja.the330.utils.AppConstants
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -11,27 +11,26 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-class ReportMissingVM(
-    private val repo: ReportMissingRepo
+class RecruitmentJobSearchVM(
+    private val repo: RecruitmentJobSearchRepo
 ) : BaseViewModel() {
     var sort = "LASTEST"
     var type = AppConstants.RECRUITMENT
+    var listDataRecruitment = mutableListOf<RecruitmentJobsModel>()
+    var stateListDataRecruitment = mutableStateListOf<RecruitmentJobsModel>()
 
-    var listDataReport = mutableListOf<ReportMissingModel>()
-    var stateListDataReport = mutableStateListOf<ReportMissingModel>()
-
-    var listDataMissing = mutableListOf<ReportMissingModel>()
-    var stateListDataMissing = mutableStateListOf<ReportMissingModel>()
+    var listDataJobs = mutableListOf<RecruitmentJobsModel>()
+    var stateListDataJobs = mutableStateListOf<RecruitmentJobsModel>()
 
 
-    fun getReportMissingList(
+    fun getRecruitmentList(
         token: String,
 //        page: Int,
 //        size: Int,
-        type: String = "REPORT"
+        type: String
     ) {
         viewModelScope.launch {
-            repo.getReportMissingList(
+            repo.getRecruitmentList(
                 token = token,
                 page = 0,
                 size = 10,
@@ -45,16 +44,16 @@ class ReportMissingVM(
                 .collect {
                     callbackSuccess.value = Unit
                     it.content?.let { it1 ->
-                        if (type == AppConstants.REPORT) {
-                            listDataReport.clear()
-                            listDataReport.addAll(it1)
-                            stateListDataReport.clear()
-                            stateListDataReport.addAll(listDataReport)
+                        if (type == AppConstants.RECRUITMENT) {
+                            listDataRecruitment.clear()
+                            listDataRecruitment.addAll(it1)
+                            stateListDataRecruitment.clear()
+                            stateListDataRecruitment.addAll(listDataRecruitment)
                         } else {
-                            listDataMissing.clear()
-                            listDataMissing.addAll(it1)
-                            stateListDataMissing.clear()
-                            stateListDataMissing.addAll(listDataReport)
+                            listDataJobs.clear()
+                            listDataJobs.addAll(it1)
+                            stateListDataJobs.clear()
+                            stateListDataJobs.addAll(listDataJobs)
                         }
                     }
                 }

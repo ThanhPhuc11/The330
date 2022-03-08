@@ -1,4 +1,4 @@
-package com.nagaja.the330.view.reportmissing
+package com.nagaja.the330.view.recruitment
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,7 +39,7 @@ import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.KeyValueModel
-import com.nagaja.the330.model.ReportMissingModel
+import com.nagaja.the330.model.RecruitmentJobsModel
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
@@ -52,19 +52,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ReportMissingFragment : BaseFragment() {
-    private lateinit var viewModel: ReportMissingVM
+class RecruitmentJobSearchFragment : BaseFragment() {
+    private lateinit var viewModel: RecruitmentJobSearchVM
     private var onClickSort: ((String) -> Unit)? = null
 
     private var options: MutableList<KeyValueModel> = mutableListOf(KeyValueModel())
 //    private var stateOptions = mutableStateOf(options)
 
     companion object {
-        fun newInstance() = ReportMissingFragment()
+        fun newInstance() = RecruitmentJobSearchFragment()
     }
 
     override fun SetupViewModel() {
-        viewModel = getViewModelProvider(this)[ReportMissingVM::class.java]
+        viewModel = getViewModelProvider(this)[RecruitmentJobSearchVM::class.java]
         viewController = (activity as MainActivity).viewController
 
         viewModel.callbackStart.observe(viewLifecycleOwner) {
@@ -123,12 +123,11 @@ class ReportMissingFragment : BaseFragment() {
                     .padding(top = 16.dp)
                     .fillMaxWidth()
                     .height(34.dp),
-//                    .border(width = 1.dp, color = ColorUtils.gray_222222),
                 verticalAlignment = Alignment.Bottom
             ) {
                 TabSelected(
                     modifier = Modifier.width(79.dp),
-                    text = stringResource(R.string.report),
+                    text = stringResource(R.string.recruitment),
                     isSelected = pagerState.currentPage == 0
                 ) {
                     CoroutineScope(Dispatchers.Main).launch {
@@ -137,7 +136,7 @@ class ReportMissingFragment : BaseFragment() {
                 }
                 TabSelected(
                     modifier = Modifier.width(79.dp),
-                    text = stringResource(R.string.missing),
+                    text = stringResource(R.string.jobsearch),
                     isSelected = pagerState.currentPage == 1
                 ) {
                     CoroutineScope(Dispatchers.Main).launch {
@@ -152,9 +151,9 @@ class ReportMissingFragment : BaseFragment() {
             SetupPager(pagerState)
             LaunchedEffect(pagerState.currentPage) {
                 if (pagerState.currentPage == 0) {
-                    viewModel.type = AppConstants.REPORT
+                    viewModel.type = AppConstants.RECRUITMENT
                 } else {
-                    viewModel.type = AppConstants.MISSING
+                    viewModel.type = AppConstants.JOB_SEARCH
                 }
             }
         }
@@ -205,21 +204,22 @@ class ReportMissingFragment : BaseFragment() {
     private fun SetupPager(pagerState: PagerState) {
         HorizontalPager(state = pagerState) { page ->
             if (page == 0) {
-                ReportList()
+                RecruitmentList()
             } else {
-                MissingList()
+                JobSearchList()
             }
         }
     }
 
     @Composable
-    private fun ReportList() {
+    private fun RecruitmentList() {
         val owner = LocalLifecycleOwner.current
         DisposableEffect(Unit) {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        viewModel.getReportMissingList(accessToken!!, AppConstants.REPORT)
+//                        viewModel.type = AppConstants.RECRUITMENT
+                        viewModel.getRecruitmentList(accessToken!!, AppConstants.RECRUITMENT)
                     }
                     else -> {}
                 }
@@ -234,10 +234,10 @@ class ReportMissingFragment : BaseFragment() {
                 .fillMaxHeight()
                 .padding(horizontal = 16.dp)
         ) {
-            val listCompany = viewModel.stateListDataReport
+            val listCompany = viewModel.stateListDataRecruitment
             LazyColumn(state = rememberLazyListState()) {
                 itemsIndexed(listCompany) { _, obj ->
-                    ReportMissingItem(obj)
+                    RecuitmentJobsItem(obj)
                     Divider(color = ColorUtils.black_000000_opacity_5)
                 }
             }
@@ -245,13 +245,14 @@ class ReportMissingFragment : BaseFragment() {
     }
 
     @Composable
-    private fun MissingList() {
+    private fun JobSearchList() {
         val owner = LocalLifecycleOwner.current
         DisposableEffect(Unit) {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        viewModel.getReportMissingList(accessToken!!, AppConstants.MISSING)
+//                        viewModel.type = AppConstants.JOB_SEARCH
+                        viewModel.getRecruitmentList(accessToken!!, AppConstants.JOB_SEARCH)
                     }
                     else -> {}
                 }
@@ -266,10 +267,10 @@ class ReportMissingFragment : BaseFragment() {
                 .fillMaxHeight()
                 .padding(horizontal = 16.dp)
         ) {
-            val listCompany = viewModel.stateListDataMissing
+            val listCompany = viewModel.stateListDataJobs
             LazyColumn(state = rememberLazyListState()) {
                 itemsIndexed(listCompany) { _, obj ->
-                    ReportMissingItem(obj)
+                    RecuitmentJobsItem(obj)
                     Divider(color = ColorUtils.black_000000_opacity_5)
                 }
             }
@@ -280,7 +281,7 @@ class ReportMissingFragment : BaseFragment() {
     private fun HandleSortUI(page: Int) {
         Row(Modifier.padding(bottom = 10.dp)) {
             val listSort = remember {
-                GetDummyData.getSortLocalNews(requireContext())
+                GetDummyData.getSortRecruitmentJobs(requireContext())
             }
             var expanded1 by remember { mutableStateOf(false) }
             val itemSelected = remember { mutableStateOf(KeyValueModel()) }
@@ -290,9 +291,9 @@ class ReportMissingFragment : BaseFragment() {
             }
             onClickSort = { id ->
                 viewModel.sort = id
-                viewModel.getReportMissingList(
+                viewModel.getRecruitmentList(
                     accessToken!!,
-                    if (page == 0) AppConstants.REPORT else AppConstants.MISSING
+                    if (page == 0) AppConstants.RECRUITMENT else AppConstants.JOB_SEARCH
                 )
             }
             Image(painter = painterResource(R.drawable.ic_sort), contentDescription = null)
@@ -326,7 +327,7 @@ class ReportMissingFragment : BaseFragment() {
     }
 
     @Composable
-    private fun ReportMissingItem(obj: ReportMissingModel) {
+    private fun RecuitmentJobsItem(obj: RecruitmentJobsModel) {
         Column(
             Modifier
                 .background(ColorUtils.white_FFFFFF)
@@ -361,26 +362,11 @@ class ReportMissingFragment : BaseFragment() {
                         fontSize = 16.sp,
                         fontWeight = FontWeight(700)
                     )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            stringResource(R.string.views).plus(" ${obj.viewCount ?: 0}"),
-                            color = ColorUtils.gray_9F9F9F,
-                            fontSize = 12.sp,
-                        )
-                        Image(
-                            painter = painterResource(R.drawable.ic_dot),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(horizontal = 4.dp)
-                                .size(2.dp),
-                            colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
-                        )
-                        Text(
-                            stringResource(R.string.comment).plus(" ${obj.commentCount ?: 0}"),
-                            color = ColorUtils.gray_9F9F9F,
-                            fontSize = 12.sp,
-                        )
-                    }
+                    Text(
+                        stringResource(R.string.views).plus(" ${obj.viewCount ?: 0}"),
+                        color = ColorUtils.gray_9F9F9F,
+                        fontSize = 12.sp,
+                    )
                     Box(
                         Modifier.fillMaxSize(),
                         contentAlignment = Alignment.BottomStart

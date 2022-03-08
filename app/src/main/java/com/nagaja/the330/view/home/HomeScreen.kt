@@ -42,6 +42,7 @@ import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.freenoticeboard.FreeNoticeFragment
 import com.nagaja.the330.view.localnews.LocalNewsFragment
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.recruitment.RecruitmentJobSearchFragment
 import com.nagaja.the330.view.reportmissing.ReportMissingFragment
 import com.nagaja.the330.view.secondhandmarket.SecondHandMarketFragment
 import com.nagaja.the330.view.text14_222
@@ -272,6 +273,18 @@ fun linkScreen(ctype: String, viewController: ViewController?) {
             ScreenId.SCREEN_REPORT_MISSING,
             ReportMissingFragment.newInstance()
         )
+        "JOB_SEARCH" -> viewController?.pushFragment(
+            ScreenId.SCREEN_RECRUITMENT_JOBSEARCH,
+            RecruitmentJobSearchFragment.newInstance()
+        )
+//        "NOTICE" -> viewController?.pushFragment(
+//            ScreenId.SCREEN_RECRUITMENT_JOBSEARCH,
+//            RecruitmentJobSearchFragment.newInstance()
+//        )
+//        "FAQ1" -> viewController?.pushFragment(
+//            ScreenId.SCREEN_RECRUITMENT_JOBSEARCH,
+//            RecruitmentJobSearchFragment.newInstance()
+//        )
         else -> {}
     }
 }

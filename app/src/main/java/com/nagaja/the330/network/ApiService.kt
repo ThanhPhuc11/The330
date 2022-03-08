@@ -225,4 +225,14 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body body: ReportMissingModel
     ): SecondHandPostResponse
+
+    @GET("recruitment_jobs/in_main")
+    suspend fun getRecruitmentList(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String,
+        @Query("categoryType") type: String,
+        @Query("all") all: String?,
+    ): ResponseModel<MutableList<RecruitmentJobsModel>>
 }
