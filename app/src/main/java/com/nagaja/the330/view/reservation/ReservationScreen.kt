@@ -38,6 +38,7 @@ import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.ReservationModel
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
+import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.Header
@@ -131,7 +132,8 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                             onClick = {
                                 itemSelected.value = selectionOption
                                 expanded = false
-                                viewModel.getReservationMain(accessToken, selectionOption.id!!)
+                                viewModel.timeLimit = selectionOption.id!!
+                                viewModel.getReservationMain(accessToken)
                             }
                         ) {
                             Text(text = selectionOption.name!!)
@@ -147,7 +149,10 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                 .height(52.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BoxStatus(Modifier.weight(1f), text = "총 예약\n30건") {}
+            BoxStatus(Modifier.weight(1f), text = "총 예약\n30건") {
+                viewModel.status = null
+                viewModel.getReservationMain(accessToken)
+            }
             Box(
                 Modifier
                     .padding(vertical = 7.dp)
@@ -156,7 +161,10 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "예약완료\n30건") {}
+            BoxStatus(Modifier.weight(1f), text = "예약완료\n30건") {
+                viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
+                viewModel.getReservationMain(accessToken)
+            }
             Box(
                 Modifier
                     .padding(vertical = 7.dp)
@@ -165,7 +173,10 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "이용완료\n30건") {}
+            BoxStatus(Modifier.weight(1f), text = "이용완료\n30건") {
+                viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
+                viewModel.getReservationMain(accessToken)
+            }
             Box(
                 Modifier
                     .padding(vertical = 7.dp)
@@ -174,7 +185,10 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "예약취소\n30건") {}
+            BoxStatus(Modifier.weight(1f), text = "예약취소\n30건") {
+                viewModel.status = AppConstants.Reservation.RESERVATION_CANCELED
+                viewModel.getReservationMain(accessToken)
+            }
             Box(
                 Modifier
                     .padding(vertical = 7.dp)

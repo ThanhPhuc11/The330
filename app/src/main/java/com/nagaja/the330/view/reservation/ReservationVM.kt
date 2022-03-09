@@ -13,10 +13,13 @@ import kotlinx.coroutines.launch
 class ReservationVM(
     private val repo: ReservationRepo
 ) : BaseViewModel() {
+    var timeLimit: String = "ONE_WEEK"
+    var status: String? = null
+
     var listData = mutableListOf<ReservationModel>()
     val stateListData = mutableStateListOf<ReservationModel>()
 
-    fun getReservationMain(token: String, timeLimit: String = "ONE_WEEK") {
+    fun getReservationMain(token: String) {
         viewModelScope.launch {
             repo.getReservationMain(
                 token = token,
@@ -24,7 +27,7 @@ class ReservationVM(
                 size = 10,
                 asCompany = false,
                 timeLimit = timeLimit,
-                status = null
+                status = status
             )
                 .onStart { }
                 .onCompletion { }

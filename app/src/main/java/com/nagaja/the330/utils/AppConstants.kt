@@ -81,29 +81,11 @@ object AppConstants {
         const val BUY = "BUY"
     }
 
-    object Accrual {
-        const val CASH = "CASH"
-        const val CASH_CHARGE = "CHARGE"
-        const val CASH_USE = "USE"
-        const val CASH_USE_CLASS_EXTEND = "USE_CLASS_EXTEND"
-        const val CASH_PAID = "PAID"
-        const val CASH_PAID_EXTEND = "PAID_EXTEND"
-        const val CASH_RESERVATION_REFUND = "RESERVATION_REFUND"
-        const val CASH_CLASS_EXTEND_REFUND = "CLASS_EXTEND_REFUND"
-        const val CASH_CLASS_REFUND = "CLASS_REFUND"
-        const val CASH_WITHDRAW_REQUEST = "WITHDRAW_REQUEST"
-        const val CASH_WITHDRAW_REJECT = "WITHDRAW_REJECT"
-        const val CASH_FORCE_CLOSE = "FORCE_CLOSE"
-        const val POINT = "POINT"
-        const val POINT_ADMIN_PROVIDE = "ADMIN_PROVIDE"
-        const val POINT_USE = "USE"
-        const val POINT_USE_CLASS_EXTEND = "USE_CLASS_EXTEND"
-        const val POINT_RESERVATION_REFUND = "RESERVATION_REFUND"
-        const val POINT_CLASS_EXTEND_REFUND = "CLASS_EXTEND_REFUND"
-        const val POINT_CLASS_REFUND = "CLASS_REFUND"
-        const val POINT_SHARE_SNS = "SHARE_SNS"
-        const val POINT_CHARGE = "CHARGE"
-        const val PENALTY = "PENALTY"
+    object Reservation {
+        const val RESERVATION_COMPLETED = "RESERVATION_COMPLETED"
+        const val USAGE_COMPLETED = "USAGE_COMPLETED"
+        const val RESERVATION_CANCELED = "RESERVATION_CANCELED"
+        const val RESERVATION_DELETED = "RESERVATION_DELETED"
     }
 
     object TabType {
