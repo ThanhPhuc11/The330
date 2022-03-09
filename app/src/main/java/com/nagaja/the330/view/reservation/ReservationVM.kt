@@ -16,14 +16,14 @@ class ReservationVM(
     var listData = mutableListOf<ReservationModel>()
     val stateListData = mutableStateListOf<ReservationModel>()
 
-    fun getReservationMain(token: String) {
+    fun getReservationMain(token: String, timeLimit: String = "ONE_WEEK") {
         viewModelScope.launch {
             repo.getReservationMain(
                 token = token,
                 page = 0,
                 size = 10,
                 asCompany = false,
-                timeLimit = "ONE_YEAR",
+                timeLimit = timeLimit,
                 status = null
             )
                 .onStart { }
@@ -33,6 +33,7 @@ class ReservationVM(
                     it.content?.let { data ->
                         listData.clear()
                         listData.addAll(data)
+                        stateListData.clear()
                         stateListData.addAll(listData)
                     }
                 }

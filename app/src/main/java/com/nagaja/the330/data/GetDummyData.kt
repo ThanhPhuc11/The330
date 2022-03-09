@@ -108,4 +108,14 @@ object GetDummyData {
             add(KeyValueModel("VIEW_COUNT", context.getString(R.string.view_order)))
         }
     }
+
+    fun getSortReservation(context: Context): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel("ONE_WEEK", context.getString(R.string.one_week)))
+            add(KeyValueModel("ONE_MONTH", context.getString(R.string.one_month)))
+            add(KeyValueModel("THREE_MONTH", context.getString(R.string.three_month)))
+            add(KeyValueModel("SIX_MONTH", context.getString(R.string.six_month)))
+            add(KeyValueModel("ONE_YEAR", context.getString(R.string.one_year)))
+        }
+    }
 }

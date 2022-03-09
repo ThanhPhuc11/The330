@@ -9,9 +9,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -28,16 +29,21 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
 import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
+import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.ReservationModel
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
+import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.text14_62
 import com.skydoves.landscapist.glide.GlideImage
 
 
@@ -84,15 +90,25 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                 .fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
+            val listSort = remember { GetDummyData.getSortReservation(context) }
+            var expanded by remember { mutableStateOf(false) }
+            val itemSelected = remember { mutableStateOf(KeyValueModel()) }
+            LaunchedEffect(listSort.size) {
+                itemSelected.value =
+                    if (listSort.size > 0) listSort[0] else KeyValueModel()
+            }
             Row(
                 Modifier
                     .size(100.dp, 36.dp)
                     .border(width = 1.dp, color = ColorUtils.gray_E1E1E1)
-                    .padding(9.dp),
+                    .padding(9.dp)
+                    .noRippleClickable {
+                        expanded = !expanded
+                    },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "일주일",
+                    itemSelected.value.name ?: "",
                     color = ColorUtils.black_000000,
                     fontSize = 14.sp,
                     modifier = Modifier.weight(1f)
@@ -103,6 +119,25 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                     colorFilter = ColorFilter.tint(ColorUtils.black_000000),
                     modifier = Modifier.size(10.dp, 6.dp)
                 )
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = {
+                        expanded = false
+                    }
+                ) {
+                    listSort.forEach { selectionOption ->
+                        DropdownMenuItem(
+                            onClick = {
+                                itemSelected.value = selectionOption
+                                expanded = false
+                                viewModel.getReservationMain(accessToken, selectionOption.id!!)
+                            }
+                        ) {
+                            Text(text = selectionOption.name!!)
+                        }
+                    }
+                }
             }
         }
         Divider(color = ColorUtils.gray_E1E1E1)
@@ -121,7 +156,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "총 예약\n30건") {}
+            BoxStatus(Modifier.weight(1f), text = "예약완료\n30건") {}
             Box(
                 Modifier
                     .padding(vertical = 7.dp)
@@ -130,7 +165,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "총 예약\n30건") {}
+            BoxStatus(Modifier.weight(1f), text = "이용완료\n30건") {}
             Box(
                 Modifier
                     .padding(vertical = 7.dp)
@@ -139,7 +174,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "총 예약\n30건") {}
+            BoxStatus(Modifier.weight(1f), text = "예약취소\n30건") {}
             Box(
                 Modifier
                     .padding(vertical = 7.dp)
@@ -188,7 +223,7 @@ private fun ItemReservation(index: Int, obj: ReservationModel) {
             .padding(16.dp)
     ) {
         GlideImage(
-            imageModel = "",
+            imageModel = "${BuildConfig.BASE_S3}${obj.companyOwner?.images?.getOrNull(0)?.url}",
             Modifier.size(96.dp),
             placeHolder = painterResource(R.drawable.ic_default_nagaja),
             error = painterResource(R.drawable.ic_default_nagaja)
@@ -201,10 +236,15 @@ private fun ItemReservation(index: Int, obj: ReservationModel) {
                 fontWeight = FontWeight.Black
             )
             Text(
-                "예약일시: 2021년 10월 26일",
+                "예약일시: ${
+                    AppDateUtils.changeDateFormat(
+                        AppDateUtils.FORMAT_16,
+                        AppDateUtils.FORMAT_20,
+                        obj.reservationDateTime ?: ""
+                    )
+                }",
                 modifier = Modifier.padding(top = 3.dp),
-                color = ColorUtils.gray_626262,
-                fontSize = 14.sp
+                style = text14_62
             )
             Text(
                 "사용인원: ${obj.reservationNumber ?: 0}인",

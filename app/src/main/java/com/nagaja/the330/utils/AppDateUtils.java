@@ -25,7 +25,7 @@ public class AppDateUtils {
     public static String FORMAT_4 = "yyyy/MM/dd hh:mm:ss";
     public static String FORMAT_5 = "yyyy-MM-dd"; // UI mobile hay dung
     public static String FORMAT_6 = "yyyy-MM-dd'T'HH:mm:ssZ";
-    public static String FORMAT_7 = "yyyy-MM-dd HH:mm"; // sv tra ve format nay
+    public static String FORMAT_7 = "yyyy-MM-dd HH:mm";
     public static String FORMAT_8 = "yyyy-MM-dd hh:mm";
     public static String FORMAT_9 = "hh:mm";
     public static String FORMAT_10 = "yyyy-MM-dd'T'HH:mm:ss.sss'Z'";
@@ -34,10 +34,11 @@ public class AppDateUtils {
     public static String FORMAT_13 = "yyyy-MM-dd EEEE";
     public static String FORMAT_14 = "MMM dd, yyyy, hh:mm:ss aa";
     public static String FORMAT_15 = "YYYY.MM.dd";
-    public static String FORMAT_16 = "yyyy-MM-dd'T'HH:mm:ss.sss";
+    public static String FORMAT_16 = "yyyy-MM-dd'T'HH:mm:ss.sss";// sv tra ve format nay
     public static String FORMAT_17 = "yyyy-MM-dd HH:mm:ss";
     public static String FORMAT_18 = "yyyy년 MM월 dd일 hh:mm aa";
     public static String FORMAT_19 = "yyyy.MM.dd HH:mm";
+    public static String FORMAT_20 = "yyyy년 MM월 dd일 HH시mm분";
 
     public static String changeDateFormat(String currentFormat, String requiredFormat, String dateString) {
         String result = dateString;
