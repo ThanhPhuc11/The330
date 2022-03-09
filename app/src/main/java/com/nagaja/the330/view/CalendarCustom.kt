@@ -32,7 +32,8 @@ fun CalendarUI(onChoose: ((String) -> Unit)? = null) {
 //                view.maxDate = // contraints
 
                 view.setOnDateChangeListener { _, year, month, dayOfMonth ->
-                    val strDate = "$year-${month + 1}-$dayOfMonth"
+                    val month1 = if (month + 1 < 10) "0${month + 1}" else (month + 1).toString()
+                    val strDate = "$year-$month1-$dayOfMonth"
                     onChoose?.invoke(strDate)
                     Toast.makeText(context1, strDate, Toast.LENGTH_SHORT).show()
 //                    onDateSelected(

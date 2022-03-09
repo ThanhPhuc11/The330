@@ -40,6 +40,7 @@ import com.nagaja.the330.view.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
 
 class ReservationRegisFragment : BaseFragment() {
+    private lateinit var viewModel: ReservationRegisVM
     private var onClickChoose: ((Int) -> Unit)? = null
 
     companion object {
@@ -47,6 +48,7 @@ class ReservationRegisFragment : BaseFragment() {
     }
 
     override fun SetupViewModel() {
+        viewModel = getViewModelProvider(this)[ReservationRegisVM::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
@@ -105,7 +107,11 @@ class ReservationRegisFragment : BaseFragment() {
                     //TODO: Name
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Text("예약자명", style = text14_222, modifier = Modifier.weight(1f))
-                        TextFieldCustom(hint = "예약자명을 입력해주세요.", modifier = Modifier.weight(2.5f))
+                        TextFieldCustom(
+                            hint = "예약자명을 입력해주세요.",
+                            modifier = Modifier.weight(2.5f),
+                            textStateId = viewModel.stateEdtBooker
+                        )
                     }
                     Divider(color = ColorUtils.gray_E1E1E1)
 
@@ -119,7 +125,12 @@ class ReservationRegisFragment : BaseFragment() {
                     //TODO: Number of people
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Text("인원", style = text14_222, modifier = Modifier.weight(1f))
-                        TextFieldCustom(hint = "예약 인원을 입력해주세요.", modifier = Modifier.weight(2.5f))
+                        TextFieldCustom(
+                            hint = "예약 인원을 입력해주세요.",
+                            modifier = Modifier.weight(2.5f),
+                            inputType = KeyboardType.Number,
+                            textStateId = viewModel.stateEdtNumber
+                        )
                     }
                     Divider(color = ColorUtils.gray_E1E1E1)
 
@@ -147,8 +158,9 @@ class ReservationRegisFragment : BaseFragment() {
                     }
                     AnimatedVisibility(visible = showDate.value) {
                         CalendarUI { date ->
-                            showDate.value = false
                             stateDate.value = date
+                            viewModel.date = date
+                            showDate.value = false
                         }
                     }
                     Divider(color = ColorUtils.gray_E1E1E1)
@@ -176,8 +188,9 @@ class ReservationRegisFragment : BaseFragment() {
                         )
                     }
                     AnimatedVisibility(visible = showTime.value) {
-                        ReservationTime { time ->
+                        ReservationTime { index, time ->
                             stateTime.value = time
+                            viewModel.time = index
                             showTime.value = false
                         }
                     }
@@ -186,7 +199,7 @@ class ReservationRegisFragment : BaseFragment() {
                     Text("요청 사항", style = text14_222, modifier = Modifier.padding(vertical = 12.dp))
 
                     //TODO: Body
-                    val stateEdtBody = remember { mutableStateOf(TextFieldValue("")) }
+                    val stateEdtBody = viewModel.stateEdtRequestNote
                     Box(
                         modifier = Modifier
                             .padding(bottom = 40.dp)
@@ -231,7 +244,10 @@ class ReservationRegisFragment : BaseFragment() {
                 Modifier
                     .fillMaxWidth()
                     .height(52.dp)
-                    .background(ColorUtils.blue_2177E4),
+                    .background(ColorUtils.blue_2177E4)
+                    .noRippleClickable {
+                        accessToken?.let { viewModel.makeReservation(it) }
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -297,7 +313,7 @@ class ReservationRegisFragment : BaseFragment() {
     @OptIn(ExperimentalFoundationApi::class)
     @Preview
     @Composable
-    private fun ReservationTime(onClick: ((String) -> Unit)? = null) {
+    private fun ReservationTime(onClick: ((Int, String) -> Unit)? = null) {
         Column(
             Modifier
                 .padding(top = 4.dp, bottom = 12.dp)
@@ -345,7 +361,7 @@ class ReservationRegisFragment : BaseFragment() {
                     }
                     listTime.removeAt(index)
                     listTime.add(index, temp)
-                    onClick?.invoke(listTime[index].time)
+                    onClick?.invoke(index, listTime[index].time)
                 }
             }
             Box(

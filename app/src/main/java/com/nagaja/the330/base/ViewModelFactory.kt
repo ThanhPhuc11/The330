@@ -45,6 +45,10 @@ import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailRepo
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailVM
 import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisRepo
 import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisVM
+import com.nagaja.the330.view.reservation.ReservationRepo
+import com.nagaja.the330.view.reservation.ReservationVM
+import com.nagaja.the330.view.reservationregis.ReservationRegisRepo
+import com.nagaja.the330.view.reservationregis.ReservationRegisVM
 import com.nagaja.the330.view.resetpassword.ResetPwRepo
 import com.nagaja.the330.view.resetpassword.ResetPwVM
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailRepo
@@ -128,6 +132,10 @@ class ViewModelFactory(apiService: ApiService) :
             RecruitJobsDetailVM(RecruitJobsDetailRepo(apiService))
         creators[RecruitJobRegisVM::class.java] =
             RecruitJobRegisVM(RecruitJobRegisRepo(apiService))
+        creators[ReservationVM::class.java] =
+            ReservationVM(ReservationRepo(apiService))
+        creators[ReservationRegisVM::class.java] =
+            ReservationRegisVM(ReservationRegisRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

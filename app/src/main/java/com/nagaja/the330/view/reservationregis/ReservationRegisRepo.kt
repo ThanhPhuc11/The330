@@ -1,0 +1,11 @@
+package com.nagaja.the330.view.reservationregis
+
+import com.nagaja.the330.model.ReservationModel
+import com.nagaja.the330.network.ApiService
+import kotlinx.coroutines.flow.flow
+
+class ReservationRegisRepo(private val apiService: ApiService) {
+    suspend fun makeReservation(token: String, body: ReservationModel) = flow {
+        emit(apiService.makeReservation(token, body))
+    }
+}

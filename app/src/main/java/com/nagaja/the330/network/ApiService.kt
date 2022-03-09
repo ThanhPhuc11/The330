@@ -252,4 +252,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("id") id: Int,
     ): RecruitmentJobsModel
+
+    @POST("reservations")
+    suspend fun makeReservation(
+        @Header("Authorization") token: String,
+        @Body body: ReservationModel
+    ): Response<Unit> //200
 }
