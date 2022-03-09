@@ -1001,8 +1001,6 @@ class ApplyCompanyFragment : BaseFragment() {
         }
     }
 
-    class TimeReservation(val time: String, var isSelected: Boolean = false)
-
     @Composable
     private fun ItemTime(index: Int, time: TimeReservation, modifier: Modifier = Modifier) {
         Box(

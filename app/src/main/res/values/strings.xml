@@ -241,6 +241,7 @@
     <string name="company_name_2">기업명</string>
     <string name="contact">연락처</string>
 
+    <!--report/missing-->
     <string name="missing">실종자</string>
     <string name="report_missing">신고/실종자</string>
     <string name="please_enter_local_description">지역 설명을 입력하세요.</string>
@@ -250,10 +251,15 @@
     <string name="post_title">게시글 제목</string>
     <string name="content">내용</string>
 
+    <!--recruitmentJobs-->
     <string name="recruitment">구인</string>
     <string name="jobsearch">구직</string>
     <string name="add_SNS_info">SNS 정보 추가</string>
     <string name="attach_your_cv">이력서 첨부</string>
     <string name="recruitment_jobsearch">구인/구직</string>
+
+    <!--reservation-->
+    <string name="make_reservation">예약하기</string>
+    <string name="please_enter_your_request">요청 사항을 입력해 주세요.</string>
 
 </resources>

@@ -33,4 +33,15 @@
     <style name="progressBar" parent="@style/Theme.AppCompat">
         <item name="colorAccent">#FF525B</item>
     </style>
+
+    <style name="CalenderViewCustom" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="colorAccent">#2177E4</item>
+        <item name="colorOnPrimary">#FF525B</item>
+        <item name="colorSurface">#ffffff</item>
+        <item name="android:weekDayTextAppearance">@style/CustomCalendarWeek</item>
+    </style>
+
+    <style name="CustomCalendarWeek" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">#2177E4</item>
+    </style>
 </resources>
