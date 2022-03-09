@@ -1,13 +1,9 @@
 package com.nagaja.the330.view.reservation
 
 import androidx.compose.runtime.mutableStateListOf
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
-import com.nagaja.the330.model.CityModel
-import com.nagaja.the330.model.DistrictModel
-import com.nagaja.the330.model.FileModel
-import com.nagaja.the330.model.SecondHandModel
+import com.nagaja.the330.model.ReservationModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -17,72 +13,26 @@ import kotlinx.coroutines.launch
 class ReservationVM(
     private val repo: ReservationRepo
 ) : BaseViewModel() {
-    var category: String? = null
-    var city: String? = null
-    var district: String? = null
-    var listData = mutableListOf<SecondHandModel>()
-    var stateListData = mutableStateListOf<SecondHandModel>()
+    var listData = mutableListOf<ReservationModel>()
+    val stateListData = mutableStateListOf<ReservationModel>()
 
-
-    val listImage = mutableStateListOf<FileModel>()
-    val listCity = mutableStateListOf<CityModel>()
-    val listDistrict = mutableStateListOf<DistrictModel>()
-
-    val callbackPostSuccess = MutableLiveData<Unit>()
-
-    fun getCity(token: String) {
+    fun getReservationMain(token: String) {
         viewModelScope.launch {
-            repo.getCity(token)
-                .onStart { }
-                .onCompletion { }
-                .catch { }
-                .collect {
-                    it.content?.let { it1 -> listCity.addAll(it1) }
-                }
-        }
-    }
-
-    fun getDistrict(token: String, cityId: Int) {
-        viewModelScope.launch {
-            repo.getDistrict(token, cityId)
-                .onStart { }
-                .onCompletion { }
-                .catch { }
-                .collect {
-                    it.content?.let { it1 ->
-                        listDistrict.clear()
-                        listDistrict.addAll(it1)
-                    }
-                }
-        }
-    }
-
-    fun getListSecondHandMarket(
-        token: String,
-//        secondhandCategoryType: String?,
-//        page: Int,
-//        size: Int,
-        sort: String = "LASTEST"
-    ) {
-        viewModelScope.launch {
-            repo.secondHandMarket(
+            repo.getReservationMain(
                 token = token,
-                cityId = city?.toInt(),
-                districtId = district?.toInt(),
-                secondhandCategoryType = category,
                 page = 0,
                 size = 10,
-                sort = sort
+                asCompany = false,
+                timeLimit = "ONE_YEAR",
+                status = null
             )
-                .onStart { callbackStart.value = Unit }
+                .onStart { }
                 .onCompletion { }
-                .catch { handleError(it) }
+                .catch { }
                 .collect {
-                    callbackSuccess.value = Unit
-                    listData.clear()
-                    it.content?.let { it1 ->
-                        listData.addAll(it1)
-                        stateListData.clear()
+                    it.content?.let { data ->
+                        listData.clear()
+                        listData.addAll(data)
                         stateListData.addAll(listData)
                     }
                 }

@@ -26,6 +26,7 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.home.HomeScreen
 import com.nagaja.the330.view.mypage.MyPageScreen
+import com.nagaja.the330.view.reservation.ReservationScreen
 
 class MainFragment : BaseFragment() {
 
@@ -120,7 +121,7 @@ class MainFragment : BaseFragment() {
                 HomeTab()
             }
             composable(NavigationItem.Reservation.route) {
-                Page2()
+                ReservationTab()
             }
             composable(NavigationItem.Chat.route) {
                 Page2()
@@ -134,6 +135,11 @@ class MainFragment : BaseFragment() {
     @Composable
     fun HomeTab() {
         accessToken?.let { HomeScreen(it, viewController) }
+    }
+
+    @Composable
+    fun ReservationTab() {
+        accessToken?.let { ReservationScreen(it, viewController) }
     }
 
     @Composable

@@ -253,6 +253,16 @@ interface ApiService {
         @Query("id") id: Int,
     ): RecruitmentJobsModel
 
+    @GET("reservations/in_main")
+    suspend fun getReservationMain(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("asCompany") asCompany: Boolean,
+        @Query("timeLimit") timeLimit: String,
+        @Query("status") status: String?,
+    ): ResponseModel<MutableList<ReservationModel>>
+
     @POST("reservations")
     suspend fun makeReservation(
         @Header("Authorization") token: String,

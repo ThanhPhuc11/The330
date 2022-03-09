@@ -4,33 +4,14 @@ import com.nagaja.the330.network.ApiService
 import kotlinx.coroutines.flow.flow
 
 class ReservationRepo(private val apiService: ApiService) {
-    suspend fun getCity(token: String) = flow {
-        emit(apiService.getCity(token))
-    }
-
-    suspend fun getDistrict(token: String, cityId: Int) = flow {
-        emit(apiService.getDistrict(token, cityId))
-    }
-
-    suspend fun secondHandMarket(
+    suspend fun getReservationMain(
         token: String,
-        cityId: Int?,
-        districtId: Int?,
-        secondhandCategoryType: String?,
         page: Int,
         size: Int,
-        sort: String
+        asCompany: Boolean,
+        timeLimit: String,
+        status: String?
     ) = flow {
-        emit(
-            apiService.secondHandMarket(
-                token = token,
-                cityId = cityId,
-                districtId = districtId,
-                secondhandCategoryType = secondhandCategoryType,
-                page = page,
-                size = size,
-                sort = sort
-            )
-        )
+        emit(apiService.getReservationMain(token, page, size, asCompany, timeLimit, status))
     }
 }
