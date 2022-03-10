@@ -152,7 +152,7 @@ class MainFragment : BaseFragment() {
         Column(
             Modifier
                 .fillMaxSize()
-                .background(ColorUtils.pink_FF1E54)
+                .background(ColorUtils.white_FFFFFF)
         ) {
 
         }

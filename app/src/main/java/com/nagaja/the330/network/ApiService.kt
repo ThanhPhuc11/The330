@@ -274,10 +274,16 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("page") page: Int,
         @Query("size") size: Int,
-        @Query("cType") cType: String,
         @Query("sort") sort: String,
+        @Query("cType") cType: String?,
         @Query("cityId") cityId: Int?,
         @Query("districtId") districtId: Int?,
         @Query("all") all: String?
     ): ResponseModel<MutableList<CompanyModel>>
+
+    @GET("company_requests")
+    suspend fun getCompanyDetail(
+        @Header("Authorization") token: String,
+        @Query("id") id: Int
+    ): CompanyModel
 }

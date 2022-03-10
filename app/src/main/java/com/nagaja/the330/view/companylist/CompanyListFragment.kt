@@ -37,8 +37,10 @@ import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.CompanyModel
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.HeaderSearch
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.companydetail.CompanyDetailFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -46,7 +48,7 @@ class CompanyListFragment : BaseFragment() {
     private lateinit var viewModel: CompanyListVM
 
     companion object {
-        fun newInstance(cType: String) = CompanyListFragment().apply {
+        fun newInstance(cType: String? = null) = CompanyListFragment().apply {
             arguments = Bundle().apply {
                 putString(AppConstants.EXTRA_KEY1, cType)
             }
@@ -56,6 +58,19 @@ class CompanyListFragment : BaseFragment() {
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[CompanyListVM::class.java]
         viewController = (activity as MainActivity).viewController
+
+        viewModel.callbackStart.observe(viewLifecycleOwner) {
+            showLoading()
+        }
+        viewModel.callbackSuccess.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.callbackFail.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.showMessCallback.observe(viewLifecycleOwner) {
+            showMess(it)
+        }
     }
 
     @Preview
@@ -66,7 +81,7 @@ class CompanyListFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        val cType = requireArguments().getString(AppConstants.EXTRA_KEY1, "")
+                        val cType = requireArguments().getString(AppConstants.EXTRA_KEY1)
                         viewModel.cType = cType
                         accessToken?.let { viewModel.findCompany(it) }
                     }
@@ -219,6 +234,12 @@ class CompanyListFragment : BaseFragment() {
                 .background(ColorUtils.white_FFFFFF)
                 .fillMaxWidth()
                 .padding(vertical = 16.dp)
+                .noRippleClickable {
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_COMPANY_DETAIL,
+                        CompanyDetailFragment.newInstance(obj.id!!)
+                    )
+                }
         ) {
             GlideImage(
                 imageModel = "",

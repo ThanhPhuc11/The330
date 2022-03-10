@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,7 +59,6 @@ import com.nagaja.the330.view.general.GeneralViewModel
 import com.nagaja.the330.view.main.MainFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.reset_templace.ResetTemplaceFragment
-import com.nagaja.the330.view.resetpassword.InputIDFragment
 import com.nagaja.the330.view.signupinfo.GoogleMapFragment
 import com.nagaja.the330.view.signupinfo.SignupInfoFragment
 import com.nagaja.the330.view.text14_222
@@ -207,11 +207,13 @@ class LoginFragment : BaseFragment() {
                     .noRippleClickable {
                         viewController?.pushFragment(
                             ScreenId.SCREEN_GOOGLE_MAP,
-                            GoogleMapFragment.newInstance().apply {
-                                callbackLocation = { lat, long ->
-                                    showMessDEBUG("$lat - $long")
+                            GoogleMapFragment
+                                .newInstance()
+                                .apply {
+                                    callbackLocation = { lat, long ->
+                                        showMessDEBUG("$lat - $long")
+                                    }
                                 }
-                            }
                         )
                     }
             )
@@ -285,6 +287,7 @@ class LoginFragment : BaseFragment() {
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
+                visualTransformation = PasswordVisualTransformation(),
             )
 
             AnimatedVisibility(

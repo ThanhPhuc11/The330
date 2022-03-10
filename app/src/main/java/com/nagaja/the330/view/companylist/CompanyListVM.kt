@@ -13,9 +13,9 @@ import kotlinx.coroutines.launch
 class CompanyListVM(
     private val repo: CompanyListRepo
 ) : BaseViewModel() {
-    var sort: String = ""
+    var sort: String = "NAGAJA_RECOMMEND_ORDER"
     var filter: String = ""
-    var cType: String = ""
+    var cType: String? = null
     val listData = mutableListOf<CompanyModel>()
     val stateListData = mutableStateListOf<CompanyModel>()
 
@@ -28,11 +28,12 @@ class CompanyListVM(
         all: String? = null
     ) {
         viewModelScope.launch {
-            repo.findCompany(token, page, size, cType, sort, cityId, districtId, all)
+            repo.findCompany(token, page, size, sort, cType, cityId, districtId, all)
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }
                 .catch { handleError(it) }
                 .collect {
+                    callbackSuccess.value = Unit
                     it.content?.let { data ->
                         listData.clear()
                         listData.addAll(data)

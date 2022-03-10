@@ -8,12 +8,12 @@ class CompanyListRepo(private val apiService: ApiService) {
         token: String,
         page: Int,
         size: Int,
-        cType: String,
         sort: String,
+        cType: String?,
         cityId: Int?,
         district: Int?,
         all: String?
     ) = flow {
-        emit(apiService.findCompany(token, page, size, cType, sort, cityId, district, all))
+        emit(apiService.findCompany(token, page, size, sort, cType, cityId, district, all))
     }
 }

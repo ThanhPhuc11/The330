@@ -1,0 +1,226 @@
+package com.nagaja.the330.view.companydetail
+
+import android.content.Context
+import android.os.Bundle
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.gson.Gson
+import com.nagaja.the330.MainActivity
+import com.nagaja.the330.R
+import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.data.DataStorePref
+import com.nagaja.the330.data.dataStore
+import com.nagaja.the330.model.UserDetail
+import com.nagaja.the330.utils.AppConstants
+import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.view.HeaderSearch
+import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.noRippleClickable
+import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+
+class CompanyDetailFragment : BaseFragment() {
+    private lateinit var viewModel: CompanyDetailVM
+    private var userDetail = mutableStateOf(UserDetail())
+
+    companion object {
+        fun newInstance(id: Int) = CompanyDetailFragment().apply {
+            arguments = Bundle().apply {
+                putInt(AppConstants.EXTRA_KEY1, id)
+            }
+        }
+    }
+
+    override fun SetupViewModel() {
+        viewModel = getViewModelProvider(this)[CompanyDetailVM::class.java]
+        viewController = (activity as MainActivity).viewController
+
+        viewModel.callbackStart.observe(viewLifecycleOwner) {
+            showLoading()
+        }
+        viewModel.callbackSuccess.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.callbackFail.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.showMessCallback.observe(viewLifecycleOwner) {
+            showMess(it)
+        }
+    }
+
+    @OptIn(ExperimentalPagerApi::class)
+    @Preview
+    @Composable
+    override fun UIData() {
+        val owner = LocalLifecycleOwner.current
+
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+                        getUserDetailFromDataStore(requireContext())
+                        accessToken?.let {
+                            viewModel.getCompanyDetail(
+                                it,
+                                requireArguments().getInt(AppConstants.EXTRA_KEY1)
+                            )
+                        }
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
+
+        LayoutTheme330 {
+            HeaderSearch(
+                clickBack = {
+                    viewController?.popFragment()
+                }
+            )
+            Column(
+                Modifier
+                    .verticalScroll(rememberScrollState())
+                    .weight(1f)
+            ) {
+                val configuration = LocalConfiguration.current
+                val screenWidth = configuration.screenWidthDp
+                GlideImage(
+                    imageModel = "",
+                    contentDescription = "",
+                    placeHolder = painterResource(R.drawable.ic_default_nagaja),
+                    error = painterResource(R.drawable.ic_default_nagaja),
+                    requestOptions = {
+                        RequestOptions()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .centerInside()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height((screenWidth * 282 / 375).dp)
+                )
+
+                Text(
+                    viewModel.companyDetail.value.name?.getOrNull(0)?.name ?: "",
+                    color = ColorUtils.gray_222222,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(top = 13.dp)
+                        .padding(horizontal = 16.dp)
+                )
+                Row(Modifier.padding(horizontal = 16.dp)) {
+                    ButtonLike()
+                    Spacer(modifier = Modifier.width(8.dp))
+                    ButtonLike()
+                }
+            }
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+            ) {
+                Column(
+                    Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .background(ColorUtils.blue_2177E4),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("오늘마감", color = ColorUtils.blue_D3E4FA, fontSize = 10.sp)
+                    Text(
+                        "예약하기",
+                        color = ColorUtils.white_FFFFFF,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Box(
+                    Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .background(ColorUtils.gray_222222),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "전화걸기",
+                        color = ColorUtils.white_FFFFFF,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+    }
+
+    private fun getUserDetailFromDataStore(context: Context) {
+        CoroutineScope(Dispatchers.IO).launch {
+            context.dataStore.data.map { get ->
+                get[DataStorePref.USER_DETAIL] ?: ""
+            }.collect {
+                val userDetail = Gson().fromJson(it, UserDetail::class.java)
+                userDetail?.let { this@CompanyDetailFragment.userDetail.value = userDetail }
+            }
+        }
+    }
+
+    @Composable
+    private fun ButtonLike() {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(horizontal = 6.dp)
+                .border(
+                    width = 1.dp,
+                    color = ColorUtils.gray_E1E1E1,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(horizontal = 7.dp, vertical = 5.dp)
+                .noRippleClickable {
+//                    viewModel.followOrNot(accessToken!!, obj.target?.id!!, obj.isFollow)
+                }
+        ) {
+            Box(Modifier.padding(end = 3.dp, top = 25.dp, bottom = 25.dp)) {
+                Image(
+                    painter = painterResource(R.drawable.ic_heart_content),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(if (true) ColorUtils.pink_FF4949 else ColorUtils.white_FFFFFF)
+                )
+                Image(
+                    painter = painterResource(R.drawable.ic_heart_empty),
+                    contentDescription = null
+                )
+            }
+            Text("단골 3,000", color = ColorUtils.black_000000, fontSize = 12.sp)
+        }
+    }
+}
