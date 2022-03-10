@@ -231,6 +231,14 @@
     <string name="three_month">3개월</string>
     <string name="six_month">6개월</string>
     <string name="one_year">1년</string>
+    <string name="nagaja_recommend_order">나가자 추천순</string>
+    <string name="distance_order">거리순</string>
+    <string name="regular_order">단골순</string>
+    <string name="all">전체</string>
+    <string name="delivery_available">배달가능</string>
+    <string name="reservation_available">예약가능</string>
+    <string name="pickup_dropup_available">픽업/ 드랍 가능</string>
+    <string name="nagaja_authentication">나가자 인증</string>
 
     <!--free board-->
     <string name="post_register">글등록</string>

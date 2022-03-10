@@ -9,9 +9,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -32,11 +33,13 @@ import com.bumptech.glide.request.RequestOptions
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.CompanyModel
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.HeaderSearch
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
 
 class CompanyListFragment : BaseFragment() {
@@ -64,7 +67,8 @@ class CompanyListFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
                         val cType = requireArguments().getString(AppConstants.EXTRA_KEY1, "")
-                        accessToken?.let { viewModel.findCompany(it, cType = cType) }
+                        viewModel.cType = cType
+                        accessToken?.let { viewModel.findCompany(it) }
                     }
                     else -> {}
                 }
@@ -97,20 +101,85 @@ class CompanyListFragment : BaseFragment() {
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                //TODO: filter company
+                var expandedFilter by remember { mutableStateOf(false) }
+                val listFilter = remember { GetDummyData.getFilterCompany(requireContext()) }
+                val itemFilterSelected = remember { mutableStateOf(listFilter[0]) }
+
                 Image(painterResource(R.drawable.ic_filter), null)
                 Box(
                     Modifier
                         .padding(start = 8.dp)
                         .size(90.dp, 26.dp)
-                        .background(ColorUtils.gray_222222),
+                        .background(ColorUtils.gray_222222)
+                        .noRippleClickable {
+                            expandedFilter = !expandedFilter
+                        },
                     contentAlignment = Center
                 ) {
-                    Text("전체", color = ColorUtils.white_FFFFFF, fontSize = 13.sp)
+                    Text(
+                        itemFilterSelected.value.name!!,
+                        color = ColorUtils.white_FFFFFF,
+                        fontSize = 13.sp
+                    )
+                    DropdownMenu(
+                        expanded = expandedFilter,
+                        onDismissRequest = {
+                            expandedFilter = false
+                        }
+                    ) {
+                        listFilter.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    viewModel.filter = selectionOption.id!!
+                                    viewModel.findCompany(accessToken!!)
+                                    itemFilterSelected.value = selectionOption
+                                    expandedFilter = false
+                                    showMessDEBUG(selectionOption.id!!)
+                                }
+                            ) {
+                                Text(text = selectionOption.name!!)
+                            }
+                        }
+                    }
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                //TODO: Sort company
+                var expandedSort by remember { mutableStateOf(false) }
+                val listSort = remember { GetDummyData.getSortCompany(requireContext()) }
+                val itemSortSelected = remember { mutableStateOf(listSort[0]) }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.noRippleClickable {
+                        expandedSort = !expandedSort
+                    }) {
                     Image(painterResource(R.drawable.ic_sort), "")
-                    Text("나가자 추천순", color = ColorUtils.gray_222222, fontSize = 13.sp)
+                    Text(
+                        itemSortSelected.value.name!!,
+                        color = ColorUtils.gray_222222,
+                        fontSize = 13.sp
+                    )
+                    DropdownMenu(
+                        expanded = expandedSort,
+                        onDismissRequest = {
+                            expandedSort = false
+                        }
+                    ) {
+                        listSort.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    viewModel.sort = selectionOption.id!!
+                                    viewModel.findCompany(accessToken!!)
+                                    itemSortSelected.value = selectionOption
+                                    expandedSort = false
+                                    showMessDEBUG(itemSortSelected.value.id)
+                                }
+                            ) {
+                                Text(text = selectionOption.name!!)
+                            }
+                        }
+                    }
                 }
             }
 

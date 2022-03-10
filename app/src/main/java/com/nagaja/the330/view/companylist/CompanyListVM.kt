@@ -13,6 +13,9 @@ import kotlinx.coroutines.launch
 class CompanyListVM(
     private val repo: CompanyListRepo
 ) : BaseViewModel() {
+    var sort: String = ""
+    var filter: String = ""
+    var cType: String = ""
     val listData = mutableListOf<CompanyModel>()
     val stateListData = mutableStateListOf<CompanyModel>()
 
@@ -20,8 +23,6 @@ class CompanyListVM(
         token: String,
         page: Int = 0,
         size: Int = 10,
-        cType: String,
-        sort: String = "NAGAJA_RECOMMEND_ORDER",
         cityId: Int? = null,
         districtId: Int? = null,
         all: String? = null

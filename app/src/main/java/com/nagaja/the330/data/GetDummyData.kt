@@ -118,4 +118,22 @@ object GetDummyData {
             add(KeyValueModel("ONE_YEAR", context.getString(R.string.one_year)))
         }
     }
+
+    fun getSortCompany(context: Context): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel("NAGAJA_RECOMMEND_ORDER", context.getString(R.string.nagaja_recommend_order)))
+            add(KeyValueModel("DISTANCE_ORDER", context.getString(R.string.distance_order)))
+            add(KeyValueModel("REGULAR_ORDER", context.getString(R.string.regular_order)))
+        }
+    }
+
+    fun getFilterCompany(context: Context): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel("ALL", context.getString(R.string.nagaja_recommend_order)))
+            add(KeyValueModel("delivery_available", context.getString(R.string.delivery_available)))
+            add(KeyValueModel("reservation_available", context.getString(R.string.reservation_available)))
+            add(KeyValueModel("pickup_dropup_available", context.getString(R.string.pickup_dropup_available)))
+            add(KeyValueModel("nagaja_authentication", context.getString(R.string.nagaja_authentication)))
+        }
+    }
 }
