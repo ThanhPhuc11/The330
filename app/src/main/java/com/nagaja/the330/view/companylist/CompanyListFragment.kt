@@ -146,11 +146,14 @@ class CompanyListFragment : BaseFragment() {
                         listFilter.forEach { selectionOption ->
                             DropdownMenuItem(
                                 onClick = {
-                                    viewModel.filter = selectionOption.id!!
+                                    viewModel.filter =
+                                        if (selectionOption.id != null) mutableListOf(
+                                            selectionOption.id!!
+                                        ) else null
                                     viewModel.findCompany(accessToken!!)
                                     itemFilterSelected.value = selectionOption
                                     expandedFilter = false
-                                    showMessDEBUG(selectionOption.id!!)
+                                    showMessDEBUG(selectionOption.id?:"null")
                                 }
                             ) {
                                 Text(text = selectionOption.name!!)

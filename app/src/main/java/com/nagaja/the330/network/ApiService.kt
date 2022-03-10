@@ -275,6 +275,7 @@ interface ApiService {
         @Query("page") page: Int,
         @Query("size") size: Int,
         @Query("sort") sort: String,
+        @Query("serviceTypes") serviceTypes: MutableList<String>?,
         @Query("cType") cType: String?,
         @Query("cityId") cityId: Int?,
         @Query("districtId") districtId: Int?,

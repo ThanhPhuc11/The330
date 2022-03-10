@@ -22,6 +22,7 @@ class CompanyModel {
     var reservationNumber: Int? = null
     var paymentMethod: String? = null
     var ctype: String? = null
+    var companyAuthentication: Boolean? = null
     var file: String? = null
     var fileTemp: FileModel? = null
     var products: MutableList<ProductModel>? = null

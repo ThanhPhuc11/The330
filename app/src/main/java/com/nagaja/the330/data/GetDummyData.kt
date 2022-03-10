@@ -129,10 +129,10 @@ object GetDummyData {
 
     fun getFilterCompany(context: Context): MutableList<KeyValueModel> {
         return mutableListOf<KeyValueModel>().apply {
-            add(KeyValueModel("ALL", context.getString(R.string.nagaja_recommend_order)))
-            add(KeyValueModel("delivery_available", context.getString(R.string.delivery_available)))
-            add(KeyValueModel("reservation_available", context.getString(R.string.reservation_available)))
-            add(KeyValueModel("pickup_dropup_available", context.getString(R.string.pickup_dropup_available)))
+            add(KeyValueModel(null, context.getString(R.string.nagaja_recommend_order)))
+            add(KeyValueModel("DELIVERY", context.getString(R.string.delivery_available)))
+            add(KeyValueModel("RESERVATION", context.getString(R.string.reservation_available)))
+            add(KeyValueModel("PICKUP_DROP", context.getString(R.string.pickup_dropup_available)))
             add(KeyValueModel("nagaja_authentication", context.getString(R.string.nagaja_authentication)))
         }
     }

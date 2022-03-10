@@ -9,11 +9,12 @@ class CompanyListRepo(private val apiService: ApiService) {
         page: Int,
         size: Int,
         sort: String,
+        serviceTypes: MutableList<String>?,
         cType: String?,
         cityId: Int?,
         district: Int?,
         all: String?
     ) = flow {
-        emit(apiService.findCompany(token, page, size, sort, cType, cityId, district, all))
+        emit(apiService.findCompany(token, page, size, sort, serviceTypes, cType, cityId, district, all))
     }
 }
