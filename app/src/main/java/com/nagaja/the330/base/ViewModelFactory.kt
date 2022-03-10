@@ -7,6 +7,8 @@ import com.nagaja.the330.view.applycompany.ApplyCompanyRepo
 import com.nagaja.the330.view.applycompany.ApplyCompanyVM
 import com.nagaja.the330.view.applycompanyproduct.ProductCompanyRepo
 import com.nagaja.the330.view.applycompanyproduct.ProductCompanyVM
+import com.nagaja.the330.view.companylist.CompanyListRepo
+import com.nagaja.the330.view.companylist.CompanyListVM
 import com.nagaja.the330.view.edit_profile.EditProfileRepo
 import com.nagaja.the330.view.edit_profile.EditProfileVM
 import com.nagaja.the330.view.favoritecompany.FavCompanyRepo
@@ -136,6 +138,8 @@ class ViewModelFactory(apiService: ApiService) :
             ReservationVM(ReservationRepo(apiService))
         creators[ReservationRegisVM::class.java] =
             ReservationRegisVM(ReservationRegisRepo(apiService))
+        creators[CompanyListVM::class.java] =
+            CompanyListVM(CompanyListRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

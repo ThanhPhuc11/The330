@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.home
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -39,6 +40,7 @@ import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.companylist.CompanyListFragment
 import com.nagaja.the330.view.freenoticeboard.FreeNoticeFragment
 import com.nagaja.the330.view.localnews.LocalNewsFragment
 import com.nagaja.the330.view.noRippleClickable
@@ -68,7 +70,7 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
-                    viewModel.getCategory(accessToken, "MAIN")
+                    viewModel.getCategory(accessToken, null)
                 }
                 Lifecycle.Event.ON_STOP -> {
 
@@ -247,6 +249,7 @@ private fun CategoryMain(homeVM: HomeScreenVM, viewController: ViewController?) 
         ) {
             items(homeVM.listCategoryState.value) { obj ->
                 IconCategory(obj) {
+                    Log.e("Category Type", it)
                     linkScreen(it, viewController)
                 }
             }
@@ -285,7 +288,10 @@ fun linkScreen(ctype: String, viewController: ViewController?) {
 //            ScreenId.SCREEN_RECRUITMENT_JOBSEARCH,
 //            RecruitmentJobSearchFragment.newInstance()
 //        )
-        else -> {}
+        else -> viewController?.pushFragment(
+            ScreenId.SCREEN_COMPANY_LIST,
+            CompanyListFragment.newInstance(ctype)
+        )
     }
 }
 

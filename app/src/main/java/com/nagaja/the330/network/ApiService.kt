@@ -92,7 +92,7 @@ interface ApiService {
     @GET("main_categories")
     suspend fun getCategory(
         @Header("Authorization") token: String,
-        @Query("group") group: String
+        @Query("group") group: String?
     ): ResponseModel<MutableList<CategoryModel>>
 
     @GET("follows/target")
@@ -268,4 +268,16 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body body: ReservationModel
     ): Response<Unit> //200
+
+    @GET("company_requests/find")
+    suspend fun findCompany(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("cType") cType: String,
+        @Query("sort") sort: String,
+        @Query("cityId") cityId: Int?,
+        @Query("districtId") districtId: Int?,
+        @Query("all") all: String?
+    ): ResponseModel<MutableList<CompanyModel>>
 }

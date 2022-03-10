@@ -4,7 +4,7 @@ import com.nagaja.the330.network.ApiService
 import kotlinx.coroutines.flow.flow
 
 class HomeScreenRepo(private val apiService: ApiService) {
-    suspend fun getCategory(token: String, group: String) = flow {
+    suspend fun getCategory(token: String, group: String?) = flow {
         emit(apiService.getCategory(token, group))
     }
 }

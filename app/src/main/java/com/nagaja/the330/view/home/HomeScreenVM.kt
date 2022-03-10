@@ -17,7 +17,7 @@ class HomeScreenVM(
 
     //    val listCategoryState = mutableStateListOf<CategoryModel>()
     val listCategoryState = mutableStateOf(mutableListOf<CategoryModel>())
-    fun getCategory(token: String, group: String) {
+    fun getCategory(token: String, group: String?) {
         viewModelScope.launch {
             repo.getCategory(token, group)
                 .onStart { }

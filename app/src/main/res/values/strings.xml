@@ -267,4 +267,7 @@
     <string name="make_reservation">예약하기</string>
     <string name="please_enter_your_request">요청 사항을 입력해 주세요.</string>
 
+    <!--companylist-->
+    <string name="company_list">기업목록</string>
+
 </resources>
