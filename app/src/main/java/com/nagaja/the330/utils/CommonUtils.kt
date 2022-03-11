@@ -44,6 +44,9 @@ object CommonUtils {
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
+    val callphonePermission = arrayOf(
+        Manifest.permission.CALL_PHONE
+    )
     const val REQUEST_PERMISSION_KEY = 1
 
     fun getQueryMap(query: String): Map<String, String> {

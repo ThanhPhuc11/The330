@@ -274,9 +274,12 @@
     <!--reservation-->
     <string name="make_reservation">예약하기</string>
     <string name="please_enter_your_request">요청 사항을 입력해 주세요.</string>
+    <string name="company_reservation_list">기업 예약 목록</string>
+    <string name="my_reservation_list">내 예약 목록</string>
 
     <!--companylist-->
     <string name="company_list">기업목록</string>
     <string name="basic_information">기본정보</string>
+    <string name="make_a_phone_call">전화걸기</string>
 
 </resources>
