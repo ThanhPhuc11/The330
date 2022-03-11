@@ -1,6 +1,5 @@
-package com.nagaja.the330.view.reservation
+package com.nagaja.the330.view.reservationcompany
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -9,13 +8,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -29,16 +27,17 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.rememberPagerState
 import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
 import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
-import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.ReservationModel
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
-import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.Header
@@ -46,12 +45,16 @@ import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_62
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 //private lateinit var viewModel: ReservationVM
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ReservationScreen(accessToken: String, viewController: ViewController?) {
+fun ReservationCompanyScreen(accessToken: String, viewController: ViewController?) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
 
@@ -65,7 +68,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
             RetrofitBuilder.getInstance(context)
                 ?.create(ApiService::class.java)!!
         )
-    )[ReservationVM::class.java]
+    )[ReservationCompanyVM::class.java]
 
     DisposableEffect(Unit) {
         val observer = LifecycleEventObserver { _, event ->
@@ -81,67 +84,111 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
             owner.lifecycle.removeObserver(observer)
         }
     }
+    val pagerState = rememberPagerState(pageCount = 2)
     LayoutTheme330 {
         Header(stringResource(R.string.option_reservation_status)) {
 //            viewController?.popFragment()
         }
-        Box(
+        //TODO: TabSelect
+        Row(
             Modifier
-                .padding(horizontal = 9.dp, vertical = 16.dp)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.CenterEnd
+                .padding(16.dp)
+                .fillMaxWidth()
+                .height(40.dp)
+                .border(width = 1.dp, color = ColorUtils.gray_222222)
         ) {
-            val listSort = remember { GetDummyData.getSortReservation(context) }
-            var expanded by remember { mutableStateOf(false) }
-            val itemSelected = remember { mutableStateOf(KeyValueModel()) }
-            LaunchedEffect(listSort.size) {
-                itemSelected.value =
-                    if (listSort.size > 0) listSort[0] else KeyValueModel()
-            }
-            Row(
-                Modifier
-                    .size(100.dp, 36.dp)
-                    .border(width = 1.dp, color = ColorUtils.gray_E1E1E1)
-                    .padding(9.dp)
-                    .noRippleClickable {
-                        expanded = !expanded
-                    },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    itemSelected.value.name ?: "",
-                    color = ColorUtils.black_000000,
-                    fontSize = 14.sp,
-                    modifier = Modifier.weight(1f)
-                )
-                Image(
-                    painter = painterResource(R.drawable.ic_arrow_down),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(ColorUtils.black_000000),
-                    modifier = Modifier.size(10.dp, 6.dp)
-                )
+            LaunchedEffect(pagerState) {
+                if (pagerState.currentPage == 0) {
 
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = {
-                        expanded = false
-                    }
-                ) {
-                    listSort.forEach { selectionOption ->
-                        DropdownMenuItem(
-                            onClick = {
-                                itemSelected.value = selectionOption
-                                expanded = false
-                                viewModel.timeLimit = selectionOption.id!!
-                                viewModel.getReservationMain(accessToken)
-                            }
-                        ) {
-                            Text(text = selectionOption.name!!)
-                        }
-                    }
+                } else {
+
+                }
+            }
+            TabSelected(
+                modifier = Modifier.weight(1f),
+                text = stringResource(R.string.company_reservation_list),
+                isSelected = pagerState.currentPage == 0
+            ) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    pagerState.scrollToPage(0)
+                }
+            }
+            TabSelected(
+                modifier = Modifier.weight(1f),
+                text = stringResource(R.string.my_reservation_list),
+                isSelected = pagerState.currentPage == 1
+            ) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    pagerState.scrollToPage(1)
                 }
             }
         }
+        //TODO: horizontal pager
+        SetupPager(pagerState = pagerState, viewModel)
+    }
+}
+
+@Composable
+private fun TabSelected(
+    modifier: Modifier = Modifier,
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    if (isSelected)
+        Box(
+            modifier
+                .background(ColorUtils.white_FFFFFF)
+                .fillMaxHeight()
+                .border(width = 1.dp, color = ColorUtils.gray_222222)
+                .noRippleClickable {
+                    onClick.invoke()
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text, color = ColorUtils.gray_222222, fontSize = 14.sp)
+        }
+    else
+        Box(
+            modifier
+                .background(ColorUtils.gray_222222)
+                .fillMaxHeight()
+                .border(width = 1.dp, color = ColorUtils.gray_222222)
+                .noRippleClickable {
+                    onClick.invoke()
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text,
+                color = ColorUtils.white_FFFFFF,
+                fontSize = 14.sp
+            )
+        }
+
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun SetupPager(pagerState: PagerState, viewModel: ReservationCompanyVM) {
+    HorizontalPager(
+        state = pagerState, modifier = Modifier
+            .heightIn(
+                0.dp, 600.dp
+            )
+            .wrapContentHeight()
+    ) { page ->
+        if (page == 0) {
+//            CompanyInfo(viewModel.companyDetail.value)
+        } else {
+            Tab2(viewModel)
+        }
+    }
+}
+
+@Composable
+private fun Tab2(viewModel: ReservationCompanyVM) {
+    Column {
         Divider(color = ColorUtils.gray_E1E1E1)
         Row(
             Modifier
@@ -150,8 +197,8 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             BoxStatus(Modifier.weight(1f), text = "총 예약\n30건") {
-                viewModel.status = null
-                viewModel.getReservationMain(accessToken)
+//                viewModel.status = null
+//                viewModel.getReservationMain(accessToken)
             }
             Box(
                 Modifier
@@ -162,8 +209,8 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
             )
 
             BoxStatus(Modifier.weight(1f), text = "예약완료\n30건") {
-                viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
-                viewModel.getReservationMain(accessToken)
+//                viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
+//                viewModel.getReservationMain(accessToken)
             }
             Box(
                 Modifier
@@ -174,8 +221,8 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
             )
 
             BoxStatus(Modifier.weight(1f), text = "이용완료\n30건") {
-                viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
-                viewModel.getReservationMain(accessToken)
+//                viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
+//                viewModel.getReservationMain(accessToken)
             }
             Box(
                 Modifier
@@ -186,8 +233,8 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
             )
 
             BoxStatus(Modifier.weight(1f), text = "예약취소\n30건") {
-                viewModel.status = AppConstants.Reservation.RESERVATION_CANCELED
-                viewModel.getReservationMain(accessToken)
+//                viewModel.status = AppConstants.Reservation.RESERVATION_CANCELED
+//                viewModel.getReservationMain(accessToken)
             }
             Box(
                 Modifier
@@ -198,7 +245,6 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
             )
         }
         Divider(color = ColorUtils.gray_E1E1E1)
-
         val listData = viewModel.stateListData
         LazyColumn(state = rememberLazyListState()) {
             itemsIndexed(listData) { index, obj ->
@@ -207,6 +253,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
             }
         }
     }
+
 }
 
 @Composable

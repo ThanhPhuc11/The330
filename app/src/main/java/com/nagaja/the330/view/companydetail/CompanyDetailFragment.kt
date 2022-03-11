@@ -3,6 +3,7 @@ package com.nagaja.the330.view.companydetail
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -46,6 +47,7 @@ import com.nagaja.the330.model.ProductModel
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.CommonUtils
 import com.nagaja.the330.view.*
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
@@ -219,10 +221,20 @@ class CompanyDetailFragment : BaseFragment() {
                         .weight(1f)
                         .background(ColorUtils.gray_222222)
                         .noRippleClickable {
-                            val phoneNum = viewModel.companyDetail.value.chargePhone
-                            startActivity(Intent(Intent.ACTION_CALL).apply {
-                                data = Uri.parse("tel:${phoneNum}")
-                            })
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                if (!CommonUtils.hasPermissions(
+                                        context,
+                                        CommonUtils.callphonePermission
+                                    )
+                                ) {
+                                    callbackPermission.launch(CommonUtils.callphonePermission)
+                                    return@noRippleClickable
+                                }
+                                val phoneNum = viewModel.companyDetail.value.chargePhone
+                                startActivity(Intent(Intent.ACTION_CALL).apply {
+                                    data = Uri.parse("tel:${phoneNum}")
+                                })
+                            }
                         },
                     contentAlignment = Alignment.Center
                 ) {
