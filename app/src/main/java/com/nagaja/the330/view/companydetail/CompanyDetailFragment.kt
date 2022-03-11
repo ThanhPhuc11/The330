@@ -15,7 +15,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -148,9 +147,13 @@ class CompanyDetailFragment : BaseFragment() {
                         .padding(horizontal = 16.dp)
                 )
                 Row(Modifier.padding(horizontal = 16.dp, vertical = 25.dp)) {
-                    ButtonLike()
+                    ButtonLike(
+                        "추천",
+                        R.drawable.ic_like,
+                        10
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
-                    ButtonLike()
+                    ButtonLike("단골", R.drawable.ic_tim, 20)
                 }
 
                 Row(
@@ -158,11 +161,11 @@ class CompanyDetailFragment : BaseFragment() {
                         .padding(horizontal = 16.dp)
                         .padding(top = 16.dp)
                         .fillMaxWidth()
-                        .height(34.dp),
+                        .height(49.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
                     TabSelected(
-                        modifier = Modifier.width(79.dp),
+                        modifier = Modifier.weight(1f),
                         text = stringResource(R.string.basic_information),
                         isSelected = pagerState.currentPage == 0
                     ) {
@@ -170,8 +173,14 @@ class CompanyDetailFragment : BaseFragment() {
                             pagerState.scrollToPage(0)
                         }
                     }
+                    Box(
+                        Modifier
+                            .fillMaxHeight()
+                            .width(1.dp)
+                            .background(ColorUtils.gray_E1E1E1)
+                    )
                     TabSelected(
-                        modifier = Modifier.width(79.dp),
+                        modifier = Modifier.weight(1f),
                         text = stringResource(R.string.jobsearch),
                         isSelected = pagerState.currentPage == 1
                     ) {
@@ -229,34 +238,52 @@ class CompanyDetailFragment : BaseFragment() {
         onClick: () -> Unit
     ) {
         if (isSelected)
-            Box(
+            Column(
                 modifier
                     .background(ColorUtils.white_FFFFFF)
                     .fillMaxHeight()
-                    .border(width = 1.dp, color = ColorUtils.gray_222222)
                     .noRippleClickable {
                         onClick.invoke()
                     },
-                contentAlignment = Alignment.Center
             ) {
-                Text(text, color = ColorUtils.gray_222222, fontSize = 14.sp)
+                Divider(color = ColorUtils.gray_222222, thickness = 2.dp)
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text,
+                        color = ColorUtils.gray_222222,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Divider(color = ColorUtils.white_FFFFFF, thickness = 1.dp)
             }
         else
-            Box(
+            Column(
                 modifier
-                    .background(ColorUtils.gray_222222)
+                    .background(ColorUtils.white_FFFFFF)
                     .fillMaxHeight()
-                    .border(width = 1.dp, color = ColorUtils.gray_222222)
                     .noRippleClickable {
                         onClick.invoke()
                     },
-                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text,
-                    color = ColorUtils.white_FFFFFF,
-                    fontSize = 14.sp
-                )
+                Divider(color = ColorUtils.white_FFFFFF, thickness = 2.dp)
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text,
+                        color = ColorUtils.gray_222222,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Divider(color = ColorUtils.gray_E1E1E1, thickness = 1.dp)
             }
 
     }
@@ -399,11 +426,15 @@ class CompanyDetailFragment : BaseFragment() {
     }
 
     @Composable
-    private fun ButtonLike() {
+    private fun ButtonLike(
+        text: String,
+        icon: Int,
+        number: Int
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(horizontal = 6.dp)
+                .size(89.dp, 24.dp)
                 .border(
                     width = 1.dp,
                     color = ColorUtils.gray_E1E1E1,
@@ -416,16 +447,11 @@ class CompanyDetailFragment : BaseFragment() {
         ) {
             Box(Modifier.padding(end = 3.dp, top = 25.dp, bottom = 25.dp)) {
                 Image(
-                    painter = painterResource(R.drawable.ic_heart_content),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(if (true) ColorUtils.pink_FF4949 else ColorUtils.white_FFFFFF)
-                )
-                Image(
-                    painter = painterResource(R.drawable.ic_heart_empty),
-                    contentDescription = null
+                    painter = painterResource(icon),
+                    contentDescription = "",
                 )
             }
-            Text("단골 3,000", color = ColorUtils.black_000000, fontSize = 12.sp)
+            Text("$text $number", color = ColorUtils.black_000000, fontSize = 12.sp)
         }
     }
 }
