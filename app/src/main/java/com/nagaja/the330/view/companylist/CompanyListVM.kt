@@ -16,6 +16,7 @@ class CompanyListVM(
     var sort: String = "NAGAJA_RECOMMEND_ORDER"
     var filter: MutableList<String>? = null
     var cType: String? = null
+    var authentication: Boolean? = null
     val listData = mutableListOf<CompanyModel>()
     val stateListData = mutableStateListOf<CompanyModel>()
 
@@ -28,7 +29,7 @@ class CompanyListVM(
         all: String? = null
     ) {
         viewModelScope.launch {
-            repo.findCompany(token, page, size, sort, filter, cType, cityId, districtId, all)
+            repo.findCompany(token, page, size, sort, filter, cType, authentication, cityId, districtId, all)
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }
                 .catch { handleError(it) }

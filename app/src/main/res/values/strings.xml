@@ -277,5 +277,6 @@
 
     <!--companylist-->
     <string name="company_list">기업목록</string>
+    <string name="basic_information">기본정보</string>
 
 </resources>

@@ -146,14 +146,24 @@ class CompanyListFragment : BaseFragment() {
                         listFilter.forEach { selectionOption ->
                             DropdownMenuItem(
                                 onClick = {
-                                    viewModel.filter =
-                                        if (selectionOption.id != null) mutableListOf(
-                                            selectionOption.id!!
-                                        ) else null
+                                    when (selectionOption.id) {
+                                        "NAGAJA_AUTHEN" -> {
+                                            viewModel.authentication = true
+                                            viewModel.filter = null
+                                        }
+                                        "ALL" -> {
+                                            viewModel.authentication = null
+                                            viewModel.filter = null
+                                        }
+                                        else -> {
+                                            viewModel.filter = mutableListOf(selectionOption.id!!)
+                                        }
+                                    }
+
                                     viewModel.findCompany(accessToken!!)
                                     itemFilterSelected.value = selectionOption
                                     expandedFilter = false
-                                    showMessDEBUG(selectionOption.id?:"null")
+                                    showMessDEBUG(selectionOption.id ?: "null")
                                 }
                             ) {
                                 Text(text = selectionOption.name!!)
