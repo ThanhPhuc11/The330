@@ -278,5 +278,6 @@
     <!--companylist-->
     <string name="company_list">기업목록</string>
     <string name="basic_information">기본정보</string>
+    <string name="make_a_phone_call">전화걸기</string>
 
 </resources>

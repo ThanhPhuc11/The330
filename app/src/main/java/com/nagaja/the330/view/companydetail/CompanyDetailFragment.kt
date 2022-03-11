@@ -1,6 +1,8 @@
 package com.nagaja.the330.view.companydetail
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -158,7 +160,6 @@ class CompanyDetailFragment : BaseFragment() {
 
                 Row(
                     Modifier
-                        .padding(horizontal = 16.dp)
                         .padding(top = 16.dp)
                         .fillMaxWidth()
                         .height(49.dp),
@@ -216,11 +217,17 @@ class CompanyDetailFragment : BaseFragment() {
                     Modifier
                         .fillMaxHeight()
                         .weight(1f)
-                        .background(ColorUtils.gray_222222),
+                        .background(ColorUtils.gray_222222)
+                        .noRippleClickable {
+                            val phoneNum = viewModel.companyDetail.value.chargePhone
+                            startActivity(Intent(Intent.ACTION_CALL).apply {
+                                data = Uri.parse("tel:${phoneNum}")
+                            })
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "전화걸기",
+                        stringResource(R.string.make_a_phone_call),
                         color = ColorUtils.white_FFFFFF,
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold
@@ -445,12 +452,11 @@ class CompanyDetailFragment : BaseFragment() {
 //                    viewModel.followOrNot(accessToken!!, obj.target?.id!!, obj.isFollow)
                 }
         ) {
-            Box(Modifier.padding(end = 3.dp, top = 25.dp, bottom = 25.dp)) {
-                Image(
-                    painter = painterResource(icon),
-                    contentDescription = "",
-                )
-            }
+            Image(
+                painter = painterResource(icon),
+                contentDescription = "",
+                modifier = Modifier.padding(end = 4.dp)
+            )
             Text("$text $number", color = ColorUtils.black_000000, fontSize = 12.sp)
         }
     }
