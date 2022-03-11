@@ -287,4 +287,15 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("id") id: Int
     ): CompanyModel
+
+    @GET("faqs")
+    suspend fun getFQAs(
+        @Header("Authorization") token: String
+    ): MutableList<FQAModel>
+
+    @GET("faqs/detail")
+    suspend fun getFQADetail(
+        @Header("Authorization") token: String,
+        @Query("id") id: Int
+    ): FQAModel
 }
