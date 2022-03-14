@@ -53,6 +53,8 @@ import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisRepo
 import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisVM
 import com.nagaja.the330.view.reservation.ReservationRepo
 import com.nagaja.the330.view.reservation.ReservationVM
+import com.nagaja.the330.view.reservationcompany.ReservationCompanyRepo
+import com.nagaja.the330.view.reservationcompany.ReservationCompanyVM
 import com.nagaja.the330.view.reservationregis.ReservationRegisRepo
 import com.nagaja.the330.view.reservationregis.ReservationRegisVM
 import com.nagaja.the330.view.resetpassword.ResetPwRepo
@@ -140,6 +142,8 @@ class ViewModelFactory(apiService: ApiService) :
             RecruitJobRegisVM(RecruitJobRegisRepo(apiService))
         creators[ReservationVM::class.java] =
             ReservationVM(ReservationRepo(apiService))
+        creators[ReservationCompanyVM::class.java] =
+            ReservationCompanyVM(ReservationCompanyRepo(apiService))
         creators[ReservationRegisVM::class.java] =
             ReservationRegisVM(ReservationRegisRepo(apiService))
         creators[CompanyListVM::class.java] =

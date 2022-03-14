@@ -277,6 +277,7 @@ interface ApiService {
         @Query("sort") sort: String,
         @Query("serviceTypes") serviceTypes: MutableList<String>?,
         @Query("cType") cType: String?,
+        @Query("authentication") authentication: Boolean?,
         @Query("cityId") cityId: Int?,
         @Query("districtId") districtId: Int?,
         @Query("all") all: String?
@@ -287,6 +288,11 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("id") id: Int
     ): CompanyModel
+
+    @GET("company_recommends")
+    suspend fun getCompanyRecommendAds(
+        @Header("Authorization") token: String
+    ): ResponseModel<MutableList<CompanyRecommendModel>>
 
     @GET("faqs")
     suspend fun getFQAs(

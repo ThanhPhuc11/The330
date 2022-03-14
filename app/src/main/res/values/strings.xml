@@ -226,7 +226,10 @@
     <string name="close_net">가까운 순</string>
     <string name="low_price_net">저가 순</string>
     <string name="high_price">고가 순</string>
+    <string name="today">당일</string>
+    <string name="three_day">3일</string>
     <string name="one_week">일주일</string>
+    <string name="last_one_month">최근 1개월</string>
     <string name="one_month">1개월</string>
     <string name="three_month">3개월</string>
     <string name="six_month">6개월</string>
@@ -274,9 +277,13 @@
     <!--reservation-->
     <string name="make_reservation">예약하기</string>
     <string name="please_enter_your_request">요청 사항을 입력해 주세요.</string>
+    <string name="company_reservation_list">기업 예약 목록</string>
+    <string name="my_reservation_list">내 예약 목록</string>
 
     <!--companylist-->
     <string name="company_list">기업목록</string>
+    <string name="basic_information">기본정보</string>
+    <string name="make_a_phone_call">전화걸기</string>
 
     <!--FQA-->
     <string name="title_fqa">FQA</string>

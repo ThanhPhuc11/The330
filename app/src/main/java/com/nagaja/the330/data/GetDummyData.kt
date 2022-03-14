@@ -119,6 +119,18 @@ object GetDummyData {
         }
     }
 
+    fun getSortReservationRoleCompany(context: Context): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel("TODAY", context.getString(R.string.one_week)))
+            add(KeyValueModel("THREE_DAY", context.getString(R.string.one_week)))
+            add(KeyValueModel("ONE_WEEK", context.getString(R.string.one_week)))
+            add(KeyValueModel("LAST_ONE_MONTH", context.getString(R.string.one_month)))
+            add(KeyValueModel("THREE_MONTH", context.getString(R.string.three_month)))
+            add(KeyValueModel("SIX_MONTH", context.getString(R.string.six_month)))
+            add(KeyValueModel("ONE_YEAR", context.getString(R.string.one_year)))
+        }
+    }
+
     fun getSortCompany(context: Context): MutableList<KeyValueModel> {
         return mutableListOf<KeyValueModel>().apply {
             add(KeyValueModel("NAGAJA_RECOMMEND_ORDER", context.getString(R.string.nagaja_recommend_order)))
@@ -129,11 +141,11 @@ object GetDummyData {
 
     fun getFilterCompany(context: Context): MutableList<KeyValueModel> {
         return mutableListOf<KeyValueModel>().apply {
-            add(KeyValueModel(null, context.getString(R.string.nagaja_recommend_order)))
+            add(KeyValueModel("ALL", context.getString(R.string.nagaja_recommend_order)))
             add(KeyValueModel("DELIVERY", context.getString(R.string.delivery_available)))
             add(KeyValueModel("RESERVATION", context.getString(R.string.reservation_available)))
             add(KeyValueModel("PICKUP_DROP", context.getString(R.string.pickup_dropup_available)))
-            add(KeyValueModel("nagaja_authentication", context.getString(R.string.nagaja_authentication)))
+            add(KeyValueModel("NAGAJA_AUTHEN", context.getString(R.string.nagaja_authentication)))
         }
     }
 }

@@ -83,7 +83,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
     }
     LayoutTheme330 {
         Header(stringResource(R.string.option_reservation_status)) {
-            viewController?.popFragment()
+//            viewController?.popFragment()
         }
         Box(
             Modifier

@@ -34,6 +34,7 @@ import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.CategoryModel
+import com.nagaja.the330.model.CompanyRecommendModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
@@ -72,6 +73,7 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
                     viewModel.getCategory(accessToken, null)
+                    viewModel.getCompanyRecommendAds(accessToken)
                 }
                 Lifecycle.Event.ON_STOP -> {
 
@@ -117,7 +119,7 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
                     fontWeight = FontWeight.Black
                 )
             }
-            ListCompanyRecommended()
+            ListCompanyRecommended(viewModel)
         }
 
     }
@@ -400,23 +402,17 @@ private fun BannerEvent() {
 }
 
 @Composable
-private fun ListCompanyRecommended() {
-    val listData = mutableListOf<KeyValueModel>().apply {
-        add(KeyValueModel())
-        add(KeyValueModel())
-        add(KeyValueModel())
-        add(KeyValueModel())
-    }
+private fun ListCompanyRecommended(viewModel: HomeScreenVM) {
+    val listData = viewModel.statelistCompany
     LazyRow(state = rememberLazyListState()) {
         items(listData) { obj ->
-            CompanyItemView()
+            CompanyItemView(obj)
         }
     }
 }
 
-@Preview
 @Composable
-private fun CompanyItemView() {
+private fun CompanyItemView(obj: CompanyRecommendModel) {
     Column(
         Modifier
             .padding(bottom = 6.dp, start = 16.dp, end = 4.dp)
@@ -430,7 +426,7 @@ private fun CompanyItemView() {
             contentAlignment = Alignment.BottomStart
         ) {
             GlideImage(
-                imageModel = "",
+                imageModel = "${BuildConfig.BASE_S3}${obj.companyRequest?.images?.getOrNull(0)?.url}",
                 contentScale = ContentScale.Fit,
                 placeHolder = painterResource(R.drawable.ic_default_nagaja),
                 error = painterResource(R.drawable.ic_default_nagaja),
@@ -442,14 +438,14 @@ private fun CompanyItemView() {
                 modifier = Modifier.size(240.dp)
             )
             Text(
-                "톡톡누들타이",
+                "${obj.companyRequest?.name?.getOrNull(0)?.name}",
                 color = ColorUtils.white_FFFFFF,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(start = 8.dp, bottom = 12.dp),
                 fontWeight = FontWeight.Bold
             )
         }
-        Text("주소: 세부시어딘가세부시어딘가", color = ColorUtils.gray_222222, fontSize = 13.sp)
+        Text("주소: ${obj.companyRequest?.address}", color = ColorUtils.gray_222222, fontSize = 13.sp)
         Text("영업시간: am10:00~pm11:00", color = ColorUtils.gray_222222, fontSize = 13.sp)
         Text(
             "픽업/드랍: 불가능/가능",
@@ -463,7 +459,7 @@ private fun CompanyItemView() {
         Row(Modifier.padding(top = 11.dp), verticalAlignment = Alignment.CenterVertically) {
             Image(painter = painterResource(R.drawable.ic_loa), contentDescription = null)
             Text(
-                "지금 예약하면 7% 할인쿠폰 지급",
+                "${obj.ads}",
                 color = ColorUtils.blue_2177E4,
                 fontSize = 13.sp,
                 modifier = Modifier.padding(start = 4.dp)

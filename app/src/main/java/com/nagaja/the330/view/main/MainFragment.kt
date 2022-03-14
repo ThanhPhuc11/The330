@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.main
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.BottomNavigation
@@ -7,28 +8,45 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.gson.Gson
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.data.DataStorePref
+import com.nagaja.the330.data.dataStore
+import com.nagaja.the330.model.UserDetail
+import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.home.HomeScreen
 import com.nagaja.the330.view.mypage.MyPageScreen
 import com.nagaja.the330.view.reservation.ReservationScreen
+import com.nagaja.the330.view.reservationcompany.ReservationCompanyScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class MainFragment : BaseFragment() {
+    private var userDetail = mutableStateOf(UserDetail())
 
     companion object {
         @JvmStatic
@@ -42,6 +60,24 @@ class MainFragment : BaseFragment() {
     @Preview
     @Composable
     override fun UIData() {
+        val owner = LocalLifecycleOwner.current
+        DisposableEffect(owner) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+                        getUserDetailFromDataStore(requireContext())
+                    }
+                    Lifecycle.Event.ON_STOP -> {
+
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
         val navController = rememberNavController()
         LayoutTheme330 {
             Box(
@@ -139,7 +175,13 @@ class MainFragment : BaseFragment() {
 
     @Composable
     fun ReservationTab() {
-        accessToken?.let { ReservationScreen(it, viewController) }
+        accessToken?.let {
+            if (userDetail.value.userType == AppConstants.COMPANY) {
+                ReservationCompanyScreen(it, viewController)
+            } else {
+                ReservationScreen(it, viewController)
+            }
+        }
     }
 
     @Composable
@@ -155,6 +197,17 @@ class MainFragment : BaseFragment() {
                 .background(ColorUtils.white_FFFFFF)
         ) {
 
+        }
+    }
+
+    private fun getUserDetailFromDataStore(context: Context) {
+        CoroutineScope(Dispatchers.IO).launch {
+            context.dataStore.data.map { get ->
+                get[DataStorePref.USER_DETAIL] ?: ""
+            }.collect {
+                val userDetail = Gson().fromJson(it, UserDetail::class.java)
+                userDetail?.let { this@MainFragment.userDetail.value = userDetail }
+            }
         }
     }
 }
