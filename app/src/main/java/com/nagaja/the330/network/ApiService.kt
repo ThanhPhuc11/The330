@@ -288,4 +288,9 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("id") id: Int
     ): CompanyModel
+
+    @GET("company_recommends")
+    suspend fun getCompanyRecommendAds(
+        @Header("Authorization") token: String
+    ): ResponseModel<MutableList<CompanyRecommendModel>>
 }
