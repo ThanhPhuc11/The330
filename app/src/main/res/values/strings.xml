@@ -242,6 +242,8 @@
     <string name="reservation_available">예약가능</string>
     <string name="pickup_dropup_available">픽업/ 드랍 가능</string>
     <string name="nagaja_authentication">나가자 인증</string>
+    <string name="in_transition">판매중</string>
+    <string name="transaction_complete">판매완료</string>
 
     <!--free board-->
     <string name="post_register">글등록</string>

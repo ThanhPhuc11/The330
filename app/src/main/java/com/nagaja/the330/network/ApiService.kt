@@ -162,6 +162,15 @@ interface ApiService {
         @Query("secondhandCategoryType") secondhandCategoryType: String?,
     ): ResponseModel<MutableList<SecondHandModel>>
 
+    @GET("secondhand_posts/in_my_page")
+    suspend fun getMySecondHand(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String?,
+        @Query("transactionStatus") transactionStatus: String?,
+    ): ResponseModel<MutableList<SecondHandModel>>
+
     @GET("local_news/in_main")
     suspend fun getListLocalNews(
         @Header("Authorization") token: String,
