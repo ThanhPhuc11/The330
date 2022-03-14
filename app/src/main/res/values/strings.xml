@@ -285,4 +285,7 @@
     <string name="basic_information">기본정보</string>
     <string name="make_a_phone_call">전화걸기</string>
 
+    <!--FQA-->
+    <string name="title_fqa">FQA</string>
+
 </resources>

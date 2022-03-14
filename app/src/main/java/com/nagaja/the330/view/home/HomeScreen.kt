@@ -42,6 +42,7 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.companylist.CompanyListFragment
+import com.nagaja.the330.view.fqa.FQAsScreen
 import com.nagaja.the330.view.freenoticeboard.FreeNoticeFragment
 import com.nagaja.the330.view.localnews.LocalNewsFragment
 import com.nagaja.the330.view.noRippleClickable
@@ -286,10 +287,10 @@ fun linkScreen(ctype: String, viewController: ViewController?) {
 //            ScreenId.SCREEN_RECRUITMENT_JOBSEARCH,
 //            RecruitmentJobSearchFragment.newInstance()
 //        )
-//        "FAQ1" -> viewController?.pushFragment(
-//            ScreenId.SCREEN_RECRUITMENT_JOBSEARCH,
-//            RecruitmentJobSearchFragment.newInstance()
-//        )
+        "FAQ" -> viewController?.pushFragment(
+            ScreenId.SCREEN_FQA,
+            FQAsScreen.newInstance()
+        )
         else -> viewController?.pushFragment(
             ScreenId.SCREEN_COMPANY_LIST,
             CompanyListFragment.newInstance(ctype)

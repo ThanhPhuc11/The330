@@ -30,6 +30,7 @@ object ColorUtils {
     val gray_F5F5F5 = Color(0xFFF5F5F5)
     val gray_F2F2F2 = Color(0xFFF2F2F2)
     val gray_3C3C43 = Color(0xFF3C3C43)
+    val gray_00000D= Color(0x0000000D)
 
     val white_FFFFFF = Color(0xFFFFFFFF)
     val black_000000 = Color(0xFF000000)
