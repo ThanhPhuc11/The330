@@ -2,8 +2,13 @@ package com.nagaja.the330.model
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-class FQAModel {
+class FQAModel : Serializable {
+    @SerializedName("answer")
+    @Expose
+    var answer: String? = null
+
     @SerializedName("createdOn")
     @Expose
     var createdOn: String? = null
@@ -26,5 +31,5 @@ class FQAModel {
 
     @SerializedName("viewCount")
     @Expose
-    var viewCount: Long? = null
+    var viewCount: Int? = null
 }

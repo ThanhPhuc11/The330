@@ -278,4 +278,7 @@
     <!--companylist-->
     <string name="company_list">기업목록</string>
 
+    <!--FQA-->
+    <string name="title_fqa">FQA</string>
+
 </resources>

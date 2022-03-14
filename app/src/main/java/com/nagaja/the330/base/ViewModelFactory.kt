@@ -17,6 +17,8 @@ import com.nagaja.the330.view.favoritecompany.FavCompanyRepo
 import com.nagaja.the330.view.favoritecompany.FavCompanyVM
 import com.nagaja.the330.view.findId.FindIdRepo
 import com.nagaja.the330.view.findId.FindIdVM
+import com.nagaja.the330.view.fqa.FQARepo
+import com.nagaja.the330.view.fqa.FQAViewModel
 import com.nagaja.the330.view.freenoticeboard.FreeNoticeRepo
 import com.nagaja.the330.view.freenoticeboard.FreeNoticeVM
 import com.nagaja.the330.view.freenoticedetail.FreeNoticeDetailRepo
@@ -144,6 +146,8 @@ class ViewModelFactory(apiService: ApiService) :
             CompanyListVM(CompanyListRepo(apiService))
         creators[CompanyDetailVM::class.java] =
             CompanyDetailVM(CompanyDetailRepo(apiService))
+        creators[FQAViewModel::class.java] =
+            FQAViewModel(FQARepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

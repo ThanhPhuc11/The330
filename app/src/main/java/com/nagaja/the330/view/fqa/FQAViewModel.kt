@@ -1,6 +1,7 @@
 package com.nagaja.the330.view.fqa
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -12,8 +13,8 @@ import kotlinx.coroutines.launch
 
 class FQAViewModel(private val repo: FQARepo)
     : BaseViewModel(){
-    val cbFQAsList: MutableState<MutableList<FQAModel>?> = mutableStateOf(null)
-    val cbFQADetail = MutableLiveData<FQAModel>()
+    val fqaStateList = mutableStateListOf<FQAModel>()
+    var cbFQADetail = mutableStateOf(FQAModel())
 
     fun getFQAs(token: String) {
         viewModelScope.launch {
@@ -26,7 +27,21 @@ class FQAViewModel(private val repo: FQARepo)
                 }
                 .collect {
                     callbackSuccess.value = Unit
-                    cbFQAsList.value = it
+                    fqaStateList.clear()
+                    fqaStateList.addAll(it)
+                }
+        }
+    }
+
+    fun getFQADetail(token: String, id: Int) {
+        viewModelScope.launch {
+            repo.getFQADetail(token, id)
+                .onStart { callbackStart.value = Unit }
+                .catch {
+                }
+                .collect {
+                    callbackSuccess.value = Unit
+                    cbFQADetail.value = it
                 }
         }
     }
