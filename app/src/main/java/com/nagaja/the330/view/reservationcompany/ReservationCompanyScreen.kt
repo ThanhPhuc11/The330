@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.reservationcompany
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -8,12 +9,14 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -35,6 +38,7 @@ import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
 import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
+import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.ReservationModel
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
@@ -179,10 +183,217 @@ private fun SetupPager(pagerState: PagerState, viewModel: ReservationCompanyVM) 
             .wrapContentHeight()
     ) { page ->
         if (page == 0) {
-//            CompanyInfo(viewModel.companyDetail.value)
+            Tab1(viewModel)
         } else {
             Tab2(viewModel)
         }
+    }
+}
+
+@Composable
+private fun Tab1(viewModel: ReservationCompanyVM) {
+    val context = LocalContext.current
+    Column {
+        Divider(color = ColorUtils.gray_E1E1E1)
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(52.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BoxStatus(Modifier.weight(1f), text = "총 예약\n30건") {
+//                viewModel.status = null
+//                viewModel.getReservationMain(accessToken)
+            }
+            Box(
+                Modifier
+                    .padding(vertical = 7.dp)
+                    .width(1.dp)
+                    .fillMaxHeight()
+                    .background(ColorUtils.gray_E1E1E1)
+            )
+
+            BoxStatus(Modifier.weight(1f), text = "예약완료\n30건") {
+//                viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
+//                viewModel.getReservationMain(accessToken)
+            }
+            Box(
+                Modifier
+                    .padding(vertical = 7.dp)
+                    .width(1.dp)
+                    .fillMaxHeight()
+                    .background(ColorUtils.gray_E1E1E1)
+            )
+
+            BoxStatus(Modifier.weight(1f), text = "이용완료\n30건") {
+//                viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
+//                viewModel.getReservationMain(accessToken)
+            }
+            Box(
+                Modifier
+                    .padding(vertical = 7.dp)
+                    .width(1.dp)
+                    .fillMaxHeight()
+                    .background(ColorUtils.gray_E1E1E1)
+            )
+
+            BoxStatus(Modifier.weight(1f), text = "예약취소\n30건") {
+//                viewModel.status = AppConstants.Reservation.RESERVATION_CANCELED
+//                viewModel.getReservationMain(accessToken)
+            }
+            Box(
+                Modifier
+                    .padding(vertical = 7.dp)
+                    .width(1.dp)
+                    .fillMaxHeight()
+                    .background(ColorUtils.gray_E1E1E1)
+            )
+        }
+        Divider(color = ColorUtils.gray_E1E1E1)
+
+        Row(
+            Modifier
+                .padding(top = 16.dp)
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Box(
+                Modifier
+                    .size(98.dp, 36.dp)
+                    .background(ColorUtils.blue_2177E4, RoundedCornerShape(4.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("오늘 예약 마감", color = ColorUtils.white_FFFFFF, fontSize = 14.sp)
+            }
+            Spacer(Modifier.weight(1f))
+
+            val listSort = remember {
+                GetDummyData.getSortReservationRoleCompany(context)
+            }
+            var expanded by remember { mutableStateOf(false) }
+            val itemSelected = remember { mutableStateOf(listSort[0]) }
+            Row(
+                Modifier
+                    .size(98.dp, 36.dp)
+                    .border(
+                        width = 1.dp,
+                        color = ColorUtils.gray_E1E1E1
+                    )
+                    .padding(horizontal = 9.dp)
+                    .noRippleClickable {
+                        expanded = !expanded
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "${itemSelected.value.name}",
+                    color = ColorUtils.black_000000,
+                    fontSize = 14.sp,
+                    modifier = Modifier.weight(1f)
+                )
+                Image(
+                    painterResource(R.drawable.ic_arrow_down), null, modifier = Modifier
+                        .rotate(if (expanded) 180f else 0f)
+                        .width(10.dp)
+                )
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = {
+                        expanded = false
+                    }
+                ) {
+                    listSort.forEach { selectionOption ->
+                        DropdownMenuItem(
+                            onClick = {
+                                itemSelected.value = selectionOption
+                                expanded = false
+//                                onClickSort?.invoke(selectionOption.id ?: "null")
+                            }
+                        ) {
+                            Text(text = selectionOption.name!!)
+                        }
+                    }
+                }
+            }
+        }
+        val listData = viewModel.stateListData
+        LazyColumn(state = rememberLazyListState()) {
+            itemsIndexed(listData) { index, obj ->
+                ItemReservationTab1(index, obj)
+                Divider(color = ColorUtils.gray_E1E1E1)
+            }
+        }
+    }
+
+}
+
+@Composable
+private fun ItemReservationTab1(index: Int, obj: ReservationModel) {
+    Column(Modifier.padding(16.dp)) {
+        Text(
+            "${obj.bookerName}",
+            color = ColorUtils.gray_222222,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            "예약일시: ${
+                AppDateUtils.changeDateFormat(
+                    AppDateUtils.FORMAT_16,
+                    AppDateUtils.FORMAT_20,
+                    obj.reservationDateTime ?: ""
+                )
+            }",
+            color = ColorUtils.gray_222222,
+            fontSize = 16.sp,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+
+        Text(
+            "사용인원: ${obj.reservationNumber ?: 0}인",
+            style = text14_62
+        )
+
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            ButtonStatus(
+                "서비스완료",
+                ColorUtils.blue_2177E4,
+                ColorUtils.white_FFFFFF,
+                ColorUtils.blue_2177E4
+            )
+
+            ButtonStatus(
+                "예약취소",
+                ColorUtils.gray_222222,
+                ColorUtils.white_FFFFFF,
+                ColorUtils.gray_222222
+            )
+
+            ButtonStatus(
+                "사용자신고",
+                ColorUtils.white_FFFFFF,
+                ColorUtils.gray_222222,
+                ColorUtils.gray_222222
+            )
+        }
+    }
+}
+
+@Composable
+private fun ButtonStatus(text: String, textColor: Color, background: Color, border: Color) {
+    Box(
+        Modifier
+            .padding(start = 8.dp)
+            .size(76.dp, 32.dp)
+            .background(background, RoundedCornerShape(99.dp))
+            .border(
+                width = 1.dp,
+                color = border,
+                shape = RoundedCornerShape(99.dp)
+            ), contentAlignment = Alignment.Center
+    ) {
+        Text(text, color = textColor, fontSize = 12.sp)
     }
 }
 
@@ -248,7 +459,7 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
         val listData = viewModel.stateListData
         LazyColumn(state = rememberLazyListState()) {
             itemsIndexed(listData) { index, obj ->
-                ItemReservation(index, obj)
+                ItemReservationTab2(index, obj)
                 Divider(color = ColorUtils.gray_E1E1E1)
             }
         }
@@ -276,7 +487,7 @@ private fun BoxStatus(modifier: Modifier = Modifier, text: String, onClick: () -
 }
 
 @Composable
-private fun ItemReservation(index: Int, obj: ReservationModel) {
+private fun ItemReservationTab2(index: Int, obj: ReservationModel) {
     Row(
         Modifier
             .background(ColorUtils.white_FFFFFF)
@@ -310,8 +521,7 @@ private fun ItemReservation(index: Int, obj: ReservationModel) {
             Text(
                 "사용인원: ${obj.reservationNumber ?: 0}인",
                 modifier = Modifier.padding(top = 3.dp),
-                color = ColorUtils.gray_626262,
-                fontSize = 14.sp
+                style = text14_62
             )
             Box(
                 Modifier.fillMaxWidth(),

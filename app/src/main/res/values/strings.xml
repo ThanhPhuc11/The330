@@ -226,7 +226,10 @@
     <string name="close_net">가까운 순</string>
     <string name="low_price_net">저가 순</string>
     <string name="high_price">고가 순</string>
+    <string name="today">당일</string>
+    <string name="three_day">3일</string>
     <string name="one_week">일주일</string>
+    <string name="last_one_month">최근 1개월</string>
     <string name="one_month">1개월</string>
     <string name="three_month">3개월</string>
     <string name="six_month">6개월</string>
