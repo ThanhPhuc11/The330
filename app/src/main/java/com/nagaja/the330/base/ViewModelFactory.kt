@@ -37,6 +37,8 @@ import com.nagaja.the330.view.login.LoginRepository
 import com.nagaja.the330.view.login.LoginViewModel
 import com.nagaja.the330.view.mypage.MyPageScreenRepo
 import com.nagaja.the330.view.mypage.MyPageScreenVM
+import com.nagaja.the330.view.mypagecompany.MyPageCompanyScreenRepo
+import com.nagaja.the330.view.mypagecompany.MyPageCompanyScreenVM
 import com.nagaja.the330.view.othersetting.OtherSettingRepo
 import com.nagaja.the330.view.othersetting.OtherSettingVM
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchRepo
@@ -102,6 +104,8 @@ class ViewModelFactory(apiService: ApiService) :
             HomeScreenVM(HomeScreenRepo(apiService))
         creators[MyPageScreenVM::class.java] =
             MyPageScreenVM(MyPageScreenRepo(apiService))
+        creators[MyPageCompanyScreenVM::class.java] =
+            MyPageCompanyScreenVM(MyPageCompanyScreenRepo(apiService))
         creators[EditProfileVM::class.java] =
             EditProfileVM(EditProfileRepo(apiService))
         creators[FavCompanyVM::class.java] =

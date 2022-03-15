@@ -112,6 +112,7 @@
 
     <!--mypage-->
     <string name="option_favorite_store_list">단골내역</string>
+    <string name="option_point">포인트</string>
     <string name="option_consultation_history">상담 현황</string>
     <string name="option_reservation_status">예약 현황</string>
     <string name="option_usage_list">이용 목록</string>
@@ -123,6 +124,7 @@
     <string name="service_use_address">서비스 이용 주소</string>
     <string name="edit">수정</string>
     <string name="apply_company_member">기업 회원 신청</string>
+    <string name="view_my_info">내 정보 보기</string>
 
     <string name="edit_info">회원 정보 수정</string>
     <string name="complete">완료</string>
