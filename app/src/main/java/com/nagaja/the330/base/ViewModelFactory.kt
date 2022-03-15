@@ -37,6 +37,8 @@ import com.nagaja.the330.view.login.LoginRepository
 import com.nagaja.the330.view.login.LoginViewModel
 import com.nagaja.the330.view.mypage.MyPageScreenRepo
 import com.nagaja.the330.view.mypage.MyPageScreenVM
+import com.nagaja.the330.view.notification.NotificationRepo
+import com.nagaja.the330.view.notification.NotificationVM
 import com.nagaja.the330.view.othersetting.OtherSettingRepo
 import com.nagaja.the330.view.othersetting.OtherSettingVM
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchRepo
@@ -152,6 +154,8 @@ class ViewModelFactory(apiService: ApiService) :
             CompanyDetailVM(CompanyDetailRepo(apiService))
         creators[FQAViewModel::class.java] =
             FQAViewModel(FQARepo(apiService))
+        creators[NotificationVM::class.java] =
+            NotificationVM(NotificationRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

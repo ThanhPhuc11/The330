@@ -46,6 +46,7 @@ import com.nagaja.the330.view.fqa.FQAsScreen
 import com.nagaja.the330.view.freenoticeboard.FreeNoticeFragment
 import com.nagaja.the330.view.localnews.LocalNewsFragment
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.notification.NotificationsScreen
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchFragment
 import com.nagaja.the330.view.reportmissing.ReportMissingFragment
 import com.nagaja.the330.view.secondhandmarket.SecondHandMarketFragment
@@ -283,10 +284,10 @@ fun linkScreen(ctype: String, viewController: ViewController?) {
             ScreenId.SCREEN_RECRUITMENT_JOBSEARCH,
             RecruitmentJobSearchFragment.newInstance()
         )
-//        "NOTICE" -> viewController?.pushFragment(
-//            ScreenId.SCREEN_RECRUITMENT_JOBSEARCH,
-//            RecruitmentJobSearchFragment.newInstance()
-//        )
+        "NOTICE" -> viewController?.pushFragment(
+            ScreenId.SCREEN_NOTIFICATION,
+            NotificationsScreen.newInstance()
+        )
         "FAQ" -> viewController?.pushFragment(
             ScreenId.SCREEN_FQA,
             FQAsScreen.newInstance()

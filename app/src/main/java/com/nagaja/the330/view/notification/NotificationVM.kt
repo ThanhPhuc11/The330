@@ -1,4 +1,9 @@
 package com.nagaja.the330.view.notification
 
-class NotificationVM {
+import androidx.compose.runtime.mutableStateListOf
+import com.nagaja.the330.base.BaseViewModel
+import com.nagaja.the330.model.NotificationModel
+
+class NotificationVM(private val repo: NotificationRepo) : BaseViewModel(){
+    val fqaStateList = mutableStateListOf<NotificationModel>()
 }

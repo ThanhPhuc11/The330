@@ -288,4 +288,7 @@
     <!--FQA-->
     <string name="title_fqa">FQA</string>
 
+    <!--Notification-->
+    <string name="title_notification">공지사항</string>
+
 </resources>
