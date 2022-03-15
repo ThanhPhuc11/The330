@@ -223,6 +223,17 @@ interface ApiService {
         @Query("all") all: String?,
     ): ResponseModel<MutableList<ReportMissingModel>>
 
+    @GET("report_missing/in_my_page")
+    suspend fun getReportMissingMyPage(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("timeLimit") timeLimit: String,
+        @Query("type") type: String?,
+        @Query("status") status: String?,
+        @Query("all") all: String?,
+    ): ResponseModel<MutableList<ReportMissingModel>>
+
     @POST("report_missing/viewDetail")
     suspend fun getReportMissingDetail(
         @Header("Authorization") token: String,
