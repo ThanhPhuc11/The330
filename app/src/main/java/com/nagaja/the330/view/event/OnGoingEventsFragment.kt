@@ -89,12 +89,14 @@ private fun EventList(names: List<String> = List(1000) { "item $it" } ) {
 @Composable
 private fun Event(name: String) {
     Column(
-        modifier = Modifier.background(white_FFFFFF)
+        modifier = Modifier
+            .background(white_FFFFFF)
             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
     ) {
         CardContent(name)
         Divider(
-            Modifier.height(1.dp)
+            Modifier
+                .height(1.dp)
                 .background(gray_00000D)
         )
     }
@@ -154,5 +156,13 @@ private fun CardContent(name: String) {
 
             )
         }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 320)
+@Composable
+fun DefaultPreview() {
+    The330Theme {
+        EventList()
     }
 }
