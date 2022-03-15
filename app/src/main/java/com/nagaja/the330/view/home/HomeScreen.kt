@@ -42,11 +42,12 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.companylist.CompanyListFragment
-import com.nagaja.the330.view.fqa.FQAsScreen
+import com.nagaja.the330.view.event.OnGoingEventsFragment
+import com.nagaja.the330.view.faq.FAQsFragment
 import com.nagaja.the330.view.freenoticeboard.FreeNoticeFragment
 import com.nagaja.the330.view.localnews.LocalNewsFragment
 import com.nagaja.the330.view.noRippleClickable
-import com.nagaja.the330.view.notification.NotificationsScreen
+import com.nagaja.the330.view.notification.NotificationsFragment
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchFragment
 import com.nagaja.the330.view.reportmissing.ReportMissingFragment
 import com.nagaja.the330.view.secondhandmarket.SecondHandMarketFragment
@@ -99,7 +100,7 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
         ) {
             CategoryMain(viewModel, viewController)
             ExchangeDollar()
-            BannerEvent()
+            BannerEvent(viewController = viewController)
             Row(
                 Modifier
                     .padding(top = 22.dp, bottom = 8.dp)
@@ -286,11 +287,11 @@ fun linkScreen(ctype: String, viewController: ViewController?) {
         )
         "NOTICE" -> viewController?.pushFragment(
             ScreenId.SCREEN_NOTIFICATION,
-            NotificationsScreen.newInstance()
+            NotificationsFragment.newInstance()
         )
         "FAQ" -> viewController?.pushFragment(
             ScreenId.SCREEN_FQA,
-            FQAsScreen.newInstance()
+            FAQsFragment.newInstance()
         )
         else -> viewController?.pushFragment(
             ScreenId.SCREEN_COMPANY_LIST,
@@ -391,7 +392,7 @@ private fun MoneyValue(
 
 @Preview
 @Composable
-private fun BannerEvent() {
+private fun BannerEvent(viewController: ViewController?) {
     Image(
         painter = painterResource(R.drawable.banner_ads),
         contentDescription = null,
@@ -399,6 +400,12 @@ private fun BannerEvent() {
         modifier = Modifier
             .fillMaxWidth()
             .height(180.dp)
+            .noRippleClickable {
+                viewController?.pushFragment(
+                    ScreenId.SCREEN_ON_GOING_EVENTS,
+                    OnGoingEventsFragment.newInstance()
+                )
+            }
     )
 }
 

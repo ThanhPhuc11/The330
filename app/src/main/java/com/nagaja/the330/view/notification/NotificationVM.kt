@@ -5,5 +5,5 @@ import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.NotificationModel
 
 class NotificationVM(private val repo: NotificationRepo) : BaseViewModel(){
-    val fqaStateList = mutableStateListOf<NotificationModel>()
+    val noticeStateList = mutableStateListOf<NotificationModel>()
 }

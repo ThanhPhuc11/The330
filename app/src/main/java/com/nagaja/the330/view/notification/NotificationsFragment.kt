@@ -1,4 +1,4 @@
-package com.nagaja.the330.view.fqa
+package com.nagaja.the330.view.notification
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,17 +10,17 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.nagaja.the330.MainActivity
-import com.nagaja.the330.base.BaseFragment
-import com.nagaja.the330.model.FQAModel
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
+import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.model.NotificationModel
 import com.nagaja.the330.ui.theme.textBold16
 import com.nagaja.the330.ui.theme.textRegular12
 import com.nagaja.the330.utils.ColorUtils
@@ -28,16 +28,16 @@ import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 
-class FQAsScreen: BaseFragment() {
-    private lateinit var viewModel: FQAViewModel
+class NotificationsFragment: BaseFragment() {
+    private lateinit var viewModel: NotificationVM
 
     companion object {
-        fun newInstance() = FQAsScreen()
+        fun newInstance() = NotificationsFragment()
     }
 
 
     override fun SetupViewModel() {
-        viewModel = getViewModelProvider(this)[FQAViewModel::class.java]
+        viewModel = getViewModelProvider(this)[NotificationVM::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
@@ -50,7 +50,7 @@ class FQAsScreen: BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        accessToken?.let { viewModel.getFQAs(it) }
+                        accessToken?.let {  }
                     }
                     else -> {}
                 }
@@ -62,7 +62,7 @@ class FQAsScreen: BaseFragment() {
         }
 
         LayoutTheme330{
-            Header(stringResource(R.string.title_fqa)) {
+            Header(stringResource(R.string.title_notification)) {
                 viewController?.popFragment()
             }
             Box(
@@ -70,10 +70,10 @@ class FQAsScreen: BaseFragment() {
                     .background(ColorUtils.white_FFFFFF)
                     .padding(top = 35.dp)
             ){
-                val fqas = viewModel.fqaStateList
+                val notices = viewModel.noticeStateList
                 Column{
                     LazyColumn(state = rememberLazyListState()) {
-                        itemsIndexed(fqas) {_, fqa -> ItemFQA(item = fqa)}
+                        itemsIndexed(notices) {_, notice -> ItemNotification(item = notice)}
                     }
 
                     Divider(
@@ -85,17 +85,16 @@ class FQAsScreen: BaseFragment() {
             }
         }
     }
-
     @Composable
-    private fun ItemFQA(item: FQAModel) {
+    private fun ItemNotification(item: NotificationModel) {
         Row(
             Modifier
                 .padding(start = 16.dp, end = 16.dp)
                 .clickable {
                     item.id?.let {
                         viewController?.pushFragment(
-                            ScreenId.SCREEN_FQA_DETAIL,
-                            FQAsDetailScreen.newInstance(it)
+                            ScreenId.SCREEN_NOTIFICATION_DETAIL,
+                            NotificationDetailFragment.newInstance(it)
                         )
                     }
                 }

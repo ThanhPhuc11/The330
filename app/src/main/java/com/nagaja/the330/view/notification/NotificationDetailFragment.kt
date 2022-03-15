@@ -16,11 +16,11 @@ import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.view.LayoutTheme330
 
-class NotificationDetailScreen: BaseFragment() {
+class NotificationDetailFragment: BaseFragment() {
     private lateinit var viewModel: NotificationVM
 
     companion object {
-        fun newInstance(arg: Int) = NotificationDetailScreen().apply {
+        fun newInstance(arg: Int) = NotificationDetailFragment().apply {
             arguments = Bundle().apply {
                 this.putInt(AppConstants.EXTRA_KEY1, arg)
             }
