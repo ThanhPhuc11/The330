@@ -44,6 +44,7 @@ import com.nagaja.the330.view.applycompany.ApplyCompanyFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
+import com.nagaja.the330.view.point.PointFragment
 import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageFragment
 import com.nagaja.the330.view.secondhandmypage.SecondHandMypageFragment
 import com.nagaja.the330.view.text14_222
@@ -68,6 +69,14 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
             FavCompanyFragment.newInstance()
         )
     }
+
+    val clickPoint: () -> Unit = {
+        viewController?.pushFragment(
+            ScreenId.SCREEN_POINT,
+            PointFragment.newInstance()
+        )
+    }
+
     val clickUsage: () -> Unit = {
         viewController?.pushFragment(
             ScreenId.SCREEN_USAGE,
@@ -174,7 +183,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                     R.drawable.ic_point_opt,
                     stringResource(R.string.option_point),
                     "잔여: 000,000",
-                    clickFavorite
+                    clickPoint
                 )
                 MypageOptionItem(
                     R.drawable.ic_consultation_opt,

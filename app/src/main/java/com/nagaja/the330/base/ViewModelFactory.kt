@@ -41,6 +41,8 @@ import com.nagaja.the330.view.mypagecompany.MyPageCompanyScreenRepo
 import com.nagaja.the330.view.mypagecompany.MyPageCompanyScreenVM
 import com.nagaja.the330.view.othersetting.OtherSettingRepo
 import com.nagaja.the330.view.othersetting.OtherSettingVM
+import com.nagaja.the330.view.point.PointRepo
+import com.nagaja.the330.view.point.PointVM
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchRepo
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchVM
 import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailRepo
@@ -120,6 +122,8 @@ class ViewModelFactory(apiService: ApiService) :
             SecondHandRegisVM(SecondHandRegisRepo(apiService))
         creators[SecondHandDetailVM::class.java] =
             SecondHandDetailVM(SecondHandDetailRepo(apiService))
+        creators[PointVM::class.java] =
+            PointVM(PointRepo(apiService))
         creators[OtherSettingVM::class.java] =
             OtherSettingVM(OtherSettingRepo(apiService))
         creators[ApplyCompanyVM::class.java] =

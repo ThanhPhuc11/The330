@@ -293,4 +293,15 @@
     <!--FQA-->
     <string name="title_fqa">FQA</string>
 
+    <!--Point-->
+    <string name="point_status">포인트 현황</string>
+    <string name="charging_history">충전 내역</string>
+    <string name="usage_history">사용 내역</string>
+    <string name="charge_date">충전 일시</string>
+    <string name="charge_type_service_payment">충전유형(서비스, 결제)</string>
+    <string name="charge_point">충전 포인트</string>
+    <string name="usage_date">사용 일시</string>
+    <string name="usage_reason">사용 사유</string>
+    <string name="usage_point">사용 포인트</string>
+
 </resources>
