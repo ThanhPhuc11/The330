@@ -49,6 +49,8 @@ import com.nagaja.the330.view.reportmissing.ReportMissingRepo
 import com.nagaja.the330.view.reportmissing.ReportMissingVM
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailRepo
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailVM
+import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageRepo
+import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageVM
 import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisRepo
 import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisVM
 import com.nagaja.the330.view.reservation.ReservationRepo
@@ -134,6 +136,8 @@ class ViewModelFactory(apiService: ApiService) :
             ReportMissingDetailVM(ReportMissingDetailRepo(apiService))
         creators[ReportMissingRegisVM::class.java] =
             ReportMissingRegisVM(ReportMissingRegisRepo(apiService))
+        creators[ReportMissingMyPageVM::class.java] =
+            ReportMissingMyPageVM(ReportMissingMyPageRepo(apiService))
         creators[RecruitmentJobSearchVM::class.java] =
             RecruitmentJobSearchVM(RecruitmentJobSearchRepo(apiService))
         creators[RecruitJobsDetailVM::class.java] =

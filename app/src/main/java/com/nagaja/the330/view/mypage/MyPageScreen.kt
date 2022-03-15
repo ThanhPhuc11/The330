@@ -41,6 +41,7 @@ import com.nagaja.the330.view.edit_profile.EditProfileFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
+import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageFragment
 import com.nagaja.the330.view.reservationregis.ReservationRegisFragment
 import com.nagaja.the330.view.secondhandmypage.SecondHandMypageFragment
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailFragment
@@ -85,8 +86,8 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
 
     val clickReport: () -> Unit = {
         viewController?.pushFragment(
-            ScreenId.SCREEN_SECONDHAND_DETAIL,
-            ReservationRegisFragment.newInstance()
+            ScreenId.SCREEN_REPORT_MISSING_MYPAGE,
+            ReportMissingMyPageFragment.newInstance()
         )
     }
     val viewModelStoreOwner: ViewModelStoreOwner =

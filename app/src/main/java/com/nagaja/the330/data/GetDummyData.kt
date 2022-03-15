@@ -94,6 +94,15 @@ object GetDummyData {
         }
     }
 
+    fun getSortMySecondHand(context: Context): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel("LASTEST", context.getString(R.string.lastest_order)))
+            add(KeyValueModel("VIEW_COUNT", context.getString(R.string.view_order)))
+            add(KeyValueModel("IN_TRANSACTION", context.getString(R.string.in_transition)))
+            add(KeyValueModel("TRANSACTION_COMPLETE", context.getString(R.string.transaction_complete)))
+        }
+    }
+
     fun getSortLocalNews(context: Context): MutableList<KeyValueModel> {
         return mutableListOf<KeyValueModel>().apply {
             add(KeyValueModel("LASTEST", context.getString(R.string.lastest_order)))

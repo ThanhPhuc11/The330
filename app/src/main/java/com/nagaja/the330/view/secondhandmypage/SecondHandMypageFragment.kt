@@ -32,12 +32,14 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.CompanyFavoriteModel
 import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.SecondHandModel
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.*
 import com.skydoves.landscapist.glide.GlideImage
@@ -71,13 +73,9 @@ class SecondHandMypageFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
                         stateOptions.value = GetDummyData.getSortFavoriteCompany(context)
-//                        accessToken?.let {
-//                            viewModel.getFavoriteCompany(
-//                                it,
-//                                0,
-//                                stateOptions.value[0].id!!
-//                            )
-//                        }
+                        accessToken?.let {
+                            viewModel.getMySecondHand(it)
+                        }
                     }
                     Lifecycle.Event.ON_STOP -> {}
                     else -> {}
@@ -185,14 +183,10 @@ class SecondHandMypageFragment : BaseFragment() {
                     .height(1.dp)
                     .background(ColorUtils.gray_E1E1E1)
             )
-            val listCompany = viewModel.listCompany.apply {
-                add(CompanyFavoriteModel())
-                add(CompanyFavoriteModel())
-                add(CompanyFavoriteModel())
-            }
+            val listSecondhand = viewModel.stateListSecondhand
             LazyColumn(state = rememberLazyListState()) {
-                itemsIndexed(listCompany) { _, obj ->
-                    SecondhandItem()
+                itemsIndexed(listSecondhand) { _, obj ->
+                    SecondhandItem(obj)
                 }
             }
         }
@@ -216,7 +210,7 @@ class SecondHandMypageFragment : BaseFragment() {
 
     @Composable
     private fun HandleSortUI() {
-        val options = GetDummyData.getSortFavoriteCompany(LocalContext.current)
+        val options = GetDummyData.getSortMySecondHand(LocalContext.current)
         var expanded by remember { mutableStateOf(false) }
         var selectedOptionText by remember { mutableStateOf(options[0]) }
         Box(
@@ -267,6 +261,14 @@ class SecondHandMypageFragment : BaseFragment() {
                             onClick = {
                                 selectedOptionText = selectionOption
                                 expanded = false
+                                if (selectionOption.id == "LASTEST" || selectionOption.id == "VIEW_COUNT") {
+                                    viewModel.sort = selectionOption.id
+                                    viewModel.transactionStatus = null
+                                } else {
+                                    viewModel.sort = null
+                                    viewModel.transactionStatus = selectionOption.id
+                                }
+                                viewModel.getMySecondHand(accessToken!!)
                             }
                         ) {
                             Text(text = selectionOption.name!!)
@@ -277,9 +279,8 @@ class SecondHandMypageFragment : BaseFragment() {
         }
     }
 
-    @Preview
     @Composable
-    private fun SecondhandItem() {
+    private fun SecondhandItem(obj: SecondHandModel) {
         Column(
             Modifier
                 .background(ColorUtils.white_FFFFFF)
@@ -289,7 +290,7 @@ class SecondHandMypageFragment : BaseFragment() {
         ) {
             Row {
                 GlideImage(
-                    imageModel = "",
+                    imageModel = "${BuildConfig.BASE_S3}${obj.images?.getOrNull(0)?.url ?: ""}",
                     Modifier
                         .size(96.dp)
                         .clip(shape = RoundedCornerShape(4.dp)),
@@ -303,12 +304,12 @@ class SecondHandMypageFragment : BaseFragment() {
                 ) {
                     Text(
                         "판매완료",
-                        color = ColorUtils.blue_2177E4,
+                        color = if (obj.transactionStatus == "TRANSACTION_COMPLETE") ColorUtils.blue_2177E4 else ColorUtils.white_FFFFFF,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Black
                     )
                     Text(
-                        "[여성잡화] 흰색 단화 230",
+                        "[${obj.type}] ${obj.title}",
                         modifier = Modifier.padding(top = 1.dp),
                         color = ColorUtils.black_000000,
                         fontSize = 16.sp,
@@ -319,7 +320,7 @@ class SecondHandMypageFragment : BaseFragment() {
                         contentAlignment = Alignment.BottomEnd
                     ) {
                         Text(
-                            "$ 19.00 ",
+                            price(obj),
                             color = ColorUtils.black_000000,
                             fontSize = 22.sp,
                             fontWeight = FontWeight(700)
@@ -328,8 +329,7 @@ class SecondHandMypageFragment : BaseFragment() {
                 }
             }
             Text(
-                "발이 너무 작아서 사이즈 미스로 팔아요ㅠㅠ\n" +
-                        "한 번도 안신었고 첫 번째 사진은 쇼핑몰 사진입니다 230...",
+                "${obj.body}",
                 style = text14_62,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.padding(top = 16.dp)
@@ -386,6 +386,14 @@ class SecondHandMypageFragment : BaseFragment() {
                     .height(1.dp)
                     .background(ColorUtils.gray_E1E1E1)
             )
+        }
+    }
+
+    private fun price(secondhand: SecondHandModel): String {
+        return if ((secondhand.dollar ?: 0.0) > 0) {
+            GetDummyData.getMoneyType()[1].name!!.plus(" ").plus(secondhand.dollar)
+        } else {
+            GetDummyData.getMoneyType()[0].name!!.plus(" ").plus(secondhand.peso)
         }
     }
 }
