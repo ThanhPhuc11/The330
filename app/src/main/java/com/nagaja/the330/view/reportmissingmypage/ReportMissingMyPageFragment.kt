@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,6 +37,7 @@ import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailFragment
+import com.nagaja.the330.view.reportmissingdetailmypage.ReportMissingDetailMyPageFragment
 import com.nagaja.the330.view.text14_222
 
 class ReportMissingMyPageFragment : BaseFragment() {
@@ -85,7 +87,7 @@ class ReportMissingMyPageFragment : BaseFragment() {
             }
         }
         LayoutTheme330 {
-            Header("신고/실종자 목록") {
+            Header(stringResource(R.string.report_missing_list)) {
                 viewController?.popFragment()
             }
             Row(
@@ -232,8 +234,8 @@ class ReportMissingMyPageFragment : BaseFragment() {
                 .padding(vertical = 16.dp)
                 .noRippleClickable {
                     viewController?.pushFragment(
-                        ScreenId.SCREEN_REPORT_MISSING_DETAIL,
-                        ReportMissingDetailFragment.newInstance(obj.id!!)
+                        ScreenId.SCREEN_REPORT_MISSING_DETAIL_MYPAGE,
+                        ReportMissingDetailMyPageFragment.newInstance(obj.id!!)
                     )
                 }
         ) {

@@ -273,6 +273,13 @@ interface ApiService {
         @Query("id") id: Int,
     ): RecruitmentJobsModel
 
+    @GET("reservations/{role}/{userId}/overview")
+    suspend fun reservationOverview(
+        @Header("Authorization") token: String,
+        @Path("role") role: String,
+        @Path("userId") userId: Int,
+    ): ReservationOverviewModel
+
     @GET("reservations/in_main")
     suspend fun getReservationMain(
         @Header("Authorization") token: String,
