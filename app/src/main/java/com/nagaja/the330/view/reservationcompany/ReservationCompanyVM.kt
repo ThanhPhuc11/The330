@@ -14,11 +14,15 @@ import kotlinx.coroutines.launch
 class ReservationCompanyVM(
     private val repo: ReservationCompanyRepo
 ) : BaseViewModel() {
+    var accessToken: String = ""
     var timeLimit: String = "ONE_WEEK"
     var status: String? = null
 
-    var listData = mutableListOf<ReservationModel>()
-    val stateListData = mutableStateListOf<ReservationModel>()
+    var listDataGeneral = mutableListOf<ReservationModel>()
+    val stateListDataGeneral = mutableStateListOf<ReservationModel>()
+
+    var listDataCompany = mutableListOf<ReservationModel>()
+    val stateListDataCompany = mutableStateListOf<ReservationModel>()
 
     val total = mutableStateOf(0)
     val reservation_completed = mutableStateOf(0)
@@ -42,7 +46,7 @@ class ReservationCompanyVM(
         }
     }
 
-    fun getReservationMain(token: String) {
+    fun getReservationGeneral(token: String) {
         viewModelScope.launch {
             repo.getReservationMain(
                 token = token,
@@ -52,15 +56,45 @@ class ReservationCompanyVM(
                 timeLimit = timeLimit,
                 status = status
             )
-                .onStart { }
+                .onStart { callbackStart.value = Unit }
                 .onCompletion { }
-                .catch { }
+                .catch {
+                    handleError(it)
+                }
                 .collect {
+                    callbackSuccess.value = Unit
                     it.content?.let { data ->
-                        listData.clear()
-                        listData.addAll(data)
-                        stateListData.clear()
-                        stateListData.addAll(listData)
+                        listDataGeneral.clear()
+                        listDataGeneral.addAll(data)
+                        stateListDataGeneral.clear()
+                        stateListDataGeneral.addAll(listDataGeneral)
+                    }
+                }
+        }
+    }
+
+    fun getReservationCompany(token: String) {
+        viewModelScope.launch {
+            repo.getReservationMain(
+                token = token,
+                page = 0,
+                size = 10,
+                asCompany = true,
+                timeLimit = timeLimit,
+                status = status
+            )
+                .onStart { callbackStart.value = Unit }
+                .onCompletion { }
+                .catch {
+                    handleError(it)
+                }
+                .collect {
+                    callbackSuccess.value = Unit
+                    it.content?.let { data ->
+                        listDataCompany.clear()
+                        listDataCompany.addAll(data)
+                        stateListDataCompany.clear()
+                        stateListDataCompany.addAll(listDataCompany)
                     }
                 }
         }
