@@ -291,7 +291,10 @@
     <string name="make_a_phone_call">전화걸기</string>
 
     <!--FQA-->
-    <string name="title_fqa">FQA</string>
+    <string name="title_faq">FAQ</string>
+
+    <!--Notification-->
+    <string name="title_notification">진행중인 이벤트</string>
 
     <!--Point-->
     <string name="point_status">포인트 현황</string>

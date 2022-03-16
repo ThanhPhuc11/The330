@@ -1,4 +1,4 @@
-package com.nagaja.the330.view.fqa
+package com.nagaja.the330.view.faq
 
 import android.os.Bundle
 import androidx.compose.foundation.background
@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,11 +29,11 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 
-class FQAsDetailScreen: BaseFragment() {
-    private lateinit var viewModel: FQAViewModel
+class FAQsDetailFragment: BaseFragment() {
+    private lateinit var viewModel: FAQViewModel
 
     companion object {
-        fun newInstance(arg: Int) = FQAsDetailScreen().apply {
+        fun newInstance(arg: Int) = FAQsDetailFragment().apply {
             arguments = Bundle().apply {
                 this.putInt(EXTRA_KEY1, arg)
             }
@@ -42,7 +41,7 @@ class FQAsDetailScreen: BaseFragment() {
     }
 
     override fun SetupViewModel() {
-        viewModel = getViewModelProvider(this)[FQAViewModel::class.java]
+        viewModel = getViewModelProvider(this)[FAQViewModel::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
@@ -74,7 +73,7 @@ class FQAsDetailScreen: BaseFragment() {
 
         LayoutTheme330{
             val fqa = viewModel.cbFQADetail
-            Header(stringResource(R.string.title_fqa)) {
+            Header(stringResource(R.string.title_faq)) {
                 viewController?.popFragment()
             }
 

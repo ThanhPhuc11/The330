@@ -1,4 +1,4 @@
-package com.nagaja.the330.view.fqa
+package com.nagaja.the330.view.faq
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,16 +28,16 @@ import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 
-class FQAsScreen: BaseFragment() {
-    private lateinit var viewModel: FQAViewModel
+class FAQsFragment: BaseFragment() {
+    private lateinit var viewModel: FAQViewModel
 
     companion object {
-        fun newInstance() = FQAsScreen()
+        fun newInstance() = FAQsFragment()
     }
 
 
     override fun SetupViewModel() {
-        viewModel = getViewModelProvider(this)[FQAViewModel::class.java]
+        viewModel = getViewModelProvider(this)[FAQViewModel::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
@@ -62,7 +62,7 @@ class FQAsScreen: BaseFragment() {
         }
 
         LayoutTheme330{
-            Header(stringResource(R.string.title_fqa)) {
+            Header(stringResource(R.string.title_faq)) {
                 viewController?.popFragment()
             }
             Box(
@@ -70,10 +70,10 @@ class FQAsScreen: BaseFragment() {
                     .background(ColorUtils.white_FFFFFF)
                     .padding(top = 35.dp)
             ){
-                val fqas = viewModel.fqaStateList
+                val faqs = viewModel.fqaStateList
                 Column{
                     LazyColumn(state = rememberLazyListState()) {
-                        itemsIndexed(fqas) {_, fqa -> ItemFQA(item = fqa)}
+                        itemsIndexed(faqs) {_, faq -> ItemFQA(item = faq)}
                     }
 
                     Divider(
@@ -95,7 +95,7 @@ class FQAsScreen: BaseFragment() {
                     item.id?.let {
                         viewController?.pushFragment(
                             ScreenId.SCREEN_FQA_DETAIL,
-                            FQAsDetailScreen.newInstance(it)
+                            FAQsDetailFragment.newInstance(it)
                         )
                     }
                 }

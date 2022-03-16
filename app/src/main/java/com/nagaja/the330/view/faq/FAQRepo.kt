@@ -1,9 +1,9 @@
-package com.nagaja.the330.view.fqa
+package com.nagaja.the330.view.faq
 
 import com.nagaja.the330.network.ApiService
 import kotlinx.coroutines.flow.flow
 
-class FQARepo(private val apiService: ApiService) {
+class FAQRepo(private val apiService: ApiService) {
     suspend fun getFQAs(token: String) = flow{
         emit(apiService.getFQAs(token))
     }
