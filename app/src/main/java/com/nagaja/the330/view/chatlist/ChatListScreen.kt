@@ -33,8 +33,10 @@ import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.chatdetail.ChatDetailFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -146,7 +148,12 @@ fun ChatListScreen(accessToken: String, viewController: ViewController?, user: U
 
         LazyColumn(state = rememberLazyListState()) {
             itemsIndexed(listChat) { index, obj ->
-                ItemGeneralMember()
+                ItemGeneralMember() {
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_CHAT_DETAIL,
+                        ChatDetailFragment.newInstance()
+                    )
+                }
                 Divider(color = ColorUtils.gray_E1E1E1)
             }
         }
@@ -208,11 +215,14 @@ private fun ItemCompanyMember() {
 }
 
 @Composable
-private fun ItemGeneralMember() {
+private fun ItemGeneralMember(onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .noRippleClickable {
+                onClick.invoke()
+            }
     ) {
         Column(
             Modifier
