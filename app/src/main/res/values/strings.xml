@@ -112,6 +112,7 @@
 
     <!--mypage-->
     <string name="option_favorite_store_list">단골내역</string>
+    <string name="option_point">포인트</string>
     <string name="option_consultation_history">상담 현황</string>
     <string name="option_reservation_status">예약 현황</string>
     <string name="option_usage_list">이용 목록</string>
@@ -123,6 +124,7 @@
     <string name="service_use_address">서비스 이용 주소</string>
     <string name="edit">수정</string>
     <string name="apply_company_member">기업 회원 신청</string>
+    <string name="view_my_info">내 정보 보기</string>
 
     <string name="edit_info">회원 정보 수정</string>
     <string name="complete">완료</string>
@@ -242,6 +244,8 @@
     <string name="reservation_available">예약가능</string>
     <string name="pickup_dropup_available">픽업/ 드랍 가능</string>
     <string name="nagaja_authentication">나가자 인증</string>
+    <string name="in_transition">판매중</string>
+    <string name="transaction_complete">판매완료</string>
 
     <!--free board-->
     <string name="post_register">글등록</string>
@@ -260,6 +264,7 @@
     <!--report/missing-->
     <string name="missing">실종자</string>
     <string name="report_missing">신고/실종자</string>
+    <string name="report_missing_list">신고/실종자 목록</string>
     <string name="please_enter_local_description">지역 설명을 입력하세요.</string>
     <string name="registrant">등록자</string>
     <string name="post_report_missing_success">게시글 등록 요청이 완료되었습니다.\n관리자 승인 후 게시글이 등록됩니다.</string>
@@ -290,5 +295,16 @@
 
     <!--Notification-->
     <string name="title_notification">진행중인 이벤트</string>
+
+    <!--Point-->
+    <string name="point_status">포인트 현황</string>
+    <string name="charging_history">충전 내역</string>
+    <string name="usage_history">사용 내역</string>
+    <string name="charge_date">충전 일시</string>
+    <string name="charge_type_service_payment">충전유형(서비스, 결제)</string>
+    <string name="charge_point">충전 포인트</string>
+    <string name="usage_date">사용 일시</string>
+    <string name="usage_reason">사용 사유</string>
+    <string name="usage_point">사용 포인트</string>
 
 </resources>

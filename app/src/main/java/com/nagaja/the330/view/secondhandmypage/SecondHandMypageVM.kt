@@ -3,7 +3,7 @@ package com.nagaja.the330.view.secondhandmypage
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
-import com.nagaja.the330.model.CompanyFavoriteModel
+import com.nagaja.the330.model.SecondHandModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -13,16 +13,21 @@ import kotlinx.coroutines.launch
 class SecondHandMypageVM(
     private val repo: SecondHandMypageRepo
 ) : BaseViewModel() {
-    val listCompany = mutableStateListOf<CompanyFavoriteModel>()
+    var sort: String? = "LASTEST"
+    var transactionStatus: String? = null
+    val stateListSecondhand = mutableStateListOf<SecondHandModel>()
 
-    fun getFavoriteCompany(token: String, page: Int, sort: String) {
+    fun getMySecondHand(token: String) {
         viewModelScope.launch {
-            repo.getFavoriteCompany(token, page, 10, sort)
+            repo.getMySecondHand(token, 0, 10, sort, transactionStatus)
                 .onStart { }
                 .onCompletion { }
                 .catch { }
                 .collect {
-                    it.content?.let { it1 -> listCompany.addAll(it1) }
+                    it.content?.let { it1 ->
+                        stateListSecondhand.clear()
+                        stateListSecondhand.addAll(it1)
+                    }
                 }
         }
     }

@@ -162,6 +162,15 @@ interface ApiService {
         @Query("secondhandCategoryType") secondhandCategoryType: String?,
     ): ResponseModel<MutableList<SecondHandModel>>
 
+    @GET("secondhand_posts/in_my_page")
+    suspend fun getMySecondHand(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String?,
+        @Query("transactionStatus") transactionStatus: String?,
+    ): ResponseModel<MutableList<SecondHandModel>>
+
     @GET("local_news/in_main")
     suspend fun getListLocalNews(
         @Header("Authorization") token: String,
@@ -214,6 +223,17 @@ interface ApiService {
         @Query("all") all: String?,
     ): ResponseModel<MutableList<ReportMissingModel>>
 
+    @GET("report_missing/in_my_page")
+    suspend fun getReportMissingMyPage(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("timeLimit") timeLimit: String,
+        @Query("type") type: String?,
+        @Query("status") status: String?,
+        @Query("all") all: String?,
+    ): ResponseModel<MutableList<ReportMissingModel>>
+
     @POST("report_missing/viewDetail")
     suspend fun getReportMissingDetail(
         @Header("Authorization") token: String,
@@ -252,6 +272,13 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("id") id: Int,
     ): RecruitmentJobsModel
+
+    @GET("reservations/{role}/{userId}/overview")
+    suspend fun reservationOverview(
+        @Header("Authorization") token: String,
+        @Path("role") role: String,
+        @Path("userId") userId: Int,
+    ): ReservationOverviewModel
 
     @GET("reservations/in_main")
     suspend fun getReservationMain(

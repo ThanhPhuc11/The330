@@ -14,4 +14,12 @@ class ReservationCompanyRepo(private val apiService: ApiService) {
     ) = flow {
         emit(apiService.getReservationMain(token, page, size, asCompany, timeLimit, status))
     }
+
+    suspend fun reservationOverview(
+        token: String,
+        userId: Int,
+        role: String
+    ) = flow {
+        emit(apiService.reservationOverview(token, userId = userId, role = role))
+    }
 }

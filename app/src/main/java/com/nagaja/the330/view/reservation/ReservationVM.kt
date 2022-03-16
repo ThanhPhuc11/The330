@@ -1,6 +1,7 @@
 package com.nagaja.the330.view.reservation
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.ReservationModel
@@ -18,6 +19,26 @@ class ReservationVM(
 
     var listData = mutableListOf<ReservationModel>()
     val stateListData = mutableStateListOf<ReservationModel>()
+
+    val total = mutableStateOf(0)
+    val reservation_completed = mutableStateOf(0)
+    val usage_completed = mutableStateOf(0)
+    val reservation_cancel = mutableStateOf(0)
+
+    fun reservationOverview(token: String, id: Int) {
+        viewModelScope.launch {
+            repo.reservationOverview(token, id, "general")
+                .onStart { callbackStart.value = Unit }
+                .onCompletion { }
+                .catch { handleError(it) }
+                .collect {
+                    total.value = it.total ?: 0
+                    reservation_completed.value = it.numCompleted ?: 0
+                    usage_completed.value = it.numUsageCompleted ?: 0
+                    reservation_cancel.value = it.numCancellation ?: 0
+                }
+        }
+    }
 
     fun getReservationMain(token: String) {
         viewModelScope.launch {

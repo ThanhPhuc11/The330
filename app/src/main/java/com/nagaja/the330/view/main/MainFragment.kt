@@ -37,6 +37,7 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.home.HomeScreen
 import com.nagaja.the330.view.mypage.MyPageScreen
+import com.nagaja.the330.view.mypagecompany.MyPageCompanyScreen
 import com.nagaja.the330.view.reservation.ReservationScreen
 import com.nagaja.the330.view.reservationcompany.ReservationCompanyScreen
 import kotlinx.coroutines.CoroutineScope
@@ -186,7 +187,13 @@ class MainFragment : BaseFragment() {
 
     @Composable
     fun MypageTab() {
-        accessToken?.let { MyPageScreen(it, viewController) }
+        accessToken?.let {
+            if (userDetail.value.userType == AppConstants.COMPANY) {
+                MyPageCompanyScreen(it, viewController)
+            } else {
+                MyPageScreen(it, viewController)
+            }
+        }
     }
 
     @Composable

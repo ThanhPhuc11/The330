@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.reservationcompany
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,12 +35,16 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import com.google.gson.Gson
 import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
 import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
+import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.data.dataStore
 import com.nagaja.the330.model.ReservationModel
+import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.AppDateUtils
@@ -51,6 +56,8 @@ import com.nagaja.the330.view.text14_62
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
@@ -78,6 +85,9 @@ fun ReservationCompanyScreen(accessToken: String, viewController: ViewController
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
+                    getUserDetailFromDataStore(context) {
+                        viewModel.reservationOverview(accessToken, it)
+                    }
                     viewModel.getReservationMain(accessToken)
                 }
                 else -> {}
@@ -201,7 +211,7 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
                 .height(52.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BoxStatus(Modifier.weight(1f), text = "총 예약\n30건") {
+            BoxStatus(Modifier.weight(1f), text = "총 예약\n${viewModel.total.value}건") {
 //                viewModel.status = null
 //                viewModel.getReservationMain(accessToken)
             }
@@ -213,7 +223,7 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "예약완료\n30건") {
+            BoxStatus(Modifier.weight(1f), text = "예약완료\n${viewModel.reservation_completed.value}건") {
 //                viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
 //                viewModel.getReservationMain(accessToken)
             }
@@ -225,7 +235,7 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "이용완료\n30건") {
+            BoxStatus(Modifier.weight(1f), text = "이용완료\n${viewModel.usage_completed.value}건") {
 //                viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
 //                viewModel.getReservationMain(accessToken)
             }
@@ -237,7 +247,7 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "예약취소\n30건") {
+            BoxStatus(Modifier.weight(1f), text = "예약취소\n${viewModel.reservation_cancel.value}건") {
 //                viewModel.status = AppConstants.Reservation.RESERVATION_CANCELED
 //                viewModel.getReservationMain(accessToken)
             }
@@ -407,7 +417,7 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
                 .height(52.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BoxStatus(Modifier.weight(1f), text = "총 예약\n30건") {
+            BoxStatus(Modifier.weight(1f), text = "총 예약\n${viewModel.total.value}건") {
 //                viewModel.status = null
 //                viewModel.getReservationMain(accessToken)
             }
@@ -419,7 +429,7 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "예약완료\n30건") {
+            BoxStatus(Modifier.weight(1f), text = "예약완료\n${viewModel.reservation_completed.value}건") {
 //                viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
 //                viewModel.getReservationMain(accessToken)
             }
@@ -431,7 +441,7 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "이용완료\n30건") {
+            BoxStatus(Modifier.weight(1f), text = "이용완료\n${viewModel.usage_completed.value}건") {
 //                viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
 //                viewModel.getReservationMain(accessToken)
             }
@@ -443,7 +453,7 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "예약취소\n30건") {
+            BoxStatus(Modifier.weight(1f), text = "예약취소\n${viewModel.reservation_cancel.value}건") {
 //                viewModel.status = AppConstants.Reservation.RESERVATION_CANCELED
 //                viewModel.getReservationMain(accessToken)
             }
@@ -536,6 +546,19 @@ private fun ItemReservationTab2(index: Int, obj: ReservationModel) {
                 ) {
                     Text("예약취소", color = ColorUtils.white_FFFFFF, fontSize = 12.sp)
                 }
+            }
+        }
+    }
+}
+
+private fun getUserDetailFromDataStore(context: Context, onClick: (Int) -> Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        context.dataStore.data.map { get ->
+            get[DataStorePref.USER_DETAIL] ?: ""
+        }.collect {
+            val userDetail = Gson().fromJson(it, UserDetail::class.java)
+            userDetail?.id?.let { id ->
+                onClick(id)
             }
         }
     }

@@ -40,10 +40,14 @@ import com.nagaja.the330.view.login.LoginRepository
 import com.nagaja.the330.view.login.LoginViewModel
 import com.nagaja.the330.view.mypage.MyPageScreenRepo
 import com.nagaja.the330.view.mypage.MyPageScreenVM
+import com.nagaja.the330.view.mypagecompany.MyPageCompanyScreenRepo
+import com.nagaja.the330.view.mypagecompany.MyPageCompanyScreenVM
 import com.nagaja.the330.view.notification.NotificationRepo
 import com.nagaja.the330.view.notification.NotificationVM
 import com.nagaja.the330.view.othersetting.OtherSettingRepo
 import com.nagaja.the330.view.othersetting.OtherSettingVM
+import com.nagaja.the330.view.point.PointRepo
+import com.nagaja.the330.view.point.PointVM
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchRepo
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchVM
 import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailRepo
@@ -54,6 +58,10 @@ import com.nagaja.the330.view.reportmissing.ReportMissingRepo
 import com.nagaja.the330.view.reportmissing.ReportMissingVM
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailRepo
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailVM
+import com.nagaja.the330.view.reportmissingdetailmypage.ReportMissingDetailMyPageRepo
+import com.nagaja.the330.view.reportmissingdetailmypage.ReportMissingDetailMyPageVM
+import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageRepo
+import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageVM
 import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisRepo
 import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisVM
 import com.nagaja.the330.view.reservation.ReservationRepo
@@ -103,6 +111,8 @@ class ViewModelFactory(apiService: ApiService) :
             HomeScreenVM(HomeScreenRepo(apiService))
         creators[MyPageScreenVM::class.java] =
             MyPageScreenVM(MyPageScreenRepo(apiService))
+        creators[MyPageCompanyScreenVM::class.java] =
+            MyPageCompanyScreenVM(MyPageCompanyScreenRepo(apiService))
         creators[EditProfileVM::class.java] =
             EditProfileVM(EditProfileRepo(apiService))
         creators[FavCompanyVM::class.java] =
@@ -117,6 +127,8 @@ class ViewModelFactory(apiService: ApiService) :
             SecondHandRegisVM(SecondHandRegisRepo(apiService))
         creators[SecondHandDetailVM::class.java] =
             SecondHandDetailVM(SecondHandDetailRepo(apiService))
+        creators[PointVM::class.java] =
+            PointVM(PointRepo(apiService))
         creators[OtherSettingVM::class.java] =
             OtherSettingVM(OtherSettingRepo(apiService))
         creators[ApplyCompanyVM::class.java] =
@@ -137,8 +149,12 @@ class ViewModelFactory(apiService: ApiService) :
             ReportMissingVM(ReportMissingRepo(apiService))
         creators[ReportMissingDetailVM::class.java] =
             ReportMissingDetailVM(ReportMissingDetailRepo(apiService))
+        creators[ReportMissingDetailMyPageVM::class.java] =
+            ReportMissingDetailMyPageVM(ReportMissingDetailMyPageRepo(apiService))
         creators[ReportMissingRegisVM::class.java] =
             ReportMissingRegisVM(ReportMissingRegisRepo(apiService))
+        creators[ReportMissingMyPageVM::class.java] =
+            ReportMissingMyPageVM(ReportMissingMyPageRepo(apiService))
         creators[RecruitmentJobSearchVM::class.java] =
             RecruitmentJobSearchVM(RecruitmentJobSearchRepo(apiService))
         creators[RecruitJobsDetailVM::class.java] =
