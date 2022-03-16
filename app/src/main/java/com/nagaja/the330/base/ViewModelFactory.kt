@@ -7,6 +7,8 @@ import com.nagaja.the330.view.applycompany.ApplyCompanyRepo
 import com.nagaja.the330.view.applycompany.ApplyCompanyVM
 import com.nagaja.the330.view.applycompanyproduct.ProductCompanyRepo
 import com.nagaja.the330.view.applycompanyproduct.ProductCompanyVM
+import com.nagaja.the330.view.chatlist.ChatListRepo
+import com.nagaja.the330.view.chatlist.ChatListVM
 import com.nagaja.the330.view.companydetail.CompanyDetailRepo
 import com.nagaja.the330.view.companydetail.CompanyDetailVM
 import com.nagaja.the330.view.companylist.CompanyListRepo
@@ -168,6 +170,8 @@ class ViewModelFactory(apiService: ApiService) :
             CompanyDetailVM(CompanyDetailRepo(apiService))
         creators[FQAViewModel::class.java] =
             FQAViewModel(FQARepo(apiService))
+        creators[ChatListVM::class.java] =
+            ChatListVM(ChatListRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

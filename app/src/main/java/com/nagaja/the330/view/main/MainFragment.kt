@@ -35,6 +35,7 @@ import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.chatlist.ChatListScreen
 import com.nagaja.the330.view.home.HomeScreen
 import com.nagaja.the330.view.mypage.MyPageScreen
 import com.nagaja.the330.view.mypagecompany.MyPageCompanyScreen
@@ -161,7 +162,7 @@ class MainFragment : BaseFragment() {
                 ReservationTab()
             }
             composable(NavigationItem.Chat.route) {
-                Page2()
+                ChatTab()
             }
             composable(NavigationItem.MyPage.route) {
                 MypageTab()
@@ -183,6 +184,11 @@ class MainFragment : BaseFragment() {
                 ReservationScreen(it, viewController)
             }
         }
+    }
+
+    @Composable
+    fun ChatTab() {
+        accessToken?.let { ChatListScreen(it, viewController, userDetail.value) }
     }
 
     @Composable
