@@ -2,9 +2,8 @@ package com.nagaja.the330.model
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.io.Serializable
 
-class FQAModel : Serializable {
+class NotificationModel {
     @SerializedName("answer")
     @Expose
     var answer: String? = null
@@ -32,4 +31,8 @@ class FQAModel : Serializable {
     @SerializedName("viewCount")
     @Expose
     var viewCount: Int? = null
+
+    @SerializedName("image")
+    @Expose
+    var image: String? = null
 }

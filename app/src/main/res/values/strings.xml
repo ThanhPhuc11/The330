@@ -291,7 +291,12 @@
     <string name="make_a_phone_call">전화걸기</string>
 
     <!--FQA-->
-    <string name="title_fqa">FQA</string>
+    <string name="title_faq">FAQ</string>
+
+    <string name="title_on_going_events">진행중인 이벤트</string>
+
+    <!--Notification-->
+    <string name="title_notification">공지사항</string>
 
     <!--Point-->
     <string name="point_status">포인트 현황</string>
@@ -303,5 +308,6 @@
     <string name="usage_date">사용 일시</string>
     <string name="usage_reason">사용 사유</string>
     <string name="usage_point">사용 포인트</string>
+
 
 </resources>
