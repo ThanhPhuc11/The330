@@ -31,9 +31,11 @@ import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.reservationregis.ReservationRegisFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,21 +71,35 @@ class ChatDetailFragment : BaseFragment() {
 
             //TODO: Content Mess
             val listMess = remember {
-                mutableStateListOf<KeyValueModel>().apply {
-                    add(KeyValueModel())
-                    add(KeyValueModel())
-                    add(KeyValueModel())
-                }
+                mutableStateListOf<KeyValueModel>()
             }
-            LazyColumn(
-                state = rememberLazyListState(),
-                reverseLayout = true,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp)
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
             ) {
-                itemsIndexed(listMess) { index, obj ->
-                    ItemCapture()
+                if (listMess.isEmpty()) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Image(painterResource(R.drawable.ic_empty_mess_detail), "")
+                        Text(
+                            "대화를 시작해보세요.",
+                            color = ColorUtils.gray_9B9A99,
+                            fontSize = 13.sp,
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
+                    }
+                }
+                LazyColumn(
+                    state = rememberLazyListState(),
+                    reverseLayout = true,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    itemsIndexed(listMess) { index, obj ->
+                        ItemCapture()
+                    }
                 }
             }
 
@@ -91,6 +107,8 @@ class ChatDetailFragment : BaseFragment() {
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(5000)
                     listMess.add(KeyValueModel())
+                    delay(5000)
+                    listMess.removeAt(0)
                 }
             }
 
@@ -104,6 +122,10 @@ class ChatDetailFragment : BaseFragment() {
                     ColorUtils.blue_2177E4
                 ) {
                     showMessDEBUG("make reservation")
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_RESERVATION_REGIS,
+                        ReservationRegisFragment.newInstance(48)
+                    )
                 }
 
                 //TODO: chatting end

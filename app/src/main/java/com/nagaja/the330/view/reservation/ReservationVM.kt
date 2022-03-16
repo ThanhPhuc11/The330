@@ -63,4 +63,32 @@ class ReservationVM(
                 }
         }
     }
+
+    fun cancelReservation(token: String, id: Int) {
+        viewModelScope.launch {
+            repo.editReservation(token, mutableListOf(ReservationModel().apply {
+                this.id = id
+                status = "RESERVATION_CANCELED"
+            }))
+                .onStart {}
+                .onCompletion {}
+                .catch { handleError(it) }
+                .collect {
+                    if (it.raw().isSuccessful && it.raw().code == 200) {
+                        stateListData.forEach { obj->
+                            if (obj.id == id) {
+                                stateListData.remove(obj)
+                            }
+                        }
+                    } else {
+                        handleError2(it)
+                    }
+                }
+        }
+    }
+
+    private fun <T> updateItem(index: Int, newObj: T, list: MutableList<T>) {
+        list.removeAt(index)
+        list.add(index, newObj)
+    }
 }

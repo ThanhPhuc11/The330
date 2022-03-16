@@ -1,5 +1,7 @@
 package com.nagaja.the330.view.reservationregis
 
+import android.content.Context
+import android.os.Bundle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -14,6 +16,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -26,35 +29,109 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.gson.Gson
+import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.data.DataStorePref
+import com.nagaja.the330.data.dataStore
 import com.nagaja.the330.model.TimeReservation
+import com.nagaja.the330.model.UserDetail
+import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
-import com.nagaja.the330.view.CalendarUI
-import com.nagaja.the330.view.Header
-import com.nagaja.the330.view.LayoutTheme330
-import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.*
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class ReservationRegisFragment : BaseFragment() {
     private lateinit var viewModel: ReservationRegisVM
     private var onClickChoose: ((Int) -> Unit)? = null
 
     companion object {
-        fun newInstance() = ReservationRegisFragment()
+        fun newInstance(companyId: Int) = ReservationRegisFragment().apply {
+            arguments = Bundle().apply {
+                putInt(AppConstants.EXTRA_KEY1, companyId)
+            }
+        }
     }
 
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[ReservationRegisVM::class.java]
         viewController = (activity as MainActivity).viewController
+
+        viewModel.callbackStart.observe(viewLifecycleOwner) {
+            showLoading()
+        }
+        viewModel.callbackSuccess.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.callbackFail.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.showMessCallback.observe(viewLifecycleOwner) {
+            showMess(it)
+        }
     }
 
     @Preview
     @Composable
     override fun UIData() {
+        val owner = LocalLifecycleOwner.current
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+                        getUserDetailFromDataStore(requireContext())
+                        viewModel.id = requireArguments().getInt(AppConstants.EXTRA_KEY1)
+                        viewModel.getCompanyDetail(accessToken!!)
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
+        val showDate = remember { mutableStateOf(false) }
+        val stateDate = remember { mutableStateOf("예약일을 선택해주세요.") }
+
+        val showTime = remember { mutableStateOf(false) }
+        val stateTime = remember { mutableStateOf("예약 시간을 선택해주세요.") }
+
+        val stateDialogSuccess = remember {
+            mutableStateOf(false)
+        }
+        if (stateDialogSuccess.value)
+            Dialog2Button(
+                state = stateDialogSuccess,
+                title = "예약 완료",
+                content = "${stateDate.value} ${stateTime.value} \n" +
+                        "${viewModel.stateEdtNumber.value.text}명 \n" +
+                        "예약 내역을 확인하시겠습니까?",
+                leftText = "아니오",
+                rightText = "예",
+                onClick = {
+                    if (it) {
+//                    accessToken?.let { viewModel.makeReservation(accessToken!!) }
+                    }
+                }
+            )
+        LaunchedEffect(Unit) {
+            if (viewModel.callbackMakeReservationSuccess.value) {
+                stateDialogSuccess.value = true
+            }
+        }
+
         LayoutTheme330 {
             Header(stringResource(R.string.make_reservation)) {
                 viewController?.popFragment()
@@ -71,7 +148,11 @@ class ReservationRegisFragment : BaseFragment() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     GlideImage(
-                        imageModel = "",
+                        imageModel = "${BuildConfig.BASE_S3}${
+                            viewModel.companyDetail.value.images?.getOrNull(
+                                0
+                            )?.url
+                        }",
                         contentDescription = "",
                         placeHolder = painterResource(R.drawable.ic_default_nagaja),
                         error = painterResource(R.drawable.ic_default_nagaja),
@@ -84,7 +165,7 @@ class ReservationRegisFragment : BaseFragment() {
                         modifier = Modifier.size(80.dp)
                     )
                     Text(
-                        "ten cty",
+                        "${viewModel.companyDetail.value.name?.getOrNull(0)?.name}",
                         color = ColorUtils.gray_222222,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(start = 13.dp)
@@ -116,9 +197,17 @@ class ReservationRegisFragment : BaseFragment() {
                     Divider(color = ColorUtils.gray_E1E1E1)
 
                     //TODO: SDT
+                    LaunchedEffect(viewModel.userDetail.value) {
+                        viewModel.stateEdtPhoneNumber.value =
+                            TextFieldValue(viewModel.userDetail.value.phone ?: "")
+                    }
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Text("전화번호", style = text14_222, modifier = Modifier.weight(1f))
-                        TextFieldCustom(hint = "sdt", modifier = Modifier.weight(2.5f))
+                        TextFieldCustom(
+                            hint = "",
+                            modifier = Modifier.weight(2.5f),
+                            textStateId = viewModel.stateEdtPhoneNumber
+                        )
                     }
                     Divider(color = ColorUtils.gray_E1E1E1)
 
@@ -135,8 +224,6 @@ class ReservationRegisFragment : BaseFragment() {
                     Divider(color = ColorUtils.gray_E1E1E1)
 
                     //TODO: Date
-                    val showDate = remember { mutableStateOf(false) }
-                    val stateDate = remember { mutableStateOf("예약일을 선택해주세요.") }
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -166,8 +253,6 @@ class ReservationRegisFragment : BaseFragment() {
                     Divider(color = ColorUtils.gray_E1E1E1)
 
                     //TODO: Time
-                    val showTime = remember { mutableStateOf(false) }
-                    val stateTime = remember { mutableStateOf("예약 시간을 선택해주세요.") }
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -240,13 +325,33 @@ class ReservationRegisFragment : BaseFragment() {
                     }
                 }
             }
+            val stateDialogConfirm = remember {
+                mutableStateOf(false)
+            }
+            if (stateDialogConfirm.value) {
+                Dialog2Button(
+                    state = stateDialogConfirm,
+                    title = "예약 신청",
+                    content = "예약자명 : ${viewModel.stateEdtBooker.value.text}\n" +
+                            "전화번호: ${viewModel.stateEdtPhoneNumber.value.text}\n" +
+                            "${stateDate.value} ${stateTime.value} \n" +
+                            "${viewModel.stateEdtNumber.value.text}명 예약을 진행하시겠습니까?",
+                    leftText = "취소하기",
+                    rightText = "예약하기",
+                    onClick = {
+                        if (it) {
+                            accessToken?.let { viewModel.makeReservation(accessToken!!) }
+                        }
+                    }
+                )
+            }
             Box(
                 Modifier
                     .fillMaxWidth()
                     .height(52.dp)
                     .background(ColorUtils.blue_2177E4)
                     .noRippleClickable {
-                        accessToken?.let { viewModel.makeReservation(it) }
+                        stateDialogConfirm.value = true
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -420,4 +525,15 @@ class ReservationRegisFragment : BaseFragment() {
         fontSize = 14.sp,
         textAlign = TextAlign.Start
     )
+
+    private fun getUserDetailFromDataStore(context: Context) {
+        CoroutineScope(Dispatchers.IO).launch {
+            context.dataStore.data.map { get ->
+                get[DataStorePref.USER_DETAIL] ?: ""
+            }.collect {
+                val userDetail = Gson().fromJson(it, UserDetail::class.java)
+                userDetail?.let { viewModel.userDetail.value = userDetail }
+            }
+        }
+    }
 }

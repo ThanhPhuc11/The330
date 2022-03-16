@@ -218,7 +218,9 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
         val listData = viewModel.stateListData
         LazyColumn(state = rememberLazyListState()) {
             itemsIndexed(listData) { index, obj ->
-                ItemReservation(index, obj)
+                ItemReservation(index, obj) {
+                    viewModel.cancelReservation(accessToken, it)
+                }
                 Divider(color = ColorUtils.gray_E1E1E1)
             }
         }
@@ -245,7 +247,7 @@ private fun BoxStatus(modifier: Modifier = Modifier, text: String, onClick: () -
 }
 
 @Composable
-private fun ItemReservation(index: Int, obj: ReservationModel) {
+private fun ItemReservation(index: Int, obj: ReservationModel, onClickCancel: (Int) -> Unit) {
     Row(
         Modifier
             .background(ColorUtils.white_FFFFFF)
@@ -290,7 +292,11 @@ private fun ItemReservation(index: Int, obj: ReservationModel) {
                     Modifier
                         .width(76.dp)
                         .height(32.dp)
-                        .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp)),
+                        .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp))
+                        .noRippleClickable {
+                            if (obj.status == "RESERVATION_COMPLETED")
+                                onClickCancel.invoke(obj.id!!)
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Text("예약취소", color = ColorUtils.white_FFFFFF, fontSize = 12.sp)
