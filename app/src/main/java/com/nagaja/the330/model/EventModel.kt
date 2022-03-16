@@ -4,9 +4,9 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 class EventModel {
-    @SerializedName("answer")
+    @SerializedName("content")
     @Expose
-    var answer: String? = null
+    var content: String? = null
 
     @SerializedName("createdOn")
     @Expose
@@ -20,9 +20,9 @@ class EventModel {
     @Expose
     var priority: Int? = null
 
-    @SerializedName("question")
+    @SerializedName("title")
     @Expose
-    var question: String? = null
+    var title: String? = null
 
     @SerializedName("status")
     @Expose

@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ExpandLess
@@ -14,23 +15,26 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.model.EventModel
 import com.nagaja.the330.ui.theme.The330Theme
 import com.nagaja.the330.ui.theme.textBold18
 import com.nagaja.the330.ui.theme.textRegular12
+import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ColorUtils.gray_00000D
 import com.nagaja.the330.utils.ColorUtils.white_FFFFFF
 import com.nagaja.the330.view.Header
+import com.skydoves.landscapist.glide.GlideImage
 
 class OnGoingEventsFragment : BaseFragment() {
     private lateinit var viewModel: EventViewModel
@@ -65,35 +69,46 @@ class OnGoingEventsFragment : BaseFragment() {
         }
 
         The330Theme{
-            Header(stringResource(R.string.title_notification)) {
-                viewController?.popFragment()
-            }
-            Row(
-                Modifier.background(white_FFFFFF)
-            ){
-                EventList()
+            Column {
+                Header(stringResource(R.string.title_notification)) {
+                    viewController?.popFragment()
+                }
+                Box(
+                    Modifier.background(white_FFFFFF)
+                ){
+                    val eventList: List<EventModel> = List(1000) {
+                        EventModel().apply {
+                            id = it
+                            title = "나가자 할로윈 특가! $it"
+                            content = ("이벤트 게시물 내용이 작성되는 페이지 입니다.\n").repeat(4)
+                            viewCount = 100
+                            createdOn = "2021.10.18"
+                        }
+                    }
+                    EventList(list = eventList)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun EventList(names: List<String> = List(1000) { "item $it" } ) {
-    LazyColumn{
-        items(items = names) { name ->
-            Event(name = name)
+private fun EventList(list: List<EventModel>) {
+    LazyColumn(state = rememberLazyListState()){
+        items(items = list) { item ->
+            Event(event = item)
         }
     }
 }
 
 @Composable
-private fun Event(name: String) {
+private fun Event(event: EventModel) {
     Column(
         modifier = Modifier
             .background(white_FFFFFF)
             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
     ) {
-        CardContent(name)
+        CardContent(event)
         Divider(
             Modifier
                 .height(1.dp)
@@ -103,7 +118,7 @@ private fun Event(name: String) {
 }
 
 @Composable
-private fun CardContent(name: String) {
+private fun CardContent(event: EventModel) {
     var expanded by remember { mutableStateOf(false) }
 
     Row(
@@ -119,30 +134,32 @@ private fun CardContent(name: String) {
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = "나가자 할로윈 특가!",
+                text = event.title as String,
                 style = textBold18
             )
             Row(
                 Modifier.padding(top = 5.dp, bottom = 16.dp)
             ) {
                 Text(
-                    text = "2021. 10. 18",
+                    text = event.createdOn as String,
                     style = textRegular12
                 )
                 Text(
-                    text = ".",
+                    text = "·",
                     style = textRegular12
                 )
                 Text(
-                    text = "조회수 270",
+                    text = event.viewCount.toString(),
                     style = textRegular12
                 )
             }
             if (expanded) {
-                Text(
-                    text = ("이벤트 게시물 내용이 작성되는 페이지 입니다.\n").repeat(4),
-                    Modifier.padding(bottom = 16.dp)
-                )
+                Column {
+                    Text(
+                        text = event.content as String,
+                        Modifier.padding(bottom = 16.dp)
+                    )
+                }
             }
         }
         IconButton(onClick = { expanded = !expanded }) {
@@ -156,13 +173,5 @@ private fun CardContent(name: String) {
 
             )
         }
-    }
-}
-
-@Preview(showBackground = true, widthDp = 320)
-@Composable
-fun DefaultPreview() {
-    The330Theme {
-        EventList()
     }
 }
