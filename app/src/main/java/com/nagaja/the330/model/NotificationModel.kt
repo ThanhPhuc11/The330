@@ -32,4 +32,7 @@ class NotificationModel {
     @Expose
     var viewCount: Int? = null
 
+    @SerializedName("image")
+    @Expose
+    var image: String? = null
 }
