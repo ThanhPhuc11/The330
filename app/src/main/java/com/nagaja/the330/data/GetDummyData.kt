@@ -1,8 +1,13 @@
 package com.nagaja.the330.data
 
 import android.content.Context
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nagaja.the330.R
 import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.NotificationModel
 import com.nagaja.the330.utils.AppConstants
 
 object GetDummyData {
@@ -156,5 +161,35 @@ object GetDummyData {
             add(KeyValueModel("PICKUP_DROP", context.getString(R.string.pickup_dropup_available)))
             add(KeyValueModel("NAGAJA_AUTHEN", context.getString(R.string.nagaja_authentication)))
         }
+    }
+
+    fun getNotificationDetail(): MutableState<NotificationModel> {
+        return mutableStateOf(NotificationModel().apply {
+            id = 7
+            question =  "Dummy 군인은 현역을 "
+            answer = "<p>{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }{공지사항 게시글 전체 내용이 출력되는 칸입니다. }</p>".repeat(10)
+            status = "ACTIVATED"
+            priority = 7
+            viewCount = 10
+            createdOn ="2021. 10. 18"
+        })
+    }
+
+    fun getNotificationList(): SnapshotStateList<NotificationModel> {
+        val notices = mutableStateListOf<NotificationModel>()
+        val list = mutableListOf<NotificationModel>()
+        for ( i in 0..100) {
+            list.add(NotificationModel().apply {
+                id = i
+                question = "Dummy 군인은 현역을 $i"
+                answer = "<p>군인은 현역을 면한 후가 아니면 국무총리로 임명될 수 없다. 대통령은 즉시 이를 공포하여야 한다. 민주평화통일자문회의의 조직·직무범위 기타 필요한 사항은 법률로 정한다. 국회의원의 수는 법률로 정하되.</p>"
+                status = "ACTIVATED"
+                priority = 7
+                viewCount = 100
+                createdOn = "2022.03.16"
+            })
+        }
+        notices.addAll(list)
+        return  notices
     }
 }

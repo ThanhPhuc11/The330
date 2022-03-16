@@ -15,13 +15,11 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
@@ -70,7 +68,7 @@ class OnGoingEventsFragment : BaseFragment() {
 
         The330Theme{
             Column {
-                Header(stringResource(R.string.title_notification)) {
+                Header(stringResource(R.string.title_on_going_events)) {
                     viewController?.popFragment()
                 }
                 Box(
