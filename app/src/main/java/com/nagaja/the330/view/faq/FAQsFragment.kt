@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.base.BaseFragment
-import com.nagaja.the330.model.FQAModel
+import com.nagaja.the330.model.FAQModel
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
@@ -87,7 +87,7 @@ class FAQsFragment: BaseFragment() {
     }
 
     @Composable
-    private fun ItemFQA(item: FQAModel) {
+    private fun ItemFQA(item: FAQModel) {
         Row(
             Modifier
                 .padding(start = 16.dp, end = 16.dp)
@@ -118,7 +118,7 @@ class FAQsFragment: BaseFragment() {
                         style = textRegular12
                     )
                     Text(
-                        text = ".",
+                        text = "·",
                         style = textRegular12
                     )
                     Text(

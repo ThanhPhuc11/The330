@@ -324,11 +324,11 @@ interface ApiService {
     @GET("faqs")
     suspend fun getFQAs(
         @Header("Authorization") token: String
-    ): MutableList<FQAModel>
+    ): MutableList<FAQModel>
 
     @GET("faqs/detail")
     suspend fun getFQADetail(
         @Header("Authorization") token: String,
         @Query("id") id: Int
-    ): FQAModel
+    ): FAQModel
 }
