@@ -35,6 +35,7 @@ import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
 import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.dataStore
+import com.nagaja.the330.model.CompanyUsageModel
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
@@ -50,6 +51,7 @@ import com.nagaja.the330.view.point.PointFragment
 import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageFragment
 import com.nagaja.the330.view.secondhandmypage.SecondHandMypageFragment
 import com.nagaja.the330.view.text14_222
+import com.nagaja.the330.view.usage.CompanyUsageFragment
 import com.nagaja.the330.view.usage.UsageFragment
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.glide.GlideImage
@@ -82,7 +84,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
     val clickUsage: () -> Unit = {
         viewController?.pushFragment(
             ScreenId.SCREEN_USAGE,
-            UsageFragment.newInstance()
+            CompanyUsageFragment.newInstance()
         )
     }
     val clickSecondHandPurchase: () -> Unit = {
