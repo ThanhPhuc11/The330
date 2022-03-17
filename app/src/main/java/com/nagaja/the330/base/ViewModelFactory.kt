@@ -2,7 +2,6 @@ package com.nagaja.the330.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.nagaja.the330.model.EventModel
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.view.applycompany.ApplyCompanyRepo
 import com.nagaja.the330.view.applycompany.ApplyCompanyVM
@@ -12,6 +11,8 @@ import com.nagaja.the330.view.chatdetail.ChatDetailRepo
 import com.nagaja.the330.view.chatdetail.ChatDetailVM
 import com.nagaja.the330.view.chatlist.ChatListRepo
 import com.nagaja.the330.view.chatlist.ChatListVM
+import com.nagaja.the330.view.comment.CommentRepo
+import com.nagaja.the330.view.comment.CommentVM
 import com.nagaja.the330.view.companydetail.CompanyDetailRepo
 import com.nagaja.the330.view.companydetail.CompanyDetailVM
 import com.nagaja.the330.view.companylist.CompanyListRepo
@@ -20,12 +21,12 @@ import com.nagaja.the330.view.edit_profile.EditProfileRepo
 import com.nagaja.the330.view.edit_profile.EditProfileVM
 import com.nagaja.the330.view.event.EventRepo
 import com.nagaja.the330.view.event.EventViewModel
+import com.nagaja.the330.view.faq.FAQRepo
+import com.nagaja.the330.view.faq.FAQViewModel
 import com.nagaja.the330.view.favoritecompany.FavCompanyRepo
 import com.nagaja.the330.view.favoritecompany.FavCompanyVM
 import com.nagaja.the330.view.findId.FindIdRepo
 import com.nagaja.the330.view.findId.FindIdVM
-import com.nagaja.the330.view.faq.FAQRepo
-import com.nagaja.the330.view.faq.FAQViewModel
 import com.nagaja.the330.view.freenoticeboard.FreeNoticeRepo
 import com.nagaja.the330.view.freenoticeboard.FreeNoticeVM
 import com.nagaja.the330.view.freenoticedetail.FreeNoticeDetailRepo
@@ -189,6 +190,8 @@ class ViewModelFactory(apiService: ApiService) :
             ChatListVM(ChatListRepo(apiService))
         creators[ChatDetailVM::class.java] =
             ChatDetailVM(ChatDetailRepo(apiService))
+        creators[CommentVM::class.java] =
+            CommentVM(CommentRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

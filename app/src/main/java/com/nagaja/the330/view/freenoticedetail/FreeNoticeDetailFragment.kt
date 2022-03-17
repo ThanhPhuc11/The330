@@ -37,6 +37,8 @@ import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.comment.CommentInput
+import com.nagaja.the330.view.comment.CommentList
 import com.skydoves.landscapist.glide.GlideImage
 
 class FreeNoticeDetailFragment : BaseFragment() {
@@ -285,9 +287,9 @@ class FreeNoticeDetailFragment : BaseFragment() {
                     }
                 }
 
-                CommentList(viewModel.freeNoticeDetailModel.value.commentCount)
+//                CommentList(viewModel.freeNoticeDetailModel.value.commentCount)
             }
-            CommentInput()
+            CommentInput{}
         }
     }
 }

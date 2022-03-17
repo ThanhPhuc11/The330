@@ -34,6 +34,8 @@ import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.comment.CommentInput
+import com.nagaja.the330.view.comment.CommentList
 import com.skydoves.landscapist.glide.GlideImage
 
 class ReportMissingDetailFragment : BaseFragment() {
@@ -221,9 +223,9 @@ class ReportMissingDetailFragment : BaseFragment() {
                     )
                 }
 
-                CommentList(viewModel.reportMissingModel.value.commentCount)
+//                CommentList(viewModel.reportMissingModel.value.commentCount)
             }
-            CommentInput()
+            CommentInput{}
         }
     }
 }

@@ -21,9 +21,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import com.google.gson.Gson
 import com.nagaja.the330.BuildConfig
+import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.DataStorePref.Companion.AUTH_TOKEN
 import com.nagaja.the330.data.dataStore
 import com.nagaja.the330.model.AuthTokenModel
+import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.CommonUtils
@@ -41,6 +43,7 @@ import java.io.FileOutputStream
 abstract class BaseFragment : Fragment() {
     private var mProgressDialog: ProgressDialog? = null
     var accessToken: String? = null
+    var userDetailBase: UserDetail? = null
 
     private var mActivity: BaseActivity? = null
     var viewController: ViewController? = null
@@ -57,6 +60,7 @@ abstract class BaseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getAccessToken()
+        getUserDetailFromDataStore()
     }
 
     override fun onCreateView(
@@ -141,6 +145,17 @@ abstract class BaseFragment : Fragment() {
             return ""
         }
         return "Bearer $token"
+    }
+
+    private fun getUserDetailFromDataStore() {
+        CoroutineScope(Dispatchers.IO).launch {
+            requireContext().dataStore.data.map { get ->
+                get[DataStorePref.USER_DETAIL] ?: ""
+            }.collect {
+                val userDetail = Gson().fromJson(it, UserDetail::class.java)
+                userDetail?.let { it1 -> this@BaseFragment.userDetailBase = it1 }
+            }
+        }
     }
 
     open fun checkPermissBeforeAttachFile(context: Context, content: () -> Unit) {
