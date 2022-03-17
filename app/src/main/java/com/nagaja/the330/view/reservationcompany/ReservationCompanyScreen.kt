@@ -1,6 +1,7 @@
 package com.nagaja.the330.view.reservationcompany
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -81,6 +82,7 @@ fun ReservationCompanyScreen(accessToken: String, viewController: ViewController
         )
     )[ReservationCompanyVM::class.java]
 
+    viewModel.accessToken = accessToken
     DisposableEffect(Unit) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
@@ -88,7 +90,19 @@ fun ReservationCompanyScreen(accessToken: String, viewController: ViewController
                     getUserDetailFromDataStore(context) {
                         viewModel.reservationOverview(accessToken, it)
                     }
-                    viewModel.getReservationMain(accessToken)
+
+//                    viewModel.callbackStart.observe(owner) {
+//                        showLoading()
+//                    }
+//                    viewModel.callbackSuccess.observe(viewLifecycleOwner) {
+//                        hideLoading()
+//                    }
+//                    viewModel.callbackFail.observe(viewLifecycleOwner) {
+//                        hideLoading()
+//                    }
+                    viewModel.showMessCallback.observe(owner) {
+                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                    }
                 }
                 else -> {}
             }
@@ -203,6 +217,24 @@ private fun SetupPager(pagerState: PagerState, viewModel: ReservationCompanyVM) 
 @Composable
 private fun Tab1(viewModel: ReservationCompanyVM) {
     val context = LocalContext.current
+    val owner = LocalLifecycleOwner.current
+    DisposableEffect(Unit) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+//                    getUserDetailFromDataStore(context) {
+//                        viewModel.reservationOverview(accessToken, it)
+//                    }
+                    viewModel.getReservationCompany(viewModel.accessToken)
+                }
+                else -> {}
+            }
+        }
+        owner.lifecycle.addObserver(observer)
+        onDispose {
+            owner.lifecycle.removeObserver(observer)
+        }
+    }
     Column {
         Divider(color = ColorUtils.gray_E1E1E1)
         Row(
@@ -223,7 +255,10 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "예약완료\n${viewModel.reservation_completed.value}건") {
+            BoxStatus(
+                Modifier.weight(1f),
+                text = "예약완료\n${viewModel.reservation_completed.value}건"
+            ) {
 //                viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
 //                viewModel.getReservationMain(accessToken)
             }
@@ -317,7 +352,8 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
                             onClick = {
                                 itemSelected.value = selectionOption
                                 expanded = false
-//                                onClickSort?.invoke(selectionOption.id ?: "null")
+                                viewModel.timeLimit = selectionOption.id!!
+                                viewModel.getReservationCompany(viewModel.accessToken)
                             }
                         ) {
                             Text(text = selectionOption.name!!)
@@ -326,7 +362,7 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
                 }
             }
         }
-        val listData = viewModel.stateListData
+        val listData = viewModel.stateListDataCompany
         LazyColumn(state = rememberLazyListState()) {
             itemsIndexed(listData) { index, obj ->
                 ItemReservationTab1(index, obj)
@@ -409,6 +445,26 @@ private fun ButtonStatus(text: String, textColor: Color, background: Color, bord
 
 @Composable
 private fun Tab2(viewModel: ReservationCompanyVM) {
+    val context = LocalContext.current
+    val owner = LocalLifecycleOwner.current
+    DisposableEffect(Unit) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+//                    getUserDetailFromDataStore(context) {
+//                        viewModel.reservationOverview(accessToken, it)
+//                    }
+                    viewModel.getReservationGeneral(viewModel.accessToken)
+                }
+                else -> {}
+            }
+        }
+        owner.lifecycle.addObserver(observer)
+        onDispose {
+            owner.lifecycle.removeObserver(observer)
+        }
+    }
+
     Column {
         Divider(color = ColorUtils.gray_E1E1E1)
         Row(
@@ -429,7 +485,10 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
                     .background(ColorUtils.gray_E1E1E1)
             )
 
-            BoxStatus(Modifier.weight(1f), text = "예약완료\n${viewModel.reservation_completed.value}건") {
+            BoxStatus(
+                Modifier.weight(1f),
+                text = "예약완료\n${viewModel.reservation_completed.value}건"
+            ) {
 //                viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
 //                viewModel.getReservationMain(accessToken)
             }
@@ -466,7 +525,67 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
             )
         }
         Divider(color = ColorUtils.gray_E1E1E1)
-        val listData = viewModel.stateListData
+
+        Row(
+            Modifier
+                .padding(top = 16.dp)
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Spacer(Modifier.weight(1f))
+
+            val listSort = remember {
+                GetDummyData.getSortReservationRoleCompany(context)
+            }
+            var expanded by remember { mutableStateOf(false) }
+            val itemSelected = remember { mutableStateOf(listSort[0]) }
+            Row(
+                Modifier
+                    .size(98.dp, 36.dp)
+                    .border(
+                        width = 1.dp,
+                        color = ColorUtils.gray_E1E1E1
+                    )
+                    .padding(horizontal = 9.dp)
+                    .noRippleClickable {
+                        expanded = !expanded
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "${itemSelected.value.name}",
+                    color = ColorUtils.black_000000,
+                    fontSize = 14.sp,
+                    modifier = Modifier.weight(1f)
+                )
+                Image(
+                    painterResource(R.drawable.ic_arrow_down), null, modifier = Modifier
+                        .rotate(if (expanded) 180f else 0f)
+                        .width(10.dp)
+                )
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = {
+                        expanded = false
+                    }
+                ) {
+                    listSort.forEach { selectionOption ->
+                        DropdownMenuItem(
+                            onClick = {
+                                itemSelected.value = selectionOption
+                                expanded = false
+                                viewModel.timeLimit = selectionOption.id!!
+                                viewModel.getReservationGeneral(viewModel.accessToken)
+                            }
+                        ) {
+                            Text(text = selectionOption.name!!)
+                        }
+                    }
+                }
+            }
+        }
+
+        val listData = viewModel.stateListDataGeneral
         LazyColumn(state = rememberLazyListState()) {
             itemsIndexed(listData) { index, obj ->
                 ItemReservationTab2(index, obj)

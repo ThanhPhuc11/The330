@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.reservation
 
+import com.nagaja.the330.model.ReservationModel
 import com.nagaja.the330.network.ApiService
 import kotlinx.coroutines.flow.flow
 
@@ -21,5 +22,12 @@ class ReservationRepo(private val apiService: ApiService) {
         role: String
     ) = flow {
         emit(apiService.reservationOverview(token, userId = userId, role = role))
+    }
+
+    suspend fun editReservation(
+        token: String,
+        body: List<ReservationModel>
+    ) = flow {
+        emit(apiService.editReservation(token, body))
     }
 }

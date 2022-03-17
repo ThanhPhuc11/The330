@@ -296,6 +296,12 @@ interface ApiService {
         @Body body: ReservationModel
     ): Response<Unit> //200
 
+    @PATCH("reservations")
+    suspend fun editReservation(
+        @Header("Authorization") token: String,
+        @Body body: List<ReservationModel>
+    ): Response<Unit> //200
+
     @GET("company_requests/find")
     suspend fun findCompany(
         @Header("Authorization") token: String,
