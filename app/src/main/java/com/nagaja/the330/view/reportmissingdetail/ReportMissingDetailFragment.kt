@@ -11,6 +11,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,16 +32,20 @@ import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
+import com.nagaja.the330.model.CommentModel
+import com.nagaja.the330.model.IdentityModel
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.comment.CommentInput
 import com.nagaja.the330.view.comment.CommentList
+import com.nagaja.the330.view.comment.CommentVM
 import com.skydoves.landscapist.glide.GlideImage
 
 class ReportMissingDetailFragment : BaseFragment() {
     private lateinit var viewModel: ReportMissingDetailVM
+    private lateinit var commentViewModel: CommentVM
 
     companion object {
         fun newInstance(id: Int) = ReportMissingDetailFragment().apply {
@@ -51,6 +57,7 @@ class ReportMissingDetailFragment : BaseFragment() {
 
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[ReportMissingDetailVM::class.java]
+        commentViewModel = getViewModelProvider(this)[CommentVM::class.java]
         viewController = (activity as MainActivity).viewController
 
         viewModel.callbackStart.observe(viewLifecycleOwner) {
@@ -223,9 +230,36 @@ class ReportMissingDetailFragment : BaseFragment() {
                     )
                 }
 
-//                CommentList(viewModel.reportMissingModel.value.commentCount)
+                val stateShowDialog = remember { mutableStateOf(false) }
+                val stateSelectedId = remember { mutableStateOf(0) }
+                CommentList(
+                    commentViewModel.stateCommentCount.value,
+                    commentViewModel.stateListComment,
+                    userDetailBase?.id ?: 0
+                ) {
+                    stateShowDialog.value = true
+                    stateSelectedId.value = it
+                }
+
+                if (stateShowDialog.value) {
+                    DialogCancelComment(state = stateShowDialog, onClick = {
+                        if (it) {
+                            commentViewModel.editComments(accessToken!!, stateSelectedId.value)
+                        }
+                    })
+                }
             }
-            CommentInput{}
+            CommentInput {
+                commentViewModel.postComments(
+                    accessToken!!,
+                    CommentModel().apply {
+                        body = it
+                        localNews = IdentityModel().apply {
+                            id = requireArguments().getInt(AppConstants.EXTRA_KEY1)
+                        }
+                    }
+                )
+            }
         }
     }
 }
