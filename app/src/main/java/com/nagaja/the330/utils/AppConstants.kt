@@ -81,6 +81,14 @@ object AppConstants {
         const val BUY = "BUY"
     }
 
+    object SearchTitle {
+        const val COMPANY = "COMPANY"
+        const val FREE_NOTICE_BOARD = "FREE_NOTICE_BOARD"
+        const val RECRUIT_JOBSEARCH = "RECRUIT_JOBSEARCH"
+        const val SECONDHAND_MARKET = "SECONDHAND_MARKET"
+        const val REPORT_MISSING = "REPORT_MISSING"
+    }
+
     object Reservation {
         const val RESERVATION_COMPLETED = "RESERVATION_COMPLETED"
         const val USAGE_COMPLETED = "USAGE_COMPLETED"

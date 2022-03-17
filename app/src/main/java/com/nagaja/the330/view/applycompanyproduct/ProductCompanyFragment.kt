@@ -3,7 +3,6 @@ package com.nagaja.the330.view.applycompanyproduct
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,15 +34,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.google.gson.Gson
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
-import com.nagaja.the330.data.DataStorePref
-import com.nagaja.the330.data.dataStore
-import com.nagaja.the330.model.CompanyModel
 import com.nagaja.the330.model.FileModel
-import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.NameUtils
 import com.nagaja.the330.utils.RealPathUtil
@@ -51,12 +45,6 @@ import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompany.ShareApplyCompanyVM
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.job
-import kotlinx.coroutines.launch
 import java.io.File
 
 class ProductCompanyFragment : BaseFragment() {
@@ -66,15 +54,14 @@ class ProductCompanyFragment : BaseFragment() {
     private var onClickChoose: ((Int) -> Unit)? = null
     private var callbackListImage: ((Uri?) -> Unit)? = null
 
-    private var userDetail: UserDetail? = null
-
     companion object {
         fun newInstance() = ProductCompanyFragment()
     }
 
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[ProductCompanyVM::class.java]
-        shareViewModel = ViewModelProvider(activity?.supportFragmentManager?.findFragmentByTag(ScreenId.SCREEN_APPLY_COMPANY)!!)[ShareApplyCompanyVM::class.java]
+        shareViewModel =
+            ViewModelProvider(activity?.supportFragmentManager?.findFragmentByTag(ScreenId.SCREEN_APPLY_COMPANY)!!)[ShareApplyCompanyVM::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
@@ -86,14 +73,6 @@ class ProductCompanyFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_START -> {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            requireContext().dataStore.data.map { get ->
-                                get[DataStorePref.USER_DETAIL] ?: ""
-                            }.collect {
-                                userDetail = Gson().fromJson(it, UserDetail::class.java)
-                                this@launch.coroutineContext.job.cancel()
-                            }
-                        }
                     }
                     Lifecycle.Event.ON_STOP -> {
 
@@ -160,7 +139,7 @@ class ProductCompanyFragment : BaseFragment() {
                         listImage.add(FileModel(url = uri.toString()))
                         viewModel.listImageProduct.add(
                             FileModel(
-                                fileName = NameUtils.setFileName(userDetail?.id, fileTemp),
+                                fileName = NameUtils.setFileName(userDetailBase?.id, fileTemp),
                                 url = fileTemp.path
                             )
                         )
@@ -248,7 +227,10 @@ class ProductCompanyFragment : BaseFragment() {
                         .height(52.dp)
                         .background(ColorUtils.blue_2177E4)
                         .noRippleClickable {
-                            viewModel.makeCompany(accessToken!!, shareViewModel.companyInfoState.value)
+                            viewModel.makeCompany(
+                                accessToken!!,
+                                shareViewModel.companyInfoState.value
+                            )
                         },
                     contentAlignment = Alignment.Center
                 ) {

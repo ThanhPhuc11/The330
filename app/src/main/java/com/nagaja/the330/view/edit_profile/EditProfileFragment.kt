@@ -52,7 +52,6 @@ import kotlinx.coroutines.launch
 
 class EditProfileFragment : BaseFragment() {
     private lateinit var viewModel: EditProfileVM
-    private var userDetail: UserDetail? = null
 
     var callbackUpdate: (() -> Unit)? = null
 
@@ -107,7 +106,7 @@ class EditProfileFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        getUserDetailFromDataStore(context)
+
                     }
                     else -> {}
                 }
@@ -356,17 +355,6 @@ class EditProfileFragment : BaseFragment() {
             modifier = Modifier
                 .padding(top = 8.dp)
         )
-    }
-
-    private fun getUserDetailFromDataStore(context: Context) {
-        CoroutineScope(Dispatchers.IO).launch {
-            context.dataStore.data.map { get ->
-                get[DataStorePref.USER_DETAIL] ?: ""
-            }.collect {
-                val userDetail = Gson().fromJson(it, UserDetail::class.java)
-                userDetail?.let { viewModel.userDetailState.value = userDetail }
-            }
-        }
     }
 
     @Composable

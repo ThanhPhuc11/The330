@@ -38,24 +38,18 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.google.gson.Gson
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
-import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.data.dataStore
-import com.nagaja.the330.model.*
+import com.nagaja.the330.model.CategoryModel
+import com.nagaja.the330.model.FileModel
+import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.TimeReservation
 import com.nagaja.the330.utils.*
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompanyproduct.ProductCompanyFragment
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.job
-import kotlinx.coroutines.launch
 import java.io.File
 
 class ApplyCompanyFragment : BaseFragment() {
@@ -65,8 +59,6 @@ class ApplyCompanyFragment : BaseFragment() {
     private var onClickChoose: ((Int) -> Unit)? = null
     private var callbackListImage: ((Uri?) -> Unit)? = null
     private var callbackAttachFile: ((Uri?) -> Unit)? = null
-
-    private var userDetail: UserDetail? = null
 
     companion object {
         fun newInstance() = ApplyCompanyFragment()
@@ -87,14 +79,6 @@ class ApplyCompanyFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_START -> {
                         viewModel.getCategory(accessToken!!)
-                        CoroutineScope(Dispatchers.IO).launch {
-                            requireContext().dataStore.data.map { get ->
-                                get[DataStorePref.USER_DETAIL] ?: ""
-                            }.collect {
-                                userDetail = Gson().fromJson(it, UserDetail::class.java)
-                                this@launch.coroutineContext.job.cancel()
-                            }
-                        }
                     }
                     Lifecycle.Event.ON_STOP -> {
 
@@ -150,7 +134,7 @@ class ApplyCompanyFragment : BaseFragment() {
                         listImage.add(FileModel(url = uri.toString()))
                         viewModel.listImageRepresentative.add(
                             FileModel(
-                                fileName = NameUtils.setFileName(userDetail?.id, fileTemp),
+                                fileName = NameUtils.setFileName(userDetailBase?.id, fileTemp),
                                 url = fileTemp.path
                             )
                         )
@@ -295,7 +279,7 @@ class ApplyCompanyFragment : BaseFragment() {
                     )
                     fileName.value = file.name
                     viewModel.fileName =
-                        NameUtils.setFileName(userDetail?.id, file)
+                        NameUtils.setFileName(userDetailBase?.id, file)
                     viewModel.filePath = file.path
                 }
                 Row(
@@ -392,7 +376,8 @@ class ApplyCompanyFragment : BaseFragment() {
                             .background(ColorUtils.gray_222222)
                             .noRippleClickable {
                                 if (viewModel.isValidate()) {
-                                    shareViewModel.companyInfoState.value = viewModel.saveCompanyTransfer()
+                                    shareViewModel.companyInfoState.value =
+                                        viewModel.saveCompanyTransfer()
                                     viewController?.pushFragment(
                                         ScreenId.SCREEN_APPLY_COMPANY_PRODUCT_INFO,
                                         ProductCompanyFragment.newInstance()

@@ -269,7 +269,7 @@ private fun ItemReservation(index: Int, obj: ReservationModel, onClickCancel: (I
             )
             Text(
                 "예약일시: ${
-                    AppDateUtils.changeDateFormat(
+                    AppDateUtils.changeDateFormatNotConvertUTC(
                         AppDateUtils.FORMAT_16,
                         AppDateUtils.FORMAT_20,
                         obj.reservationDateTime ?: ""
@@ -284,22 +284,23 @@ private fun ItemReservation(index: Int, obj: ReservationModel, onClickCancel: (I
                 color = ColorUtils.gray_626262,
                 fontSize = 14.sp
             )
-            Box(
-                Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.CenterEnd
-            ) {
+            if (obj.status == "RESERVATION_COMPLETED") {
                 Box(
-                    Modifier
-                        .width(76.dp)
-                        .height(32.dp)
-                        .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp))
-                        .noRippleClickable {
-                            if (obj.status == "RESERVATION_COMPLETED")
-                                onClickCancel.invoke(obj.id!!)
-                        },
-                    contentAlignment = Alignment.Center
+                    Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
                 ) {
-                    Text("예약취소", color = ColorUtils.white_FFFFFF, fontSize = 12.sp)
+                    Box(
+                        Modifier
+                            .width(76.dp)
+                            .height(32.dp)
+                            .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp))
+                            .noRippleClickable {
+                                onClickCancel.invoke(obj.id!!)
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("예약취소", color = ColorUtils.white_FFFFFF, fontSize = 12.sp)
+                    }
                 }
             }
         }

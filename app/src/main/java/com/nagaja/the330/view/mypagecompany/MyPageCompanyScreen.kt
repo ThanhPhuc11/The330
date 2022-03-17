@@ -11,6 +11,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,7 +43,7 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
-import com.nagaja.the330.view.applycompany.ApplyCompanyFragment
+import com.nagaja.the330.view.edit_profile.EditProfileFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
@@ -146,6 +148,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                 .weight(1f)
                 .verticalScroll(state = rememberScrollState())
         ) {
+            val stateShowCompany = remember {mutableStateOf(true)}
             Box(
                 Modifier
                     .fillMaxWidth()
@@ -154,18 +157,15 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
             ) {
                 Button(
                     onClick = {
-                        viewController?.pushFragment(
-                            ScreenId.SCREEN_APPLY_COMPANY,
-                            ApplyCompanyFragment.newInstance()
-                        )
+                        stateShowCompany.value = !stateShowCompany.value
                     },
                     modifier = Modifier
-                        .width(96.dp)
-                        .height(32.dp),
+                        .height(32.dp)
+                        .padding(horizontal = 16.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = ColorUtils.gray_222222)
                 ) {
                     Text(
-                        stringResource(R.string.view_my_info),
+                        stringResource(if(stateShowCompany.value) R.string.view_my_info else R.string.view_company_info),
                         color = ColorUtils.white_FFFFFF,
                         fontSize = 12.sp
                     )
@@ -175,7 +175,11 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                 color = ColorUtils.gray_F5F5F5,
                 thickness = 8.dp
             )
-            MyInfo(viewController)
+            if (stateShowCompany.value) {
+                MyInfoCompany(viewController)
+            } else {
+                MyInfo(viewController)
+            }
             Divider(
                 color = ColorUtils.gray_F5F5F5,
                 thickness = 8.dp
@@ -241,7 +245,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
 }
 
 @Composable
-private fun MyInfo(viewController: ViewController?) {
+private fun MyInfoCompany(viewController: ViewController?) {
     val userDetail = viewModel.userDetailState.value
     val companyDetail = viewModel.companyDetailState.value
     Column(
@@ -306,6 +310,60 @@ private fun MyInfo(viewController: ViewController?) {
             textAlign = TextAlign.Start,
             modifier = Modifier.padding(top = 4.dp)
         )
+    }
+}
+
+@Composable
+private fun MyInfo(viewController: ViewController?) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Column(
+            Modifier
+                .weight(1f)
+                .padding(end = 10.dp)
+        ) {
+            val userDetail = viewModel.userDetailState.value
+            Text("${stringResource(R.string.user_id)}: ${userDetail?.name}", style = text14_222)
+            Text("${stringResource(R.string.name)}: ${userDetail?.realName}", style = text14_222)
+            Text(
+                "${stringResource(R.string.phone_number)}: ${userDetail?.phone}",
+                style = text14_222
+            )
+            Row() {
+                Text("${stringResource(R.string.service_use_address)}: ", style = text14_222)
+                Text("${userDetail?.address}", style = text14_222, textAlign = TextAlign.Start)
+            }
+        }
+        Box(
+            modifier = Modifier
+                .width(52.dp)
+                .height(28.dp)
+                .border(
+                    width = 1.dp,
+                    color = ColorUtils.gray_222222,
+                    shape = RoundedCornerShape(99.dp)
+                )
+                .noRippleClickable {
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_EDIT_PROFILE,
+                        EditProfileFragment
+                            .newInstance()
+                            .apply {
+                                callbackUpdate = {
+                                    accessToken?.let {
+                                        viewModel.getUserDetails(it)
+                                    }
+                                }
+                            }
+                    )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(stringResource(R.string.edit), color = ColorUtils.gray_222222, fontSize = 12.sp)
+        }
     }
 }
 
