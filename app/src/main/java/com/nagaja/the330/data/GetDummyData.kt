@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nagaja.the330.R
+import com.nagaja.the330.model.CompanyUsageModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.NotificationModel
 import com.nagaja.the330.utils.AppConstants
@@ -191,5 +192,18 @@ object GetDummyData {
         }
         notices.addAll(list)
         return  notices
+    }
+
+    fun getCompanyUsageList() : MutableList<CompanyUsageModel> {
+        val list = mutableListOf<CompanyUsageModel>()
+        for (i in 0..100) {
+            list.add(CompanyUsageModel().apply {
+                id = i
+                name = "Dummy $i"
+                numberOfUsers = 10
+                date = "YYYY/MM/DD HH:MM"
+            })
+        }
+        return list
     }
 }
