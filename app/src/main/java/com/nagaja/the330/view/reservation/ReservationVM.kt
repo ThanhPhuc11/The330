@@ -75,11 +75,9 @@ class ReservationVM(
                 .catch { handleError(it) }
                 .collect {
                     if (it.raw().isSuccessful && it.raw().code == 200) {
-                        stateListData.forEach { obj->
-                            if (obj.id == id) {
-                                stateListData.remove(obj)
-                            }
-                        }
+                        val index = stateListData.indexOfFirst { obj -> obj.id == id }
+                        val newObj = stateListData[index].apply { status = "RESERVATION_CANCELED" }
+                        updateItem(index, newObj, stateListData)
                     } else {
                         handleError2(it)
                     }

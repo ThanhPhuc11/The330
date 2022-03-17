@@ -83,6 +83,25 @@ public class AppDateUtils {
         return result;
     }
 
+    public static String changeDateFormatNotConvertUTC(String currentFormat, String requiredFormat, String dateString) {
+        String result = dateString;
+        if (dateString == null || TextUtils.isEmpty(dateString)) {
+            return result;
+        }
+        SimpleDateFormat formatterOld = new SimpleDateFormat(currentFormat, Locale.getDefault());
+        SimpleDateFormat formatterNew = new SimpleDateFormat(requiredFormat, Locale.getDefault());
+        Date date = null;
+        try {
+            date = formatterOld.parse(dateString);
+        } catch (Exception e) {
+            //  e.printStackTrace();
+        }
+        if (date != null) {
+            result = formatterNew.format(date);
+        }
+        return result;
+    }
+
     public static String getTimeLocalAgo(String currentFormat, String requiredFormat, String dateString) {
         String result = dateString;
         if (dateString == null || TextUtils.isEmpty(dateString)) {
