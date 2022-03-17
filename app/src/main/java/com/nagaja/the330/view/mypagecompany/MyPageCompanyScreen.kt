@@ -158,12 +158,12 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                         stateShowCompany.value = !stateShowCompany.value
                     },
                     modifier = Modifier
-                        .width(96.dp)
-                        .height(32.dp),
+                        .height(32.dp)
+                        .padding(horizontal = 16.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = ColorUtils.gray_222222)
                 ) {
                     Text(
-                        stringResource(R.string.view_my_info),
+                        stringResource(if(stateShowCompany.value) R.string.view_my_info else R.string.view_company_info),
                         color = ColorUtils.white_FFFFFF,
                         fontSize = 12.sp
                     )
