@@ -90,6 +90,16 @@ object GetDummyData {
         }
     }
 
+    fun getTitleSearch(): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel(AppConstants.SearchTitle.COMPANY, "업체"))
+            add(KeyValueModel(AppConstants.SearchTitle.FREE_NOTICE_BOARD, "자유게시판"))
+            add(KeyValueModel(AppConstants.SearchTitle.RECRUIT_JOBSEARCH, "구인구직"))
+            add(KeyValueModel(AppConstants.SearchTitle.SECONDHAND_MARKET, "중고마켓"))
+            add(KeyValueModel(AppConstants.SearchTitle.REPORT_MISSING, "신고/실종자"))
+        }
+    }
+
     fun getSortSecondHandMarket(context: Context): MutableList<KeyValueModel> {
         return mutableListOf<KeyValueModel>().apply {
             add(KeyValueModel("LASTEST", context.getString(R.string.lastest_order)))

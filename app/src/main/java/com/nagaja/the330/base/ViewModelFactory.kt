@@ -76,6 +76,8 @@ import com.nagaja.the330.view.reservationregis.ReservationRegisRepo
 import com.nagaja.the330.view.reservationregis.ReservationRegisVM
 import com.nagaja.the330.view.resetpassword.ResetPwRepo
 import com.nagaja.the330.view.resetpassword.ResetPwVM
+import com.nagaja.the330.view.searchmain.SearchMainRepo
+import com.nagaja.the330.view.searchmain.SearchMainVM
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailRepo
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailVM
 import com.nagaja.the330.view.secondhandmarket.SecondHandMarketRepo
@@ -113,6 +115,8 @@ class ViewModelFactory(apiService: ApiService) :
             SignupInfoVM(SignupInfoRepo(apiService))
         creators[HomeScreenVM::class.java] =
             HomeScreenVM(HomeScreenRepo(apiService))
+        creators[SearchMainVM::class.java] =
+            SearchMainVM(SearchMainRepo(apiService))
         creators[MyPageScreenVM::class.java] =
             MyPageScreenVM(MyPageScreenRepo(apiService))
         creators[MyPageCompanyScreenVM::class.java] =
