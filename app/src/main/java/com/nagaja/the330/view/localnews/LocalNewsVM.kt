@@ -14,21 +14,20 @@ import kotlinx.coroutines.launch
 class LocalNewsVM(
     private val repo: LocalNewsRepo
 ) : BaseViewModel() {
+    var sort = "LASTEST"
     var listData = mutableListOf<LocalNewsModel>()
     var stateListData = mutableStateListOf<LocalNewsModel>()
 
 
     fun getListLocalNews(
         token: String,
-//        page: Int,
-//        size: Int,
-        sort: String = "LASTEST"
+        page: Int,
     ) {
         viewModelScope.launch {
             repo.getListLocalNews(
                 token = token,
-                page = 0,
-                size = 10,
+                page = page,
+                size = 20,
                 sort = sort,
                 null
             )
@@ -40,7 +39,6 @@ class LocalNewsVM(
                     listData.clear()
                     it.content?.let { it1 ->
                         listData.addAll(it1)
-                        stateListData.clear()
                         stateListData.addAll(listData)
                     }
                 }

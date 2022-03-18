@@ -14,11 +14,12 @@ import kotlinx.coroutines.launch
 class FavCompanyVM(
     private val repo: FavCompanyRepo
 ) : BaseViewModel() {
+    var sort = ""
     val listCompany = mutableStateListOf<CompanyFavoriteModel>()
 
-    fun getFavoriteCompany(token: String, page: Int, sort: String) {
+    fun getFavoriteCompany(token: String, page: Int) {
         viewModelScope.launch {
-            repo.getFavoriteCompany(token, page, 10, sort)
+            repo.getFavoriteCompany(token, page, 10, sort = sort)
                 .onStart { }
                 .onCompletion { }
                 .catch { }

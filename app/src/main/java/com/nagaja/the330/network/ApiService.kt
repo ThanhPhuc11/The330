@@ -115,6 +115,12 @@ interface ApiService {
         @Query("targetId") targetId: Int
     ): Response<Unit> //204
 
+    @GET("follows/checkFollow")
+    suspend fun checkFollowCompany(
+        @Header("Authorization") token: String,
+        @Query("targetId") targetId: Int
+    ): Boolean
+
     @POST("company_requests")
     suspend fun makeCompany(
         @Header("Authorization") token: String,

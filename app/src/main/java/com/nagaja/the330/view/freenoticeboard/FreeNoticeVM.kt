@@ -28,7 +28,7 @@ class FreeNoticeVM(
             repo.getFreeNoticeBoard(
                 token = token,
                 page = page,
-                size = 5,
+                size = 20,
                 sort = sort,
                 null
             )

@@ -155,9 +155,15 @@ class CompanyDetailFragment : BaseFragment() {
                         "추천",
                         R.drawable.ic_like,
                         10
-                    )
+                    ) {}
                     Spacer(modifier = Modifier.width(8.dp))
-                    ButtonLike("단골", R.drawable.ic_tim, 20)
+                    ButtonLike(
+                        "단골",
+                        if (viewModel.isFollowing.value) R.drawable.ic_tim else R.drawable.ic_heart_empty,
+                        viewModel.companyDetail.value.likedCount ?: 0
+                    ) {
+                        accessToken?.let { viewModel.followOrNot(it) }
+                    }
                 }
 
                 Row(
@@ -448,7 +454,8 @@ class CompanyDetailFragment : BaseFragment() {
     private fun ButtonLike(
         text: String,
         icon: Int,
-        number: Int
+        number: Int,
+        onClick: () -> Unit
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -461,7 +468,7 @@ class CompanyDetailFragment : BaseFragment() {
                 )
                 .padding(horizontal = 7.dp, vertical = 5.dp)
                 .noRippleClickable {
-//                    viewModel.followOrNot(accessToken!!, obj.target?.id!!, obj.isFollow)
+                    onClick.invoke()
                 }
         ) {
             Image(

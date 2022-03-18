@@ -40,14 +40,10 @@ import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.RecruitmentJobsModel
-import com.nagaja.the330.utils.AppConstants
-import com.nagaja.the330.utils.AppDateUtils
-import com.nagaja.the330.utils.ColorUtils
-import com.nagaja.the330.utils.ScreenId
+import com.nagaja.the330.utils.*
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailFragment
 import com.nagaja.the330.view.recruitmentregis.RecruitJobRegisFragment
-import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -257,7 +253,7 @@ class RecruitmentJobSearchFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
 //                        viewModel.type = AppConstants.RECRUITMENT
-                        viewModel.getRecruitmentList(accessToken!!, AppConstants.RECRUITMENT)
+                        viewModel.getRecruitmentList(accessToken!!, 0, AppConstants.RECRUITMENT)
                     }
                     else -> {}
                 }
@@ -273,11 +269,16 @@ class RecruitmentJobSearchFragment : BaseFragment() {
                 .padding(horizontal = 16.dp)
         ) {
             val listCompany = viewModel.stateListDataRecruitment
-            LazyColumn(state = rememberLazyListState()) {
+            val lazyListState = rememberLazyListState()
+            LazyColumn(state = lazyListState) {
                 itemsIndexed(listCompany) { _, obj ->
                     RecuitmentJobsItem(obj)
                     Divider(color = ColorUtils.black_000000_opacity_5)
                 }
+            }
+
+            LoadmoreHandler(lazyListState) { page ->
+                viewModel.getRecruitmentList(accessToken!!, page, AppConstants.RECRUITMENT)
             }
         }
     }
@@ -290,7 +291,7 @@ class RecruitmentJobSearchFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
 //                        viewModel.type = AppConstants.JOB_SEARCH
-                        viewModel.getRecruitmentList(accessToken!!, AppConstants.JOB_SEARCH)
+                        viewModel.getRecruitmentList(accessToken!!, 0, AppConstants.JOB_SEARCH)
                     }
                     else -> {}
                 }
@@ -306,11 +307,16 @@ class RecruitmentJobSearchFragment : BaseFragment() {
                 .padding(horizontal = 16.dp)
         ) {
             val listCompany = viewModel.stateListDataJobs
-            LazyColumn(state = rememberLazyListState()) {
+            val lazyListState = rememberLazyListState()
+            LazyColumn(state = lazyListState) {
                 itemsIndexed(listCompany) { _, obj ->
                     RecuitmentJobsItem(obj)
                     Divider(color = ColorUtils.black_000000_opacity_5)
                 }
+            }
+
+            LoadmoreHandler(lazyListState) { page ->
+                viewModel.getRecruitmentList(accessToken!!, page, AppConstants.JOB_SEARCH)
             }
         }
     }
@@ -331,6 +337,7 @@ class RecruitmentJobSearchFragment : BaseFragment() {
                 viewModel.sort = id
                 viewModel.getRecruitmentList(
                     accessToken!!,
+                    0,
                     if (page == 0) AppConstants.RECRUITMENT else AppConstants.JOB_SEARCH
                 )
             }

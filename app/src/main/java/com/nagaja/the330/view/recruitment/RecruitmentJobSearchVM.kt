@@ -28,15 +28,14 @@ class RecruitmentJobSearchVM(
 
     fun getRecruitmentList(
         token: String,
-//        page: Int,
-//        size: Int,
+        page: Int,
         type: String
     ) {
         viewModelScope.launch {
             repo.getRecruitmentList(
                 token = token,
-                page = 0,
-                size = 10,
+                page = page,
+                size = 20,
                 sort = sort,
                 type = type,
                 null
@@ -50,12 +49,10 @@ class RecruitmentJobSearchVM(
                         if (type == AppConstants.RECRUITMENT) {
                             listDataRecruitment.clear()
                             listDataRecruitment.addAll(it1)
-                            stateListDataRecruitment.clear()
                             stateListDataRecruitment.addAll(listDataRecruitment)
                         } else {
                             listDataJobs.clear()
                             listDataJobs.addAll(it1)
-                            stateListDataJobs.clear()
                             stateListDataJobs.addAll(listDataJobs)
                         }
                     }

@@ -17,9 +17,9 @@ class SecondHandMypageVM(
     var transactionStatus: String? = null
     val stateListSecondhand = mutableStateListOf<SecondHandModel>()
 
-    fun getMySecondHand(token: String) {
+    fun getMySecondHand(token: String, page: Int) {
         viewModelScope.launch {
-            repo.getMySecondHand(token, 0, 10, sort, transactionStatus)
+            repo.getMySecondHand(token, page, 20, sort, transactionStatus)
                 .onStart { }
                 .onCompletion { }
                 .catch { }

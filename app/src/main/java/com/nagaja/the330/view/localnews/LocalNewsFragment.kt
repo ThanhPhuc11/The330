@@ -34,7 +34,9 @@ import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.LocalNewsModel
+import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.localnewsdetail.LocalNewsDetailFragment
@@ -62,7 +64,7 @@ class LocalNewsFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        accessToken?.let { viewModel.getListLocalNews(it) }
+                        accessToken?.let { viewModel.getListLocalNews(it, 0) }
                     }
                     else -> {}
                 }
@@ -95,7 +97,8 @@ class LocalNewsFragment : BaseFragment() {
                             if (listSort.size > 0) listSort[0] else KeyValueModel()
                     }
                     onClickSort = { id ->
-                        viewModel.getListLocalNews(accessToken!!, id)
+                        viewModel.sort = id
+                        viewModel.getListLocalNews(accessToken!!, 0)
                     }
                     Image(painter = painterResource(R.drawable.ic_sort), contentDescription = null)
                     Text(
@@ -141,10 +144,15 @@ class LocalNewsFragment : BaseFragment() {
             )
             {
                 val news = viewModel.stateListData
-                LazyColumn(state = rememberLazyListState()) {
+                val lazyListState = rememberLazyListState()
+                LazyColumn(state = lazyListState) {
                     itemsIndexed(news) { index, obj ->
                         ItemLocalNews(obj)
                     }
+                }
+
+                LoadmoreHandler(lazyListState) { page ->
+                    viewModel.getListLocalNews(accessToken!!, page)
                 }
             }
         }

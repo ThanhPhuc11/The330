@@ -22,14 +22,13 @@ class CompanyListVM(
 
     fun findCompany(
         token: String,
-        page: Int = 0,
-        size: Int = 10,
+        page: Int,
         cityId: Int? = null,
         districtId: Int? = null,
         all: String? = null
     ) {
         viewModelScope.launch {
-            repo.findCompany(token, page, size, sort, filter, cType, authentication, cityId, districtId, all)
+            repo.findCompany(token, page, size = 20, sort, filter, cType, authentication, cityId, districtId, all)
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }
                 .catch { handleError(it) }
@@ -38,8 +37,6 @@ class CompanyListVM(
                     it.content?.let { data ->
                         listData.clear()
                         listData.addAll(data)
-
-                        stateListData.clear()
                         stateListData.addAll(listData)
                     }
                 }

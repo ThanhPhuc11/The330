@@ -32,6 +32,7 @@ import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.ReportMissingModel
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
@@ -75,7 +76,7 @@ class ReportMissingMyPageFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        viewModel.getReportMissingMyPage(accessToken!!)
+                        viewModel.getReportMissingMyPage(accessToken!!, 0)
                     }
                     Lifecycle.Event.ON_STOP -> {}
                     else -> {}
@@ -108,7 +109,7 @@ class ReportMissingMyPageFragment : BaseFragment() {
             ) {
                 BoxStatus(Modifier.weight(1f), label = "신고/실종자", number = 30) {
                     viewModel.status = null
-                    viewModel.getReportMissingMyPage(accessToken!!)
+                    viewModel.getReportMissingMyPage(accessToken!!, 0)
                 }
                 Box(
                     Modifier
@@ -119,7 +120,7 @@ class ReportMissingMyPageFragment : BaseFragment() {
                 )
                 BoxStatus(Modifier.weight(1f), label = "등록완료", number = 30) {
                     viewModel.status = "REGISTRATION_COMPLETED"
-                    viewModel.getReportMissingMyPage(accessToken!!)
+                    viewModel.getReportMissingMyPage(accessToken!!, 0)
                 }
                 Box(
                     Modifier
@@ -130,20 +131,25 @@ class ReportMissingMyPageFragment : BaseFragment() {
                 )
                 BoxStatus(Modifier.weight(1f), label = "등록불가", number = 10) {
                     viewModel.status = "REGISTRATION_IMPOSSIBLE"
-                    viewModel.getReportMissingMyPage(accessToken!!)
+                    viewModel.getReportMissingMyPage(accessToken!!, 0)
                 }
             }
             Divider(color = ColorUtils.gray_E1E1E1)
 
             val listReportMissing = viewModel.stateListDataReport
+            val lazyListState = rememberLazyListState()
             LazyColumn(
-                state = rememberLazyListState(),
+                state = lazyListState,
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 itemsIndexed(listReportMissing) { _, obj ->
                     ReportMissingItem(obj)
                     Divider(color = ColorUtils.black_000000_opacity_5)
                 }
+            }
+
+            LoadmoreHandler(lazyListState) { page ->
+                viewModel.getReportMissingMyPage(accessToken!!, page)
             }
         }
     }
@@ -189,7 +195,7 @@ class ReportMissingMyPageFragment : BaseFragment() {
         ) {
             onClickSort = { id ->
                 viewModel.timeLimit = id
-                viewModel.getReportMissingMyPage(accessToken!!)
+                viewModel.getReportMissingMyPage(accessToken!!, 0)
             }
             Text(
                 itemSelected.value.name ?: "",
