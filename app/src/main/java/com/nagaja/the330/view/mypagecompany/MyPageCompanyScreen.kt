@@ -46,6 +46,7 @@ import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
 import com.nagaja.the330.view.point.PointFragment
+import com.nagaja.the330.view.regularcustomer.RegularCustomerFragment
 import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageFragment
 import com.nagaja.the330.view.secondhandmypage.SecondHandMypageFragment
 import com.nagaja.the330.view.text14_222
@@ -67,8 +68,8 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
     val owner = LocalLifecycleOwner.current
     val clickFavorite: (() -> Unit) = {
         viewController?.pushFragment(
-            ScreenId.SCREEN_FAV_COMPANY,
-            FavCompanyFragment.newInstance()
+            ScreenId.SCREEN_REGULAR_CUSTOMER_HISTORY,
+            RegularCustomerFragment.newInstance()
         )
     }
 

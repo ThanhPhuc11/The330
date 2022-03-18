@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -71,14 +70,8 @@ class CompanyUsageFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        // Get dummy data here
-//                        accessToken?.let {
-//                            viewModel.getFavoriteCompany(
-//                                it,
-//                                0,
-//                                stateOptions.value[0].id!!
-//                            )
-//                        }
+                        accessToken?.let {
+                        }
                     }
                     Lifecycle.Event.ON_STOP -> {}
                     else -> {}
@@ -177,7 +170,6 @@ class CompanyUsageFragment : BaseFragment() {
         }
     }
 
-    @OptIn(ExperimentalPagerApi::class)
     @Composable
     private fun CorporateUseTab(context: Context) {
         Column(Modifier.fillMaxWidth()) {

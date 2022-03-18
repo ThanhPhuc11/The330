@@ -1,5 +1,7 @@
 package com.nagaja.the330.view
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,17 +13,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -39,7 +38,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
+import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.model.CompanyUsageModel
+import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.utils.ColorUtils
 
 @Composable
@@ -602,3 +605,140 @@ val text14_222 = TextStyle(
     fontSize = 14.sp,
     textAlign = TextAlign.Center
 )
+
+@Composable
+fun TabSelected(
+    modifier: Modifier = Modifier,
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    if (isSelected)
+        Box(
+            modifier
+                .background(ColorUtils.white_FFFFFF)
+                .fillMaxHeight()
+                .noRippleClickable {
+                    onClick.invoke()
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text, color = ColorUtils.gray_222222, fontSize = 16.sp)
+        }
+    else
+        Box(
+            modifier
+                .background(ColorUtils.gray_222222)
+                .fillMaxHeight()
+                .noRippleClickable {
+                    onClick.invoke()
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text,
+                color = ColorUtils.white_FFFFFF,
+                fontSize = 16.sp,
+                modifier = Modifier.alpha(0.4f)
+            )
+        }
+}
+
+@Preview
+@Composable
+fun ItemRegular(item: CompanyUsageModel = CompanyUsageModel().apply {
+    id = 0
+    name = "name"
+    date = "2022/03/18 00:00"
+    numberOfUsers = 100
+}){
+    Row(Modifier.padding(16.dp)
+        .height(IntrinsicSize.Max)
+    ) {
+        Column(
+            Modifier.weight(5f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text("${item.name}(${item.id})",
+                modifier = Modifier.fillMaxWidth()
+                    .padding(end = 2.dp),
+                color = ColorUtils.black_000000,
+                fontSize = 13.sp,
+                textAlign = TextAlign.Start,
+            )
+            Text("이용건수: ${item.numberOfUsers}회",
+                modifier = Modifier.padding(top = 12.dp)
+                    .fillMaxWidth()
+                    .padding(end = 2.dp),
+                color = ColorUtils.black_000000,
+                fontSize = 13.sp,
+                textAlign = TextAlign.Start
+            )
+        }
+        Box(modifier = Modifier
+            .fillMaxHeight()
+            .weight(6f),
+            contentAlignment = Alignment.BottomStart
+        ) {
+            Text(modifier = Modifier.fillMaxWidth(),
+                text = "이용일시:${item.date}",
+                color = ColorUtils.black_000000,
+                fontSize = 13.sp,
+                textAlign = TextAlign.Start
+            )
+        }
+    }
+    Divider(
+        Modifier
+            .height(1.dp)
+            .background(ColorUtils.gray_E1E1E1)
+    )
+}
+
+@Composable
+fun HandleSortUI(context: Context, ft : MutableList<KeyValueModel>) {
+    val filters = remember { ft }
+    var expanded by remember { mutableStateOf(false) }
+    val itemSelected = remember { mutableStateOf(filters[0]) }
+    Row(
+        Modifier
+            .size(100.dp, 36.dp)
+            .border(width = 1.dp, color = ColorUtils.gray_E1E1E1)
+            .padding(9.dp)
+            .noRippleClickable {
+                expanded = true
+            },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            itemSelected.value.name ?: "",
+            modifier = Modifier.weight(1f),
+            style = text14_222
+        )
+        Image(
+            painterResource(R.drawable.ic_arrow_down), null,
+            Modifier
+                .rotate(if (expanded) 180f else 0f)
+                .width(10.dp)
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }) {
+            filters.forEach { option ->
+                DropdownMenuItem(
+                    onClick = {
+                        itemSelected.value = option
+                        expanded = false
+                        if (BuildConfig.DEBUG)
+                            Toast.makeText(context, "${itemSelected.value.id}", Toast.LENGTH_LONG).show()
+                    }
+                ) {
+                    option.name?.let { Text(text = it) }
+                }
+
+            }
+        }
+    }
+}
