@@ -1,13 +1,12 @@
 package com.nagaja.the330.view.point
 
-import android.util.Log
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.CompanyModel
-import com.nagaja.the330.model.UserDetail
+import com.nagaja.the330.model.PointModel
+import com.nagaja.the330.utils.AppConstants
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -17,30 +16,13 @@ import kotlinx.coroutines.launch
 class PointVM(
     private val repo: PointRepo,
 ) : BaseViewModel() {
-    val userDetailState: MutableState<UserDetail?> = mutableStateOf(null)
-    var companyDetailState = mutableStateOf(CompanyModel())
+    var timeLimit = "ONE_DAY"
+    var chargeCount = mutableStateOf(0)
+    var usageCount = mutableStateOf(0)
+    val stateListCharge = mutableStateListOf<PointModel>()
+    val stateListUsage = mutableStateListOf<PointModel>()
 
-    val cbUpdateUserDataStore = MutableLiveData<UserDetail>()
-    fun getUserDetails(token: String) {
-        viewModelScope.launch {
-            repo.getUserDetails(token)
-                .onStart {
-                    callbackStart.value = Unit
-                }
-                .onCompletion { }
-                .catch {
-//                    handleError(it)
-//                    callbackUserFail.value = Unit
-                }
-                .collect {
-                    callbackSuccess.value = Unit
-                    userDetailState.value = it
-                    cbUpdateUserDataStore.value = it
-
-                    it.companyRequest?.id?.let { it1 -> getCompanyDetail(token, it1) }
-                }
-        }
-    }
+    var companyDetail = mutableStateOf(CompanyModel())
 
     fun getCompanyDetail(
         token: String,
@@ -52,16 +34,50 @@ class PointVM(
             )
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }
-                .catch { handleError(it) }
+                .catch {
+                    handleError(it)
+                }
                 .collect {
                     callbackSuccess.value = Unit
-                    companyDetailState.value = it
+                    companyDetail.value = it
                 }
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        Log.e("MYPAGE", "onCleared")
+    fun getPoints(
+        token: String,
+        page: Int,
+        pointTransactionType: String
+    ) {
+        viewModelScope.launch {
+            repo.getPoints(token, page, size = 20, pointTransactionType, timeLimit)
+                .onStart {
+                    callbackStart.value = Unit
+                }
+                .onCompletion { }
+                .catch {
+                    handleError(it)
+                }
+                .collect {
+                    callbackSuccess.value = Unit
+                    if (pointTransactionType == AppConstants.Point.PROVIDED) {
+                        if (page == 0) {
+                            stateListCharge.clear()
+                            chargeCount.value = it.totalElements?:0
+                        }
+                        it.content?.let { data ->
+                            stateListCharge.addAll(data)
+                        }
+                    } else {
+                        if (page == 0) {
+                            stateListUsage.clear()
+                            usageCount.value = it.totalElements?:0
+                        }
+                        it.content?.let { data ->
+                            stateListUsage.addAll(data)
+                        }
+                    }
+                }
+        }
     }
 }

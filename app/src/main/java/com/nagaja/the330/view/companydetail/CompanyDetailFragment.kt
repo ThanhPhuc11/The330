@@ -48,7 +48,9 @@ import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.CommonUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.chatdetail.ChatDetailFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -149,6 +151,12 @@ class CompanyDetailFragment : BaseFragment() {
                     modifier = Modifier
                         .padding(top = 13.dp)
                         .padding(horizontal = 16.dp)
+                        .noRippleClickable {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_CHAT_DETAIL,
+                                ChatDetailFragment.newInstance()
+                            )
+                        }
                 )
                 Row(Modifier.padding(horizontal = 16.dp, vertical = 25.dp)) {
                     ButtonLike(

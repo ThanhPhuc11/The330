@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.chatlist
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import kotlinx.coroutines.flow.catch
@@ -11,17 +12,23 @@ import kotlinx.coroutines.launch
 class ChatListVM(
     private val repo: ChatListRepo
 ) : BaseViewModel() {
+//    val stateListRoom = mutableStateListOf<>
 
-    fun getUserDetails(token: String) {
+    fun getChatList(
+        token: String,
+        page: Int,
+        type: String? = null,
+        startTime: String? = null,
+        endTime: String? = null
+    ) {
         viewModelScope.launch {
-            repo.getUserDetails(token)
+            repo.getChatList(token, page, size = 20, type, startTime, endTime)
                 .onStart {
                     callbackStart.value = Unit
                 }
                 .onCompletion { }
                 .catch {
-//                    handleError(it)
-//                    callbackUserFail.value = Unit
+                    handleError(it)
                 }
                 .collect {
                     callbackSuccess.value = Unit

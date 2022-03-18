@@ -77,7 +77,9 @@ class SecondHandMarketVM(
                 .catch { handleError(it) }
                 .collect {
                     callbackSuccess.value = Unit
-                    listData.clear()
+                    if (page == 0) {
+                        listData.clear()
+                    }
                     it.content?.let { it1 ->
                         listData.addAll(it1)
                         stateListData.addAll(listData)

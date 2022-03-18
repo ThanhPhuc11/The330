@@ -60,7 +60,10 @@ fun ChatListScreen(accessToken: String, viewController: ViewController?, user: U
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
-
+                    viewModel.getChatList(
+                        accessToken,
+                        0
+                    )
                 }
                 Lifecycle.Event.ON_STOP -> {
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,8 +34,10 @@ import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.utils.AppConstants
+import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
@@ -76,6 +79,10 @@ class PointFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        viewModel.getCompanyDetail(
+                            accessToken!!,
+                            userDetailBase?.companyRequest?.id ?: 0
+                        )
                     }
                     Lifecycle.Event.ON_STOP -> {}
                     else -> {}
@@ -115,7 +122,12 @@ class PointFragment : BaseFragment() {
                     .fillMaxWidth()
                     .height(52.dp)
             ) {
-                BoxStatus(Modifier.weight(1f), label = "충전", point = 10, number = 30) {
+                BoxStatus(
+                    Modifier.weight(1f),
+                    label = "충전",
+                    point = viewModel.companyDetail.value.pointCharge ?: 0,
+                    number = viewModel.chargeCount.value
+                ) {
 
                 }
                 Box(
@@ -125,7 +137,12 @@ class PointFragment : BaseFragment() {
                         .width(1.dp)
                         .background(ColorUtils.gray_E1E1E1)
                 )
-                BoxStatus(Modifier.weight(1f), label = "사용", point = 9, number = 30) {
+                BoxStatus(
+                    Modifier.weight(1f),
+                    label = "사용",
+                    point = viewModel.companyDetail.value.pointUse ?: 0,
+                    number = viewModel.usageCount.value
+                ) {
 
                 }
                 Box(
@@ -135,7 +152,12 @@ class PointFragment : BaseFragment() {
                         .width(1.dp)
                         .background(ColorUtils.gray_E1E1E1)
                 )
-                BoxStatus(Modifier.weight(1f), label = "잔여", point = 1, number = null) {
+                BoxStatus(
+                    Modifier.weight(1f),
+                    label = "잔여",
+                    point = viewModel.companyDetail.value.pointRemain ?: 0,
+                    number = null
+                ) {
 
                 }
             }
@@ -248,6 +270,22 @@ class PointFragment : BaseFragment() {
 
     @Composable
     private fun ChargingHistoryTab() {
+        val owner = LocalLifecycleOwner.current
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+//                        viewModel.type = AppConstants.RECRUITMENT
+                        viewModel.getPoints(accessToken!!, 0, AppConstants.Point.PROVIDED)
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
         Column(Modifier.fillMaxWidth()) {
             Box(
                 Modifier
@@ -256,7 +294,7 @@ class PointFragment : BaseFragment() {
                     .padding(top = 12.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                HandleSortUI()
+                HandleSortUI(AppConstants.Point.PROVIDED)
             }
             Divider(color = ColorUtils.white_FFFFFF, thickness = 10.dp)
             ItemCharge(
@@ -265,21 +303,46 @@ class PointFragment : BaseFragment() {
                 stringResource(R.string.charge_point)
             )
             Divider(color = ColorUtils.gray_E1E1E1)
-            val listData = mutableListOf<KeyValueModel>().apply {
-                add(KeyValueModel())
-                add(KeyValueModel())
-                add(KeyValueModel())
-            }
-            LazyColumn(state = rememberLazyListState()) {
+            val listData = viewModel.stateListCharge
+            val lazyListState = rememberLazyListState()
+            LazyColumn(state = lazyListState) {
                 itemsIndexed(listData) { index, obj ->
-                    ItemCharge()
+                    ItemCharge(
+                        date = AppDateUtils.changeDateFormat(
+                            AppDateUtils.FORMAT_16,
+                            AppDateUtils.FORMAT_21,
+                            obj.createdOn ?: ""
+                        ),
+                        type = "${obj.pointProvidedType}",
+                        point = "+${obj.amount ?: 0} P"
+                    )
                 }
+            }
+
+            LoadmoreHandler(lazyListState) { page ->
+                viewModel.getPoints(accessToken!!, page, AppConstants.Point.PROVIDED)
             }
         }
     }
 
     @Composable
     private fun UsageHistoryTab() {
+        val owner = LocalLifecycleOwner.current
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+//                        viewModel.type = AppConstants.RECRUITMENT
+                        viewModel.getPoints(accessToken!!, 0, AppConstants.Point.USAGE)
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
         Column(Modifier.fillMaxWidth()) {
             Box(
                 Modifier
@@ -288,7 +351,7 @@ class PointFragment : BaseFragment() {
                     .padding(top = 12.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                HandleSortUI()
+                HandleSortUI(AppConstants.Point.USAGE)
             }
             Divider(color = ColorUtils.white_FFFFFF, thickness = 10.dp)
             ItemCharge(
@@ -297,21 +360,30 @@ class PointFragment : BaseFragment() {
                 stringResource(R.string.usage_point)
             )
             Divider(color = ColorUtils.gray_E1E1E1)
-            val listData = mutableListOf<KeyValueModel>().apply {
-                add(KeyValueModel())
-                add(KeyValueModel())
-                add(KeyValueModel())
-            }
-            LazyColumn(state = rememberLazyListState()) {
+            val listData = viewModel.stateListUsage
+            val lazyListState = rememberLazyListState()
+            LazyColumn(state = lazyListState) {
                 itemsIndexed(listData) { index, obj ->
-                    ItemUsage()
+                    ItemCharge(
+                        date = AppDateUtils.changeDateFormat(
+                            AppDateUtils.FORMAT_16,
+                            AppDateUtils.FORMAT_21,
+                            obj.createdOn ?: ""
+                        ),
+                        type = "${obj.reason}",
+                        point = "-${obj.amount ?: 0} P"
+                    )
                 }
+            }
+
+            LoadmoreHandler(lazyListState) { page ->
+                viewModel.getPoints(accessToken!!, page, AppConstants.Point.PROVIDED)
             }
         }
     }
 
     @Composable
-    private fun HandleSortUI() {
+    private fun HandleSortUI(pointTransactionType: String) {
         val listSort = remember {
             GetDummyData.getSortReservationRoleCompany(requireContext())
         }
@@ -354,7 +426,8 @@ class PointFragment : BaseFragment() {
                         onClick = {
                             itemSelected.value = selectionOption
                             expanded = false
-//                            onClickSort?.invoke(selectionOption.id ?: "null")
+                            viewModel.timeLimit = selectionOption.id!!
+                            viewModel.getPoints(accessToken!!, 0, pointTransactionType)
                             showMessDEBUG(itemSelected.value.id)
                         }
                     ) {
@@ -379,7 +452,12 @@ class PointFragment : BaseFragment() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                Text(date, color = ColorUtils.black_000000, fontSize = 13.sp)
+                Text(
+                    date,
+                    color = ColorUtils.black_000000,
+                    fontSize = 13.sp,
+                    textAlign = TextAlign.Center
+                )
             }
             Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
                 Text(type, color = ColorUtils.black_000000, fontSize = 13.sp)
@@ -390,28 +468,28 @@ class PointFragment : BaseFragment() {
         }
     }
 
-    @Preview
-    @Composable
-    private fun ItemUsage(
-        date: String = "YYYY/MM/DD\nHH:MM",
-        type: String = "reason",
-        point: String = "- 99,999 P"
-    ) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                Text(date, color = ColorUtils.black_000000, fontSize = 13.sp)
-            }
-            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                Text(type, color = ColorUtils.black_000000, fontSize = 13.sp)
-            }
-            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                Text(point, color = ColorUtils.black_000000, fontSize = 13.sp)
-            }
-        }
-    }
+//    @Preview
+//    @Composable
+//    private fun ItemUsage(
+//        date: String = "YYYY/MM/DD\nHH:MM",
+//        type: String = "reason",
+//        point: String = "- 99,999 P"
+//    ) {
+//        Row(
+//            Modifier
+//                .fillMaxWidth()
+//                .padding(vertical = 10.dp),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+//                Text(date, color = ColorUtils.black_000000, fontSize = 13.sp)
+//            }
+//            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+//                Text(type, color = ColorUtils.black_000000, fontSize = 13.sp)
+//            }
+//            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+//                Text(point, color = ColorUtils.black_000000, fontSize = 13.sp)
+//            }
+//        }
+//    }
 }

@@ -146,8 +146,8 @@ object GetDummyData {
 
     fun getSortReservationRoleCompany(context: Context): MutableList<KeyValueModel> {
         return mutableListOf<KeyValueModel>().apply {
-            add(KeyValueModel("TODAY", context.getString(R.string.one_week)))
-            add(KeyValueModel("THREE_DAY", context.getString(R.string.one_week)))
+            add(KeyValueModel("TODAY", context.getString(R.string.today)))
+            add(KeyValueModel("THREE_DAY", context.getString(R.string.three_day)))
             add(KeyValueModel("ONE_WEEK", context.getString(R.string.one_week)))
             add(KeyValueModel("LAST_ONE_MONTH", context.getString(R.string.one_month)))
             add(KeyValueModel("THREE_MONTH", context.getString(R.string.three_month)))
