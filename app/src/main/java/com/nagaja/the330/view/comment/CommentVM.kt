@@ -15,13 +15,13 @@ class CommentVM(
     private val repo: CommentRepo
 ) : BaseViewModel() {
     val stateListComment = mutableStateListOf<CommentModel>()
+    var firstCall = true
     val stateCommentCount = mutableStateOf(0)
 
 
     fun getCommentsById(
         token: String,
         page: Int,
-        size: Int,
         status: String?,
         freeNoticeBoardId: Int?,
         localNewsId: Int?,
@@ -31,7 +31,7 @@ class CommentVM(
             repo.getCommentsById(
                 token,
                 page,
-                size,
+                5,
                 "DESC",
                 status,
                 freeNoticeBoardId,
@@ -43,10 +43,13 @@ class CommentVM(
                 .catch { handleError(it) }
                 .collect {
                     callbackSuccess.value = Unit
-                    stateCommentCount.value = it.totalElements ?: 0
                     it.content?.let { it1 ->
-                        stateListComment.clear()
+//                        stateListComment.clear()
                         stateListComment.addAll(it1)
+                    }
+                    if (firstCall) {
+                        stateCommentCount.value = it.totalElements ?: 0
+                        firstCall = false
                     }
                 }
         }
