@@ -173,18 +173,38 @@ class CompanyUsageFragment : BaseFragment() {
 
     @Composable
     private fun CorporateUseTab(context: Context) {
+        val data = GetDummyData.getCompanyUsageList()
         Column(Modifier.fillMaxWidth()) {
-            Box(
-                Modifier
-                    .fillMaxWidth()
+            Row(
+                modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .padding(top = 12.dp, bottom = 16.dp),
-                contentAlignment = Alignment.CenterEnd
+                    .padding(top = 12.dp, bottom = 16.dp)
+                    .height(IntrinsicSize.Max)
             ) {
-                HandleSortUI(context = context)
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .noRippleClickable {
+                            Toast.makeText(requireContext(), "click", Toast.LENGTH_LONG).show()
+                        },
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    Text(
+                        text = "상담중 ${data.size}건",
+                        color = ColorUtils.black_000000,
+                        fontSize = 13.sp,
+                        textAlign = TextAlign.Start
+                    )
+                }
+                Box(
+                    Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    HandleSortUI(context = context)
+                }
             }
             Divider(color = ColorUtils.gray_E1E1E1)
-            val data = GetDummyData.getCompanyUsageList()
             LazyColumn(Modifier.padding(top = 16.dp),
                 state = rememberLazyListState()) {
                 itemsIndexed(data) {_, item ->
@@ -196,18 +216,38 @@ class CompanyUsageFragment : BaseFragment() {
 
     @Composable
     private fun MyUsageTab(context: Context) {
+        val data = GetDummyData.getCompanyUsageList()
         Column(Modifier.fillMaxWidth()) {
-            Box(
-                Modifier
-                    .fillMaxWidth()
+            Row(
+                modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .padding(top = 12.dp, bottom = 16.dp),
-                contentAlignment = Alignment.CenterEnd
+                    .padding(top = 12.dp, bottom = 16.dp)
+                    .height(IntrinsicSize.Max)
             ) {
-                HandleSortUI(context = context)
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .noRippleClickable {
+                            Toast.makeText(requireContext(), "click", Toast.LENGTH_LONG).show()
+                        },
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    Text(
+                        text = "상담중 ${data.size}건",
+                        color = ColorUtils.black_000000,
+                        fontSize = 13.sp,
+                        textAlign = TextAlign.Start
+                    )
+                }
+                Box(
+                    Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    HandleSortUI(context = context)
+                }
             }
             Divider(color = ColorUtils.gray_E1E1E1)
-            val data = GetDummyData.getCompanyUsageList()
             LazyColumn(Modifier.padding(top = 16.dp),
                 state = rememberLazyListState()) {
                 itemsIndexed(data) {_, item ->
