@@ -39,7 +39,8 @@ public class AppDateUtils {
     public static String FORMAT_18 = "yyyy년 MM월 dd일 hh:mm aa";
     public static String FORMAT_19 = "yyyy.MM.dd HH:mm";
     public static String FORMAT_20 = "yyyy년 MM월 dd일 HH시mm분";
-    public static String FORMAT_21 = "yyyy/MM/dd\nHH:m";
+    public static String FORMAT_21 = "yyyy/MM/dd\nHH:mm";
+    public static String FORMAT_22 = "yyyy/MM/dd HH:mm";
     public static String FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
     public static String changeDateFormat(String currentFormat, String requiredFormat, String dateString) {

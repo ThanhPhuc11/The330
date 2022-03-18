@@ -15,14 +15,16 @@ class ReservationCompanyVM(
     private val repo: ReservationCompanyRepo
 ) : BaseViewModel() {
     var accessToken: String = ""
-    var timeLimit: String = "ONE_WEEK"
+    var timeLimit: String = "ONE_DAY"
     var status: String? = null
 
     var listDataGeneral = mutableListOf<ReservationModel>()
     val stateListDataGeneral = mutableStateListOf<ReservationModel>()
+    val stateTotalGeneralTab = mutableStateOf(0)
 
     var listDataCompany = mutableListOf<ReservationModel>()
     val stateListDataCompany = mutableStateListOf<ReservationModel>()
+    val stateTotalCompanyTab = mutableStateOf(0)
 
     val total = mutableStateOf(0)
     val reservation_completed = mutableStateOf(0)
@@ -65,6 +67,7 @@ class ReservationCompanyVM(
                     callbackSuccess.value = Unit
                     if (page == 0) {
                         stateListDataGeneral.clear()
+                        stateTotalGeneralTab.value = it.totalElements?:0
                     }
                     it.content?.let { data ->
                         listDataGeneral.clear()
@@ -95,6 +98,7 @@ class ReservationCompanyVM(
                     callbackSuccess.value = Unit
                     if (page == 0) {
                         stateListDataCompany.clear()
+                        stateTotalCompanyTab.value = it.totalElements?:0
                     }
                     it.content?.let { data ->
                         listDataCompany.clear()
