@@ -1,4 +1,4 @@
-package com.nagaja.the330.view.usage
+package com.nagaja.the330.view.usagecompany
 
 import android.content.Context
 import android.os.Bundle
@@ -40,6 +40,7 @@ import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
+import com.nagaja.the330.view.usage.UsageVM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

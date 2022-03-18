@@ -9,6 +9,7 @@ import com.nagaja.the330.R
 import com.nagaja.the330.model.CompanyUsageModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.NotificationModel
+import com.nagaja.the330.model.RecruitmentJobsModel
 import com.nagaja.the330.utils.AppConstants
 
 object GetDummyData {
@@ -202,6 +203,19 @@ object GetDummyData {
                 name = "Dummy $i"
                 numberOfUsers = 10
                 date = "2022/03/18 00:00"
+            })
+        }
+        return list
+    }
+
+    fun getRecruitmentList() : MutableList<RecruitmentJobsModel> {
+        val list = mutableListOf<RecruitmentJobsModel>()
+        for (i in 0..100) {
+            list.add(RecruitmentJobsModel().apply {
+                id = i
+                title = "Dummy $i"
+                body = "설명내용 일부 (등록된 글의 앞부분만 2줄까지 표기, 이후 ...) 설명내용 일부 (등록된 글의 앞부분만 2줄까지 표기, 이후 ...)"
+                createdOn = "2022/03/18 00:00"
             })
         }
         return list

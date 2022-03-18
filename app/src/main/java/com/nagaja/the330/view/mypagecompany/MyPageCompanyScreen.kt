@@ -33,7 +33,6 @@ import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
 import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.dataStore
-import com.nagaja.the330.model.CompanyUsageModel
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
@@ -42,16 +41,15 @@ import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.applycompany.ApplyCompanyFragment
-import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
 import com.nagaja.the330.view.point.PointFragment
+import com.nagaja.the330.view.recruimentcompany.RecruitmentCompanyFragment
 import com.nagaja.the330.view.regularcustomer.RegularCustomerFragment
 import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageFragment
 import com.nagaja.the330.view.secondhandmypage.SecondHandMypageFragment
 import com.nagaja.the330.view.text14_222
-import com.nagaja.the330.view.usage.CompanyUsageFragment
-import com.nagaja.the330.view.usage.UsageFragment
+import com.nagaja.the330.view.usagecompany.CompanyUsageFragment
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
@@ -70,6 +68,13 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
         viewController?.pushFragment(
             ScreenId.SCREEN_REGULAR_CUSTOMER_HISTORY,
             RegularCustomerFragment.newInstance()
+        )
+    }
+
+    val clickRecruitment: (() -> Unit) = {
+        viewController?.pushFragment(
+            ScreenId.SCREEN_RECRUITMENT_COMPANY,
+            RecruitmentCompanyFragment.newInstance()
         )
     }
 
@@ -216,7 +221,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                     R.drawable.ic_job_opt,
                     stringResource(R.string.option_recruitment_list),
                     null,
-                    clickFavorite
+                    clickRecruitment
                 )
                 MypageOptionItem(
                     R.drawable.ic_secondhand_purchase_opt,
