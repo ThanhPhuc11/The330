@@ -191,7 +191,7 @@ class CompanyUsageFragment : BaseFragment() {
                     contentAlignment = Alignment.CenterStart,
                 ) {
                     Text(
-                        text = "상담중 ${data.size}건",
+                        text = "총 ${data.size}건 이용",
                         color = ColorUtils.black_000000,
                         fontSize = 13.sp,
                         textAlign = TextAlign.Start
@@ -234,7 +234,7 @@ class CompanyUsageFragment : BaseFragment() {
                     contentAlignment = Alignment.CenterStart,
                 ) {
                     Text(
-                        text = "상담중 ${data.size}건",
+                        text = "총 ${data.size}건 이용",
                         color = ColorUtils.black_000000,
                         fontSize = 13.sp,
                         textAlign = TextAlign.Start
