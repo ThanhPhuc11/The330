@@ -52,4 +52,8 @@ class ReservationModel {
     @SerializedName("createdOn")
     @Expose
     var createdOn: String? = null
+
+    @SerializedName("autoCancel")
+    @Expose
+    var autoCancel: Boolean? = null
 }

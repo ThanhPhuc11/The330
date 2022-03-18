@@ -48,8 +48,10 @@ import com.nagaja.the330.model.ReservationModel
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
+import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
@@ -152,7 +154,7 @@ fun ReservationCompanyScreen(accessToken: String, viewController: ViewController
             }
         }
         //TODO: horizontal pager
-        SetupPager(pagerState = pagerState, viewModel)
+        SetupPager(pagerState = pagerState, modifier = Modifier.weight(1f), viewModel, accessToken)
     }
 }
 
@@ -198,24 +200,27 @@ private fun TabSelected(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun SetupPager(pagerState: PagerState, viewModel: ReservationCompanyVM) {
-    HorizontalPager(
-        state = pagerState, modifier = Modifier
-            .heightIn(
-                0.dp, 600.dp
-            )
-            .wrapContentHeight()
-    ) { page ->
-        if (page == 0) {
-            Tab1(viewModel)
-        } else {
-            Tab2(viewModel)
+private fun SetupPager(
+    pagerState: PagerState,
+    modifier: Modifier = Modifier,
+    viewModel: ReservationCompanyVM,
+    token: String
+) {
+    Column(modifier) {
+        HorizontalPager(
+            state = pagerState,
+        ) { page ->
+            if (page == 0) {
+                Tab1(viewModel, token)
+            } else {
+                Tab2(viewModel, token)
+            }
         }
     }
 }
 
 @Composable
-private fun Tab1(viewModel: ReservationCompanyVM) {
+private fun Tab1(viewModel: ReservationCompanyVM, token: String) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
     DisposableEffect(Unit) {
@@ -225,7 +230,7 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
 //                    getUserDetailFromDataStore(context) {
 //                        viewModel.reservationOverview(accessToken, it)
 //                    }
-                    viewModel.getReservationCompany(viewModel.accessToken)
+                    viewModel.getReservationCompany(viewModel.accessToken, 0)
                 }
                 else -> {}
             }
@@ -244,8 +249,8 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             BoxStatus(Modifier.weight(1f), text = "총 예약\n${viewModel.total.value}건") {
-//                viewModel.status = null
-//                viewModel.getReservationMain(accessToken)
+                viewModel.status = null
+                viewModel.getReservationCompany(token, 0)
             }
             Box(
                 Modifier
@@ -259,8 +264,8 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
                 Modifier.weight(1f),
                 text = "예약완료\n${viewModel.reservation_completed.value}건"
             ) {
-//                viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
-//                viewModel.getReservationMain(accessToken)
+                viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
+                viewModel.getReservationCompany(token, 0)
             }
             Box(
                 Modifier
@@ -271,8 +276,8 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
             )
 
             BoxStatus(Modifier.weight(1f), text = "이용완료\n${viewModel.usage_completed.value}건") {
-//                viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
-//                viewModel.getReservationMain(accessToken)
+                viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
+                viewModel.getReservationCompany(token, 0)
             }
             Box(
                 Modifier
@@ -283,8 +288,8 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
             )
 
             BoxStatus(Modifier.weight(1f), text = "예약취소\n${viewModel.reservation_cancel.value}건") {
-//                viewModel.status = AppConstants.Reservation.RESERVATION_CANCELED
-//                viewModel.getReservationMain(accessToken)
+                viewModel.status = AppConstants.Reservation.RESERVATION_CANCELED
+                viewModel.getReservationCompany(token, 0)
             }
             Box(
                 Modifier
@@ -353,7 +358,7 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
                                 itemSelected.value = selectionOption
                                 expanded = false
                                 viewModel.timeLimit = selectionOption.id!!
-                                viewModel.getReservationCompany(viewModel.accessToken)
+                                viewModel.getReservationCompany(viewModel.accessToken, 0)
                             }
                         ) {
                             Text(text = selectionOption.name!!)
@@ -363,18 +368,35 @@ private fun Tab1(viewModel: ReservationCompanyVM) {
             }
         }
         val listData = viewModel.stateListDataCompany
-        LazyColumn(state = rememberLazyListState()) {
+        val lazyListState = rememberLazyListState()
+        LazyColumn(state = lazyListState) {
             itemsIndexed(listData) { index, obj ->
-                ItemReservationTab1(index, obj)
+                ItemReservationTab1(index, obj,
+                    onCompleted = {
+                        viewModel.editReservation(token, obj.id!!, "USAGE_COMPLETED")
+                    },
+                    onCancel = {
+                        viewModel.editReservation(token, obj.id!!, "RESERVATION_CANCELED")
+                    })
                 Divider(color = ColorUtils.gray_E1E1E1)
             }
+        }
+
+        LoadmoreHandler(lazyListState) { page ->
+            viewModel.getReservationCompany(token, page)
         }
     }
 
 }
 
 @Composable
-private fun ItemReservationTab1(index: Int, obj: ReservationModel) {
+private fun ItemReservationTab1(
+    index: Int,
+    obj: ReservationModel,
+    onCompleted: (() -> Unit)? = null,
+    onCancel: (() -> Unit)? = null,
+    onReport: (() -> Unit)? = null
+) {
     Column(Modifier.padding(16.dp)) {
         Text(
             "${obj.bookerName}",
@@ -402,32 +424,48 @@ private fun ItemReservationTab1(index: Int, obj: ReservationModel) {
         )
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            ButtonStatus(
-                "서비스완료",
-                ColorUtils.blue_2177E4,
-                ColorUtils.white_FFFFFF,
-                ColorUtils.blue_2177E4
-            )
+            if (obj.status == AppConstants.Reservation.RESERVATION_COMPLETED) {
+                ButtonStatus(
+                    "서비스완료",
+                    ColorUtils.blue_2177E4,
+                    ColorUtils.white_FFFFFF,
+                    ColorUtils.blue_2177E4
+                ) {
+                    onCompleted?.invoke()
+                }
 
-            ButtonStatus(
-                "예약취소",
-                ColorUtils.gray_222222,
-                ColorUtils.white_FFFFFF,
-                ColorUtils.gray_222222
-            )
+                ButtonStatus(
+                    "예약취소",
+                    ColorUtils.gray_222222,
+                    ColorUtils.white_FFFFFF,
+                    ColorUtils.gray_222222
+                ) {
+                    onCancel?.invoke()
+                }
+            }
 
-            ButtonStatus(
-                "사용자신고",
-                ColorUtils.white_FFFFFF,
-                ColorUtils.gray_222222,
-                ColorUtils.gray_222222
-            )
+            if (obj.autoCancel == true) {
+                ButtonStatus(
+                    "사용자신고",
+                    ColorUtils.white_FFFFFF,
+                    ColorUtils.gray_222222,
+                    ColorUtils.gray_222222
+                ) {
+                    onReport?.invoke()
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun ButtonStatus(text: String, textColor: Color, background: Color, border: Color) {
+private fun ButtonStatus(
+    text: String,
+    textColor: Color,
+    background: Color,
+    border: Color,
+    onClick: () -> Unit
+) {
     Box(
         Modifier
             .padding(start = 8.dp)
@@ -437,14 +475,17 @@ private fun ButtonStatus(text: String, textColor: Color, background: Color, bord
                 width = 1.dp,
                 color = border,
                 shape = RoundedCornerShape(99.dp)
-            ), contentAlignment = Alignment.Center
+            )
+            .noRippleClickable {
+                onClick.invoke()
+            }, contentAlignment = Alignment.Center
     ) {
         Text(text, color = textColor, fontSize = 12.sp)
     }
 }
 
 @Composable
-private fun Tab2(viewModel: ReservationCompanyVM) {
+private fun Tab2(viewModel: ReservationCompanyVM, token: String) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
     DisposableEffect(Unit) {
@@ -454,7 +495,7 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
 //                    getUserDetailFromDataStore(context) {
 //                        viewModel.reservationOverview(accessToken, it)
 //                    }
-                    viewModel.getReservationGeneral(viewModel.accessToken)
+                    viewModel.getReservationGeneral(viewModel.accessToken, 0)
                 }
                 else -> {}
             }
@@ -474,8 +515,8 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             BoxStatus(Modifier.weight(1f), text = "총 예약\n${viewModel.total.value}건") {
-//                viewModel.status = null
-//                viewModel.getReservationMain(accessToken)
+                viewModel.status = null
+                viewModel.getReservationGeneral(token, 0)
             }
             Box(
                 Modifier
@@ -489,8 +530,8 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
                 Modifier.weight(1f),
                 text = "예약완료\n${viewModel.reservation_completed.value}건"
             ) {
-//                viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
-//                viewModel.getReservationMain(accessToken)
+                viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
+                viewModel.getReservationGeneral(token, 0)
             }
             Box(
                 Modifier
@@ -501,8 +542,8 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
             )
 
             BoxStatus(Modifier.weight(1f), text = "이용완료\n${viewModel.usage_completed.value}건") {
-//                viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
-//                viewModel.getReservationMain(accessToken)
+                viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
+                viewModel.getReservationGeneral(token, 0)
             }
             Box(
                 Modifier
@@ -513,8 +554,8 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
             )
 
             BoxStatus(Modifier.weight(1f), text = "예약취소\n${viewModel.reservation_cancel.value}건") {
-//                viewModel.status = AppConstants.Reservation.RESERVATION_CANCELED
-//                viewModel.getReservationMain(accessToken)
+                viewModel.status = AppConstants.Reservation.RESERVATION_CANCELED
+                viewModel.getReservationGeneral(token, 0)
             }
             Box(
                 Modifier
@@ -575,7 +616,7 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
                                 itemSelected.value = selectionOption
                                 expanded = false
                                 viewModel.timeLimit = selectionOption.id!!
-                                viewModel.getReservationGeneral(viewModel.accessToken)
+                                viewModel.getReservationGeneral(viewModel.accessToken, 0)
                             }
                         ) {
                             Text(text = selectionOption.name!!)
@@ -586,11 +627,16 @@ private fun Tab2(viewModel: ReservationCompanyVM) {
         }
 
         val listData = viewModel.stateListDataGeneral
-        LazyColumn(state = rememberLazyListState()) {
+        val lazyListState = rememberLazyListState()
+        LazyColumn(state = lazyListState) {
             itemsIndexed(listData) { index, obj ->
                 ItemReservationTab2(index, obj)
                 Divider(color = ColorUtils.gray_E1E1E1)
             }
+        }
+
+        LoadmoreHandler(lazyListState) { page ->
+            viewModel.getReservationGeneral(token, page)
         }
     }
 

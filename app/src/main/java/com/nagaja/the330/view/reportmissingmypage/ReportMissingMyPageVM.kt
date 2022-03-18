@@ -30,7 +30,7 @@ class ReportMissingMyPageVM(
             repo.getReportMissingMyPage(
                 token = token,
                 page = page,
-                size = 10,
+                size = 20,
                 timeLimit = timeLimit,
                 type = null,
                 status = status,

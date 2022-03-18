@@ -1,6 +1,5 @@
 package com.nagaja.the330.view.favoritecompany
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
@@ -24,6 +23,9 @@ class FavCompanyVM(
                 .onCompletion { }
                 .catch { }
                 .collect {
+                    if (page == 0) {
+                        listCompany.clear()
+                    }
                     it.content?.let { it1 -> listCompany.addAll(it1) }
                 }
         }
@@ -40,15 +42,23 @@ class FavCompanyVM(
     private fun follow(token: String, targetId: Int) {
         viewModelScope.launch {
             repo.followCompany(token, targetId)
-                .onStart { }
+                .onStart { callbackStart.value = Unit }
                 .onCompletion { }
-                .catch { }
+                .catch {
+                    handleError(it)
+                }
                 .collect {
+                    callbackSuccess.value = Unit
                     if (it.raw().isSuccessful && it.raw().code == 201) {
                         //TODO: update UI to follow
                         listCompany.forEachIndexed { index, obj ->
                             if (obj.target?.id == targetId) {
-                                val newObj = listCompany[index].apply { isFollow = true }
+                                val newObj = listCompany[index].apply {
+                                    isFollow = true
+                                    target?.apply {
+                                        likedCount = (likedCount ?: 0) + 1
+                                    }
+                                }
                                 updateItem(index, newObj, listCompany)
                                 return@forEachIndexed
                             }
@@ -61,17 +71,23 @@ class FavCompanyVM(
     private fun unfollow(token: String, targetId: Int) {
         viewModelScope.launch {
             repo.unfollowCompany(token, targetId)
-                .onStart { }
+                .onStart { callbackStart.value = Unit }
                 .onCompletion { }
                 .catch {
-                    Log.e("PHUC", "$this")
+                    handleError(it)
                 }
                 .collect {
+                    callbackSuccess.value = Unit
                     if (it.raw().isSuccessful && it.raw().code == 204) {
                         //TODO: update UI to unFollow
                         listCompany.forEachIndexed { index, obj ->
                             if (obj.target?.id == targetId) {
-                                val newObj = listCompany[index].apply { isFollow = false }
+                                val newObj = listCompany[index].apply {
+                                    isFollow = false
+                                    target?.apply {
+                                        likedCount = (likedCount ?: 0) - 1
+                                    }
+                                }
                                 updateItem(index, newObj, listCompany)
                                 return@forEachIndexed
                             }

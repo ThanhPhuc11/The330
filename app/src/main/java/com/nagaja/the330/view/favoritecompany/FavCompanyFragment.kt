@@ -34,9 +34,11 @@ import com.nagaja.the330.model.CompanyFavoriteModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.LoadmoreHandler
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.reservationregis.ReservationRegisFragment
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -229,7 +231,15 @@ class FavCompanyFragment : BaseFragment() {
                         Modifier
                             .width(76.dp)
                             .height(32.dp)
-                            .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp)),
+                            .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp))
+                            .noRippleClickable {
+                                obj.userFollowId?.targetId?.let {
+                                    viewController?.pushFragment(
+                                        ScreenId.SCREEN_RESERVATION_REGIS,
+                                        ReservationRegisFragment.newInstance(it)
+                                    )
+                                }
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text("예약하기", color = ColorUtils.white_FFFFFF, fontSize = 12.sp)
@@ -266,7 +276,11 @@ class FavCompanyFragment : BaseFragment() {
                     contentDescription = null
                 )
             }
-            Text("단골 3,000", color = ColorUtils.black_000000, fontSize = 12.sp)
+            Text(
+                "단골 ${obj.target?.likedCount ?: 0}",
+                color = ColorUtils.black_000000,
+                fontSize = 12.sp
+            )
         }
     }
 }

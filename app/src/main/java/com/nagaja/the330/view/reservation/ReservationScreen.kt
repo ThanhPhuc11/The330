@@ -46,6 +46,7 @@ import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
@@ -84,7 +85,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                     getUserDetailFromDataStore(context) {
                         viewModel.reservationOverview(accessToken, it)
                     }
-                    viewModel.getReservationMain(accessToken)
+                    viewModel.getReservationMain(accessToken, 0)
                 }
                 else -> {}
             }
@@ -146,7 +147,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                                 itemSelected.value = selectionOption
                                 expanded = false
                                 viewModel.timeLimit = selectionOption.id!!
-                                viewModel.getReservationMain(accessToken)
+                                viewModel.getReservationMain(accessToken, 0)
                             }
                         ) {
                             Text(text = selectionOption.name!!)
@@ -164,7 +165,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
         ) {
             BoxStatus(Modifier.weight(1f), text = "총 예약\n${viewModel.total.value}건") {
                 viewModel.status = null
-                viewModel.getReservationMain(accessToken)
+                viewModel.getReservationMain(accessToken, 0)
             }
             Box(
                 Modifier
@@ -179,7 +180,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
                 text = "예약완료\n${viewModel.reservation_completed.value}건"
             ) {
                 viewModel.status = AppConstants.Reservation.RESERVATION_COMPLETED
-                viewModel.getReservationMain(accessToken)
+                viewModel.getReservationMain(accessToken, 0)
             }
             Box(
                 Modifier
@@ -191,7 +192,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
 
             BoxStatus(Modifier.weight(1f), text = "이용완료\n${viewModel.usage_completed.value}건") {
                 viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
-                viewModel.getReservationMain(accessToken)
+                viewModel.getReservationMain(accessToken, 0)
             }
             Box(
                 Modifier
@@ -203,7 +204,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
 
             BoxStatus(Modifier.weight(1f), text = "예약취소\n${viewModel.reservation_cancel.value}건") {
                 viewModel.status = AppConstants.Reservation.RESERVATION_CANCELED
-                viewModel.getReservationMain(accessToken)
+                viewModel.getReservationMain(accessToken, 0)
             }
             Box(
                 Modifier
@@ -216,13 +217,18 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
         Divider(color = ColorUtils.gray_E1E1E1)
 
         val listData = viewModel.stateListData
-        LazyColumn(state = rememberLazyListState()) {
+        val lazyListState = rememberLazyListState()
+        LazyColumn(state = lazyListState) {
             itemsIndexed(listData) { index, obj ->
                 ItemReservation(index, obj) {
                     viewModel.cancelReservation(accessToken, it)
                 }
                 Divider(color = ColorUtils.gray_E1E1E1)
             }
+        }
+
+        LoadmoreHandler(lazyListState) { page ->
+            viewModel.getReservationMain(accessToken, page)
         }
     }
 }
