@@ -96,6 +96,11 @@ object AppConstants {
         const val RESERVATION_DELETED = "RESERVATION_DELETED"
     }
 
+    object Point {
+        const val PROVIDED = "PROVIDED"
+        const val USAGE = "USAGE"
+    }
+
     object TabType {
         const val ITEM_COOKING_GENERAL = "ITEM_COOKING_GENERAL"
         const val ITEM_COOKING_CHEF = "ITEM_COOKING_CHEF"

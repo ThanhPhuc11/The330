@@ -115,6 +115,12 @@ interface ApiService {
         @Query("targetId") targetId: Int
     ): Response<Unit> //204
 
+    @GET("follows/checkFollow")
+    suspend fun checkFollowCompany(
+        @Header("Authorization") token: String,
+        @Query("targetId") targetId: Int
+    ): Boolean
+
     @POST("company_requests")
     suspend fun makeCompany(
         @Header("Authorization") token: String,
@@ -360,5 +366,24 @@ interface ApiService {
     suspend fun editComments(
         @Header("Authorization") token: String,
         @Body body: CommentModel
+    ): Response<Unit>
+
+    @GET("points")
+    suspend fun getPoints(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("pointTransactionType") pointTransactionType : String,
+        @Query("timeLimit") timeLimit  : String,
+    ): ResponseModel<MutableList<PointModel>>
+
+    @GET("chat/chatList")
+    suspend fun getChatList(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("type") type: String?,
+        @Query("startTime") startTime: String?,
+        @Query("endTime") endTime: String?,
     ): Response<Unit>
 }

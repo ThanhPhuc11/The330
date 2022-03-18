@@ -15,7 +15,7 @@ class ReportMissingVM(
     private val repo: ReportMissingRepo
 ) : BaseViewModel() {
     var sort = "LASTEST"
-    var type = AppConstants.RECRUITMENT
+    var type = AppConstants.REPORT
 
     var listDataReport = mutableListOf<ReportMissingModel>()
     var stateListDataReport = mutableStateListOf<ReportMissingModel>()
@@ -26,15 +26,14 @@ class ReportMissingVM(
 
     fun getReportMissingList(
         token: String,
-//        page: Int,
-//        size: Int,
+        page: Int,
         type: String = "REPORT"
     ) {
         viewModelScope.launch {
             repo.getReportMissingList(
                 token = token,
-                page = 0,
-                size = 10,
+                page = page,
+                size = 20,
                 sort = sort,
                 type = type,
                 null
@@ -48,12 +47,10 @@ class ReportMissingVM(
                         if (type == AppConstants.REPORT) {
                             listDataReport.clear()
                             listDataReport.addAll(it1)
-                            stateListDataReport.clear()
                             stateListDataReport.addAll(listDataReport)
                         } else {
                             listDataMissing.clear()
                             listDataMissing.addAll(it1)
-                            stateListDataMissing.clear()
                             stateListDataMissing.addAll(listDataReport)
                         }
                     }

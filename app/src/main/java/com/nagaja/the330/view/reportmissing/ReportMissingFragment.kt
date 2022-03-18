@@ -40,10 +40,7 @@ import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.ReportMissingModel
-import com.nagaja.the330.utils.AppConstants
-import com.nagaja.the330.utils.AppDateUtils
-import com.nagaja.the330.utils.ColorUtils
-import com.nagaja.the330.utils.ScreenId
+import com.nagaja.the330.utils.*
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailFragment
 import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisFragment
@@ -219,7 +216,7 @@ class ReportMissingFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        viewModel.getReportMissingList(accessToken!!, AppConstants.REPORT)
+                        viewModel.getReportMissingList(accessToken!!, 0, AppConstants.REPORT)
                     }
                     else -> {}
                 }
@@ -235,11 +232,16 @@ class ReportMissingFragment : BaseFragment() {
                 .padding(horizontal = 16.dp)
         ) {
             val listCompany = viewModel.stateListDataReport
-            LazyColumn(state = rememberLazyListState()) {
+            val lazyListState = rememberLazyListState()
+            LazyColumn(state = lazyListState) {
                 itemsIndexed(listCompany) { _, obj ->
                     ReportMissingItem(obj)
                     Divider(color = ColorUtils.black_000000_opacity_5)
                 }
+            }
+
+            LoadmoreHandler(lazyListState) { page ->
+                viewModel.getReportMissingList(accessToken!!, page, AppConstants.REPORT)
             }
         }
     }
@@ -251,7 +253,7 @@ class ReportMissingFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        viewModel.getReportMissingList(accessToken!!, AppConstants.MISSING)
+                        viewModel.getReportMissingList(accessToken!!, 0, AppConstants.MISSING)
                     }
                     else -> {}
                 }
@@ -267,11 +269,16 @@ class ReportMissingFragment : BaseFragment() {
                 .padding(horizontal = 16.dp)
         ) {
             val listCompany = viewModel.stateListDataMissing
+            val lazyListState = rememberLazyListState()
             LazyColumn(state = rememberLazyListState()) {
                 itemsIndexed(listCompany) { _, obj ->
                     ReportMissingItem(obj)
                     Divider(color = ColorUtils.black_000000_opacity_5)
                 }
+            }
+
+            LoadmoreHandler(lazyListState) { page ->
+                viewModel.getReportMissingList(accessToken!!, page, AppConstants.MISSING)
             }
         }
     }
@@ -292,6 +299,7 @@ class ReportMissingFragment : BaseFragment() {
                 viewModel.sort = id
                 viewModel.getReportMissingList(
                     accessToken!!,
+                    0,
                     if (page == 0) AppConstants.REPORT else AppConstants.MISSING
                 )
             }

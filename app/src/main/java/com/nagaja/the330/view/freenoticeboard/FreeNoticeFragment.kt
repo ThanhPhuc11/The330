@@ -1,10 +1,12 @@
 package com.nagaja.the330.view.freenoticeboard
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,15 +34,14 @@ import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.FreeNoticeModel
 import com.nagaja.the330.model.KeyValueModel
-import com.nagaja.the330.utils.AppDateUtils
-import com.nagaja.the330.utils.ColorUtils
-import com.nagaja.the330.utils.ScreenId
+import com.nagaja.the330.utils.*
 import com.nagaja.the330.view.HeaderSearch
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.freenoticedetail.FreeNoticeDetailFragment
 import com.nagaja.the330.view.freenoticeregis.FreeNoticeRegisFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
+import kotlinx.coroutines.flow.collect
 
 class FreeNoticeFragment : BaseFragment() {
     private lateinit var viewModel: FreeNoticeVM
@@ -78,7 +79,7 @@ class FreeNoticeFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        accessToken?.let { viewModel.getFreeNoticeBoard(it) }
+                        accessToken?.let { viewModel.getFreeNoticeBoard(it, 0) }
                     }
                     else -> {}
                 }
@@ -134,7 +135,7 @@ class FreeNoticeFragment : BaseFragment() {
                         if (listSort.size > 0) listSort[0] else KeyValueModel()
                 }
                 onClickSort = { id ->
-                    viewModel.getFreeNoticeBoard(accessToken!!, id)
+                    viewModel.getFreeNoticeBoard(accessToken!!, 0, id)
                 }
                 Row {
                     Image(painter = painterResource(R.drawable.ic_sort), contentDescription = null)
@@ -181,8 +182,9 @@ class FreeNoticeFragment : BaseFragment() {
                     )
                 }
             }
+            val lazyListState = rememberLazyListState()
             LazyColumn(
-                state = rememberLazyListState(),
+                state = lazyListState,
 //                    verticalArrangement = Arrangement.spacedBy(1.dp)
             ) {
                 itemsIndexed(news) { index, obj ->
@@ -196,6 +198,10 @@ class FreeNoticeFragment : BaseFragment() {
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
+            }
+
+            LoadmoreHandler(lazyListState) { page->
+                viewModel.getFreeNoticeBoard(accessToken!!, page)
             }
         }
     }

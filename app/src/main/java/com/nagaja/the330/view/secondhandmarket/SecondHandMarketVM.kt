@@ -18,6 +18,7 @@ class SecondHandMarketVM(
     private val repo: SecondHandMarketRepo
 ) : BaseViewModel() {
     var category: String? = null
+    var sort: String = "LASTEST"
     var city: String? = null
     var district: String? = null
     var listData = mutableListOf<SecondHandModel>()
@@ -59,10 +60,7 @@ class SecondHandMarketVM(
 
     fun getListSecondHandMarket(
         token: String,
-//        secondhandCategoryType: String?,
-//        page: Int,
-//        size: Int,
-        sort: String = "LASTEST"
+        page: Int
     ) {
         viewModelScope.launch {
             repo.secondHandMarket(
@@ -70,8 +68,8 @@ class SecondHandMarketVM(
                 cityId = city?.toInt(),
                 districtId = district?.toInt(),
                 secondhandCategoryType = category,
-                page = 0,
-                size = 10,
+                page = page,
+                size = 20,
                 sort = sort
             )
                 .onStart { callbackStart.value = Unit }
@@ -79,10 +77,11 @@ class SecondHandMarketVM(
                 .catch { handleError(it) }
                 .collect {
                     callbackSuccess.value = Unit
-                    listData.clear()
+                    if (page == 0) {
+                        listData.clear()
+                    }
                     it.content?.let { it1 ->
                         listData.addAll(it1)
-                        stateListData.clear()
                         stateListData.addAll(listData)
                     }
                 }

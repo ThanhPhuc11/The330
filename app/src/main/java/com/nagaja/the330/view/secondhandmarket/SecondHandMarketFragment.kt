@@ -35,6 +35,7 @@ import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.SecondHandModel
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.secondhandregis.SecondHandRegisFragment
@@ -67,7 +68,7 @@ class SecondHandMarketFragment : BaseFragment() {
 //                        viewModel.category = listCategory[0].id!!
                         accessToken?.let {
                             viewModel.getCity(it)
-                            viewModel.getListSecondHandMarket(it)
+                            viewModel.getListSecondHandMarket(it, 0)
                         }
                     }
                     else -> {}
@@ -206,7 +207,8 @@ class SecondHandMarketFragment : BaseFragment() {
                         if (listSort.size > 0) listSort[0] else KeyValueModel()
                 }
                 onClickSort = { id ->
-                    viewModel.getListSecondHandMarket(accessToken!!, id)
+                    viewModel.sort = id
+                    viewModel.getListSecondHandMarket(accessToken!! , 0)
                 }
                 Row {
                     Image(painter = painterResource(R.drawable.ic_sort), contentDescription = null)
@@ -244,10 +246,15 @@ class SecondHandMarketFragment : BaseFragment() {
                     .background(ColorUtils.gray_E7E7E7)
             ) {
                 val listSecondHand = viewModel.stateListData
-                LazyColumn(state = rememberLazyListState()) {
+                val lazyListState = rememberLazyListState()
+                LazyColumn(state = lazyListState) {
                     itemsIndexed(listSecondHand) { index, obj ->
                         ItemSecondHand(obj)
                     }
+                }
+
+                LoadmoreHandler(lazyListState) { page ->
+                    viewModel.getListSecondHandMarket(accessToken!!, page)
                 }
             }
         }

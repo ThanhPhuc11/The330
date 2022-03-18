@@ -40,19 +40,14 @@ import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
-import com.nagaja.the330.view.Header
-import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.*
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
-import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
-import com.nagaja.the330.view.applycompany.ApplyCompanyFragment
-import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
 import com.nagaja.the330.view.point.PointFragment
 import com.nagaja.the330.view.recruimentcompany.RecruitmentCompanyFragment
 import com.nagaja.the330.view.regularcustomer.RegularCustomerFragment
 import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageFragment
 import com.nagaja.the330.view.secondhandmypage.SecondHandMypageFragment
-import com.nagaja.the330.view.text14_222
 import com.nagaja.the330.view.usagecompany.CompanyUsageFragment
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.glide.GlideImage
@@ -68,11 +63,24 @@ private lateinit var viewModel: MyPageCompanyScreenVM
 fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
-    val clickFavorite: (() -> Unit) = {
+    val clickRegular: (() -> Unit) = {
         viewController?.pushFragment(
             ScreenId.SCREEN_REGULAR_CUSTOMER_HISTORY,
             RegularCustomerFragment.newInstance()
         )
+        showMessDebug("SCREEN_REGULAR_CUSTOMER_HISTORY", context)
+    }
+
+    val clickConsultation: (() -> Unit) = {
+        viewController?.pushFragment(
+            ScreenId.SCREEN_CONSULTATION,
+            RegularCustomerFragment.newInstance()
+        )
+        showMessDebug("SCREEN_CONSULTATION", context)
+    }
+
+    val clickReservationHistory: (() -> Unit) = {
+        showMessDebug("SCREEN_RESERVATION", context)
     }
 
     val clickRecruitment: (() -> Unit) = {
@@ -80,6 +88,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
             ScreenId.SCREEN_RECRUITMENT_COMPANY,
             RecruitmentCompanyFragment.newInstance()
         )
+        showMessDebug("SCREEN_RECRUITMENT_COMPANY", context)
     }
 
     val clickPoint: () -> Unit = {
@@ -87,6 +96,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
             ScreenId.SCREEN_POINT,
             PointFragment.newInstance()
         )
+        showMessDebug("SCREEN_POINT", context)
     }
 
     val clickUsage: () -> Unit = {
@@ -94,18 +104,21 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
             ScreenId.SCREEN_USAGE,
             CompanyUsageFragment.newInstance()
         )
+        showMessDebug("SCREEN_USAGE", context)
     }
     val clickSecondHandPurchase: () -> Unit = {
         viewController?.pushFragment(
             ScreenId.SCREEN_SECONDHAND_PURCHARGE,
             SecondHandMypageFragment.newInstance()
         )
+        showMessDebug("SCREEN_SECONDHAND_PURCHARGE", context)
     }
     val clickOtherSetting: () -> Unit = {
         viewController?.pushFragment(
             ScreenId.SCREEN_OTHER_SETTING,
             OtherSettingFragment.newInstance()
         )
+        showMessDebug("SCREEN_OTHER_SETTING", context)
     }
 
     val clickReport: () -> Unit = {
@@ -113,6 +126,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
             ScreenId.SCREEN_REPORT_MISSING_MYPAGE,
             ReportMissingMyPageFragment.newInstance()
         )
+        showMessDebug("SCREEN_REPORT_MISSING_MYPAGE", context)
     }
     val viewModelStoreOwner: ViewModelStoreOwner =
         checkNotNull(LocalViewModelStoreOwner.current) {
@@ -156,7 +170,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                 .weight(1f)
                 .verticalScroll(state = rememberScrollState())
         ) {
-            val stateShowCompany = remember {mutableStateOf(true)}
+            val stateShowCompany = remember { mutableStateOf(true) }
             Box(
                 Modifier
                     .fillMaxWidth()
@@ -173,7 +187,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                     colors = ButtonDefaults.buttonColors(backgroundColor = ColorUtils.gray_222222)
                 ) {
                     Text(
-                        stringResource(if(stateShowCompany.value) R.string.view_my_info else R.string.view_company_info),
+                        stringResource(if (stateShowCompany.value) R.string.view_my_info else R.string.view_company_info),
                         color = ColorUtils.white_FFFFFF,
                         fontSize = 12.sp
                     )
@@ -203,7 +217,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                     R.drawable.ic_consultation_opt,
                     stringResource(R.string.option_consultation_history),
                     "상담중: 00건",
-                    clickFavorite
+                    clickConsultation
                 )
                 MypageOptionItem(
                     R.drawable.ic_usage_opt,
@@ -215,13 +229,13 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                     R.drawable.ic_reservation_opt,
                     stringResource(R.string.option_reservation_status),
                     "오늘: 00건",
-                    clickFavorite
+                    clickReservationHistory
                 )
                 MypageOptionItem(
                     R.drawable.ic_favorite,
                     stringResource(R.string.option_favorite_store_list),
                     "총: 00건",
-                    clickFavorite
+                    clickRegular
                 )
                 MypageOptionItem(
                     R.drawable.ic_job_opt,

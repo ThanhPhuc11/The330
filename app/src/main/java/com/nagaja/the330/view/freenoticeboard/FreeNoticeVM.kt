@@ -20,15 +20,15 @@ class FreeNoticeVM(
 
     fun getFreeNoticeBoard(
         token: String,
-//        page: Int,
+        page: Int,
 //        size: Int,
         sort: String = "LASTEST"
     ) {
         viewModelScope.launch {
             repo.getFreeNoticeBoard(
                 token = token,
-                page = 0,
-                size = 10,
+                page = page,
+                size = 20,
                 sort = sort,
                 null
             )
@@ -40,7 +40,7 @@ class FreeNoticeVM(
                     listData.clear()
                     it.content?.let { it1 ->
                         listData.addAll(it1)
-                        stateListData.clear()
+//                        stateListData.clear()
                         stateListData.addAll(listData)
                     }
                 }

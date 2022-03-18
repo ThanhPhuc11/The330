@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -34,9 +33,12 @@ import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.CompanyFavoriteModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.reservationregis.ReservationRegisFragment
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -69,8 +71,7 @@ class FavCompanyFragment : BaseFragment() {
                         accessToken?.let {
                             viewModel.getFavoriteCompany(
                                 it,
-                                0,
-                                stateOptions.value[0].id!!
+                                0
                             )
                         }
                     }
@@ -104,10 +105,15 @@ class FavCompanyFragment : BaseFragment() {
                         .background(ColorUtils.gray_E1E1E1)
                 ) {
                     val listCompany = viewModel.listCompany
-                    LazyColumn(state = rememberLazyListState()) {
+                    val lazyListState = rememberLazyListState()
+                    LazyColumn(state = lazyListState) {
                         itemsIndexed(listCompany) { _, obj ->
                             CompanyItem(obj)
                         }
+                    }
+
+                    LoadmoreHandler(lazyListState) { page ->
+                        viewModel.getFavoriteCompany(accessToken!!, page)
                     }
                 }
 
@@ -167,6 +173,8 @@ class FavCompanyFragment : BaseFragment() {
                             onClick = {
                                 selectedOptionText = selectionOption
                                 expanded = false
+                                viewModel.sort = selectionOption.id!!
+                                viewModel.getFavoriteCompany(accessToken!!, 0)
                             }
                         ) {
                             Text(text = selectionOption.name!!)
@@ -223,7 +231,15 @@ class FavCompanyFragment : BaseFragment() {
                         Modifier
                             .width(76.dp)
                             .height(32.dp)
-                            .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp)),
+                            .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp))
+                            .noRippleClickable {
+                                obj.userFollowId?.targetId?.let {
+                                    viewController?.pushFragment(
+                                        ScreenId.SCREEN_RESERVATION_REGIS,
+                                        ReservationRegisFragment.newInstance(it)
+                                    )
+                                }
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text("예약하기", color = ColorUtils.white_FFFFFF, fontSize = 12.sp)
@@ -260,7 +276,11 @@ class FavCompanyFragment : BaseFragment() {
                     contentDescription = null
                 )
             }
-            Text("단골 3,000", color = ColorUtils.black_000000, fontSize = 12.sp)
+            Text(
+                "단골 ${obj.target?.likedCount ?: 0}",
+                color = ColorUtils.black_000000,
+                fontSize = 12.sp
+            )
         }
     }
 }

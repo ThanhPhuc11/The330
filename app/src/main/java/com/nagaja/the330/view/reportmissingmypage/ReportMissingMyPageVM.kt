@@ -24,14 +24,13 @@ class ReportMissingMyPageVM(
 
     fun getReportMissingMyPage(
         token: String,
-//        page: Int,
-//        size: Int,
+        page: Int
     ) {
         viewModelScope.launch {
             repo.getReportMissingMyPage(
                 token = token,
-                page = 0,
-                size = 10,
+                page = page,
+                size = 20,
                 timeLimit = timeLimit,
                 type = null,
                 status = status,

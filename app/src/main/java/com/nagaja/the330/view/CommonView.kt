@@ -828,3 +828,7 @@ fun HandleSortUI(context: Context, ft : MutableList<KeyValueModel>) {
         }
     }
 }
+
+fun showMessDebug(mess: String?, context: Context) {
+    if (BuildConfig.DEBUG) Toast.makeText(context, mess ?: "", Toast.LENGTH_SHORT).show()
+}

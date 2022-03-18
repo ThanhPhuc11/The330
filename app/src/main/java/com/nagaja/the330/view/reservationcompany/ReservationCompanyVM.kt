@@ -15,14 +15,16 @@ class ReservationCompanyVM(
     private val repo: ReservationCompanyRepo
 ) : BaseViewModel() {
     var accessToken: String = ""
-    var timeLimit: String = "ONE_WEEK"
+    var timeLimit: String = "ONE_DAY"
     var status: String? = null
 
     var listDataGeneral = mutableListOf<ReservationModel>()
     val stateListDataGeneral = mutableStateListOf<ReservationModel>()
+    val stateTotalGeneralTab = mutableStateOf(0)
 
     var listDataCompany = mutableListOf<ReservationModel>()
     val stateListDataCompany = mutableStateListOf<ReservationModel>()
+    val stateTotalCompanyTab = mutableStateOf(0)
 
     val total = mutableStateOf(0)
     val reservation_completed = mutableStateOf(0)
@@ -46,12 +48,12 @@ class ReservationCompanyVM(
         }
     }
 
-    fun getReservationGeneral(token: String) {
+    fun getReservationGeneral(token: String, page: Int) {
         viewModelScope.launch {
             repo.getReservationMain(
                 token = token,
-                page = 0,
-                size = 10,
+                page = page,
+                size = 20,
                 asCompany = false,
                 timeLimit = timeLimit,
                 status = status
@@ -63,22 +65,26 @@ class ReservationCompanyVM(
                 }
                 .collect {
                     callbackSuccess.value = Unit
+                    if (page == 0) {
+                        stateListDataGeneral.clear()
+                        stateTotalGeneralTab.value = it.totalElements?:0
+                    }
                     it.content?.let { data ->
                         listDataGeneral.clear()
                         listDataGeneral.addAll(data)
-                        stateListDataGeneral.clear()
+//                        stateListDataGeneral.clear()
                         stateListDataGeneral.addAll(listDataGeneral)
                     }
                 }
         }
     }
 
-    fun getReservationCompany(token: String) {
+    fun getReservationCompany(token: String, page: Int) {
         viewModelScope.launch {
             repo.getReservationMain(
                 token = token,
-                page = 0,
-                size = 10,
+                page = page,
+                size = 20,
                 asCompany = true,
                 timeLimit = timeLimit,
                 status = status
@@ -90,13 +96,42 @@ class ReservationCompanyVM(
                 }
                 .collect {
                     callbackSuccess.value = Unit
+                    if (page == 0) {
+                        stateListDataCompany.clear()
+                        stateTotalCompanyTab.value = it.totalElements?:0
+                    }
                     it.content?.let { data ->
                         listDataCompany.clear()
                         listDataCompany.addAll(data)
-                        stateListDataCompany.clear()
                         stateListDataCompany.addAll(listDataCompany)
                     }
                 }
         }
+    }
+
+    fun editReservation(token: String, id: Int, enum: String) {
+        viewModelScope.launch {
+            repo.editReservation(token, mutableListOf(ReservationModel().apply {
+                this.id = id
+                status = enum
+            }))
+                .onStart {}
+                .onCompletion {}
+                .catch { handleError(it) }
+                .collect {
+                    if (it.raw().isSuccessful && it.raw().code == 200) {
+                        val index = stateListDataCompany.indexOfFirst { obj -> obj.id == id }
+                        val newObj = stateListDataCompany[index].apply { status = enum }
+                        updateItem(index, newObj, stateListDataCompany)
+                    } else {
+                        handleError2(it)
+                    }
+                }
+        }
+    }
+
+    private fun <T> updateItem(index: Int, newObj: T, list: MutableList<T>) {
+        list.removeAt(index)
+        list.add(index, newObj)
     }
 }

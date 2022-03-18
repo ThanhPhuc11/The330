@@ -37,6 +37,7 @@ import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.CompanyModel
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.HeaderSearch
 import com.nagaja.the330.view.LayoutTheme330
@@ -83,7 +84,7 @@ class CompanyListFragment : BaseFragment() {
                     Lifecycle.Event.ON_CREATE -> {
                         val cType = requireArguments().getString(AppConstants.EXTRA_KEY1)
                         viewModel.cType = cType
-                        accessToken?.let { viewModel.findCompany(it) }
+                        accessToken?.let { viewModel.findCompany(it, 0) }
                     }
                     else -> {}
                 }
@@ -160,7 +161,7 @@ class CompanyListFragment : BaseFragment() {
                                         }
                                     }
 
-                                    viewModel.findCompany(accessToken!!)
+                                    viewModel.findCompany(accessToken!!, 0)
                                     itemFilterSelected.value = selectionOption
                                     expandedFilter = false
                                     showMessDEBUG(selectionOption.id ?: "null")
@@ -198,7 +199,7 @@ class CompanyListFragment : BaseFragment() {
                             DropdownMenuItem(
                                 onClick = {
                                     viewModel.sort = selectionOption.id!!
-                                    viewModel.findCompany(accessToken!!)
+                                    viewModel.findCompany(accessToken!!, 0)
                                     itemSortSelected.value = selectionOption
                                     expandedSort = false
                                     showMessDEBUG(itemSortSelected.value.id)
@@ -230,11 +231,16 @@ class CompanyListFragment : BaseFragment() {
             )
             Box(Modifier.padding(horizontal = 16.dp)) {
                 val listData = viewModel.stateListData
-                LazyColumn(state = rememberLazyListState()) {
+                val lazyListState = rememberLazyListState()
+                LazyColumn(state = lazyListState) {
                     itemsIndexed(listData) { index, obj ->
                         ItemCompany(obj)
                         Divider(color = ColorUtils.black_000000_opacity_5)
                     }
+                }
+
+                LoadmoreHandler(lazyListState) { page ->
+                    accessToken?.let { viewModel.findCompany(it, page) }
                 }
             }
         }

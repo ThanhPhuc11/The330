@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.*
+import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,7 +23,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -29,24 +31,26 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.model.CompanyUsageModel
+import com.nagaja.the330.model.ReservationModel
+import com.nagaja.the330.utils.AppConstants
+import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.reservationcompany.ReservationCompanyVM
 import com.nagaja.the330.view.text14_222
-import com.nagaja.the330.view.usage.UsageVM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CompanyUsageFragment : BaseFragment() {
-    private lateinit var viewModel: UsageVM
+    private lateinit var viewModel: ReservationCompanyVM
 
     companion object {
         @JvmStatic
@@ -59,7 +63,7 @@ class CompanyUsageFragment : BaseFragment() {
     }
 
     override fun SetupViewModel() {
-        viewModel = getViewModelProvider(this)[UsageVM::class.java]
+        viewModel = getViewModelProvider(this)[ReservationCompanyVM::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
@@ -164,7 +168,7 @@ class CompanyUsageFragment : BaseFragment() {
     private fun SetupPager(context: Context, pagerState: PagerState) {
         HorizontalPager(state = pagerState) { page ->
             if (page == 0) {
-                CorporateUseTab(context)
+                CompanyUsageTab(context)
             } else {
                 MyUsageTab(context = context)
             }
@@ -172,8 +176,24 @@ class CompanyUsageFragment : BaseFragment() {
     }
 
     @Composable
-    private fun CorporateUseTab(context: Context) {
-        val data = GetDummyData.getCompanyUsageList()
+    private fun CompanyUsageTab(context: Context) {
+        val owner = LocalLifecycleOwner.current
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+                        viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
+                        viewModel.getReservationCompany(accessToken!!, 0)
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
+
         Column(Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
@@ -184,14 +204,11 @@ class CompanyUsageFragment : BaseFragment() {
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight()
-                        .noRippleClickable {
-                            Toast.makeText(requireContext(), "click", Toast.LENGTH_LONG).show()
-                        },
-                    contentAlignment = Alignment.CenterStart,
+                        .fillMaxHeight(),
+                    contentAlignment = Alignment.BottomStart,
                 ) {
                     Text(
-                        text = "총 ${data.size}건 이용",
+                        text = "총 ${viewModel.stateTotalCompanyTab.value}건 이용",
                         color = ColorUtils.black_000000,
                         fontSize = 13.sp,
                         textAlign = TextAlign.Start
@@ -201,22 +218,45 @@ class CompanyUsageFragment : BaseFragment() {
                     Modifier.weight(1f),
                     contentAlignment = Alignment.CenterEnd
                 ) {
-                    HandleSortUI(context = context)
+                    HandleSortUI(context = context, true)
                 }
             }
             Divider(color = ColorUtils.gray_E1E1E1)
-            LazyColumn(Modifier.padding(top = 16.dp),
-                state = rememberLazyListState()) {
-                itemsIndexed(data) {_, item ->
+            val listData = viewModel.stateListDataCompany
+            val lazyListState = rememberLazyListState()
+            LazyColumn(state = lazyListState) {
+                itemsIndexed(listData) { _, item ->
                     ItemUsage(item)
+                    Divider(color = ColorUtils.gray_E1E1E1)
                 }
+            }
+
+            LoadmoreHandler(lazyListState) { page ->
+                viewModel.getReservationCompany(accessToken!!, page)
             }
         }
     }
 
     @Composable
     private fun MyUsageTab(context: Context) {
-        val data = GetDummyData.getCompanyUsageList()
+        val owner = LocalLifecycleOwner.current
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+                        viewModel.status = AppConstants.Reservation.USAGE_COMPLETED
+                        viewModel.getReservationGeneral(accessToken!!, 0)
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
+
+
         Column(Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
@@ -229,12 +269,14 @@ class CompanyUsageFragment : BaseFragment() {
                         .weight(1f)
                         .fillMaxHeight()
                         .noRippleClickable {
-                            Toast.makeText(requireContext(), "click", Toast.LENGTH_LONG).show()
+                            Toast
+                                .makeText(requireContext(), "click", Toast.LENGTH_LONG)
+                                .show()
                         },
                     contentAlignment = Alignment.CenterStart,
                 ) {
                     Text(
-                        text = "총 ${data.size}건 이용",
+                        text = "총 ${viewModel.stateTotalGeneralTab.value}건 이용",
                         color = ColorUtils.black_000000,
                         fontSize = 13.sp,
                         textAlign = TextAlign.Start
@@ -244,27 +286,36 @@ class CompanyUsageFragment : BaseFragment() {
                     Modifier.weight(1f),
                     contentAlignment = Alignment.CenterEnd
                 ) {
-                    HandleSortUI(context = context)
+                    HandleSortUI(context = context, false)
                 }
             }
             Divider(color = ColorUtils.gray_E1E1E1)
-            LazyColumn(Modifier.padding(top = 16.dp),
-                state = rememberLazyListState()) {
-                itemsIndexed(data) {_, item ->
+
+            val listData = viewModel.stateListDataGeneral
+            val lazyListState = rememberLazyListState()
+            LazyColumn(
+                Modifier.padding(top = 16.dp),
+                state = lazyListState
+            ) {
+                itemsIndexed(listData) { _, item ->
                     ItemUsage(item)
                 }
+            }
+
+            LoadmoreHandler(lazyListState) { page ->
+                viewModel.getReservationCompany(accessToken!!, page)
             }
         }
     }
 
     @Composable
-    fun HandleSortUI(context: Context) {
+    fun HandleSortUI(context: Context, isCompany: Boolean = true) {
         val filters = remember {
             // Dummy data
             GetDummyData.getSortReservationRoleCompany(context = context)
         }
         var expanded by remember { mutableStateOf(false) }
-        val itemSelected = remember { mutableStateOf(filters[0])}
+        val itemSelected = remember { mutableStateOf(filters[0]) }
         Row(
             Modifier
                 .size(100.dp, 36.dp)
@@ -295,8 +346,13 @@ class CompanyUsageFragment : BaseFragment() {
                         onClick = {
                             itemSelected.value = option
                             expanded = false
-                            if (BuildConfig.DEBUG)
-                                Toast.makeText(context, "${itemSelected.value.id}", Toast.LENGTH_LONG).show()
+                            showMessDEBUG(option.id)
+                            viewModel.timeLimit = option.id!!
+                            if (isCompany) {
+                                viewModel.getReservationCompany(accessToken!!, 0)
+                            } else {
+                                viewModel.getReservationGeneral(accessToken!!, 0)
+                            }
                         }
                     ) {
                         option.name?.let { Text(text = it) }
@@ -307,56 +363,48 @@ class CompanyUsageFragment : BaseFragment() {
         }
     }
 
-    @Preview(showBackground = true)
     @Composable
-    fun ItemUsage(item: CompanyUsageModel = CompanyUsageModel().apply {
-        id = 0
-        name = "name"
-        date = "2022/03/18 00:00"
-        numberOfUsers = 100
-    }){
-        Row(Modifier.padding(16.dp)
-            .height(IntrinsicSize.Max)
-        ) {
-            Column(
-                Modifier.weight(5f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start
-            ) {
-                Text("${item.name}(${item.id})",
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(end = 2.dp),
+    fun ItemUsage(item: ReservationModel) {
+        Column(
+            Modifier
+                .padding(16.dp)
+                .fillMaxWidth()) {
+            Text(
+                "${item.bookerName}(${item.booker?.name})",
+                modifier = Modifier
+                    .fillMaxWidth(),
+                color = ColorUtils.black_000000,
+                fontSize = 13.sp,
+                textAlign = TextAlign.Start,
+            )
+
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)) {
+                Text(
+                    "사용인원: ${item.reservationNumber ?: 0}인",
+                    modifier = Modifier.weight(1f),
                     color = ColorUtils.black_000000,
                     fontSize = 13.sp,
                     textAlign = TextAlign.Start,
                 )
-                Text("이용건수: ${item.numberOfUsers}회",
-                    modifier = Modifier.padding(top = 12.dp)
-                        .fillMaxWidth()
-                        .padding(end = 2.dp),
-                    color = ColorUtils.black_000000,
-                    fontSize = 13.sp,
-                    textAlign = TextAlign.Start
-                )
-            }
-            Box(modifier = Modifier
-                .fillMaxHeight()
-                .weight(6f),
-                contentAlignment = Alignment.BottomStart
-            ) {
-                Text(modifier = Modifier.fillMaxWidth(),
-                    text = "이용일시:${item.date}",
+
+                Text(
+                    modifier = Modifier.padding(end = 10.dp),
+                    text = "이용일시:${
+                        AppDateUtils.changeDateFormat(
+                            AppDateUtils.FORMAT_16,
+                            AppDateUtils.FORMAT_22,
+                            item.reservationDateTime ?: ""
+                        )
+                    }",
                     color = ColorUtils.black_000000,
                     fontSize = 13.sp,
                     textAlign = TextAlign.Start
                 )
             }
         }
-        Divider(
-            Modifier
-                .height(1.dp)
-                .background(ColorUtils.gray_E1E1E1)
-        )
     }
 }
 

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -37,6 +38,7 @@ import com.nagaja.the330.model.IdentityModel
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.comment.CommentInput
 import com.nagaja.the330.view.comment.CommentList
@@ -78,7 +80,6 @@ class LocalNewsDetailFragment : BaseFragment() {
                             commentViewModel.getCommentsById(
                                 it,
                                 0,
-                                10,
                                 "ACTIVATED",
                                 null,
                                 requireArguments().getInt(AppConstants.EXTRA_KEY1),
@@ -172,13 +173,26 @@ class LocalNewsDetailFragment : BaseFragment() {
                 }
                 val stateShowDialog = remember { mutableStateOf(false) }
                 val stateSelectedId = remember { mutableStateOf(0) }
+                val lazyListState = rememberLazyListState()
                 CommentList(
                     commentViewModel.stateCommentCount.value,
                     commentViewModel.stateListComment,
+                    lazyListState,
                     userDetailBase?.id ?: 0
                 ) {
                     stateShowDialog.value = true
                     stateSelectedId.value = it
+                }
+
+                LoadmoreHandler(lazyListState) { page->
+                    commentViewModel.getCommentsById(
+                        accessToken!!,
+                        page,
+                        "ACTIVATED",
+                        null,
+                        requireArguments().getInt(AppConstants.EXTRA_KEY1),
+                        null
+                    )
                 }
 
                 if (stateShowDialog.value) {

@@ -3,6 +3,7 @@ package com.nagaja.the330.view.freenoticedetail
 import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -37,6 +38,7 @@ import com.nagaja.the330.model.ReportModel
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.comment.CommentInput
 import com.nagaja.the330.view.comment.CommentList
@@ -91,6 +93,14 @@ class FreeNoticeDetailFragment : BaseFragment() {
                             viewModel.getFreeNotiDetail(
                                 it,
                                 requireArguments().getInt(AppConstants.EXTRA_KEY1)
+                            )
+                            commentViewModel.getCommentsById(
+                                it,
+                                0,
+                                "ACTIVATED",
+                                requireArguments().getInt(AppConstants.EXTRA_KEY1),
+                                null,
+                                null
                             )
                         }
                     }
@@ -189,7 +199,11 @@ class FreeNoticeDetailFragment : BaseFragment() {
                     Row(Modifier.padding(top = 25.dp)) {
                         Column(Modifier.padding(end = 30.dp)) {
                             Text(stringResource(R.string.company_name), style = text14_222)
-                            Text(stringResource(R.string.address), style = text14_222, modifier = Modifier.padding(top = 10.dp))
+                            Text(
+                                stringResource(R.string.address),
+                                style = text14_222,
+                                modifier = Modifier.padding(top = 10.dp)
+                            )
                             Text(
                                 stringResource(R.string.phone_number),
                                 style = text14_222,
@@ -293,13 +307,26 @@ class FreeNoticeDetailFragment : BaseFragment() {
 
                 val stateShowDialog = remember { mutableStateOf(false) }
                 val stateSelectedId = remember { mutableStateOf(0) }
+                val lazyListState = rememberLazyListState()
                 CommentList(
                     commentViewModel.stateCommentCount.value,
                     commentViewModel.stateListComment,
+                    lazyListState,
                     userDetailBase?.id ?: 0
                 ) {
                     stateShowDialog.value = true
                     stateSelectedId.value = it
+                }
+
+                LoadmoreHandler(lazyListState) { page ->
+                    commentViewModel.getCommentsById(
+                        accessToken!!,
+                        page,
+                        "ACTIVATED",
+                        requireArguments().getInt(AppConstants.EXTRA_KEY1),
+                        null,
+                        null
+                    )
                 }
 
                 if (stateShowDialog.value) {
@@ -315,7 +342,7 @@ class FreeNoticeDetailFragment : BaseFragment() {
                     accessToken!!,
                     CommentModel().apply {
                         body = it
-                        localNews = IdentityModel().apply {
+                        freeNoticeBoard = IdentityModel().apply {
                             id = requireArguments().getInt(AppConstants.EXTRA_KEY1)
                         }
                     }

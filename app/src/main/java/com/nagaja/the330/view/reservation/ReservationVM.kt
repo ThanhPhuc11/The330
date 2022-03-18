@@ -40,12 +40,12 @@ class ReservationVM(
         }
     }
 
-    fun getReservationMain(token: String) {
+    fun getReservationMain(token: String, page: Int) {
         viewModelScope.launch {
             repo.getReservationMain(
                 token = token,
-                page = 0,
-                size = 10,
+                page = page,
+                size = 20,
                 asCompany = false,
                 timeLimit = timeLimit,
                 status = status
@@ -54,10 +54,12 @@ class ReservationVM(
                 .onCompletion { }
                 .catch { }
                 .collect {
+                    if (page == 0) {
+                        stateListData.clear()
+                    }
                     it.content?.let { data ->
                         listData.clear()
                         listData.addAll(data)
-                        stateListData.clear()
                         stateListData.addAll(listData)
                     }
                 }

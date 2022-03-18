@@ -41,6 +41,7 @@ import com.nagaja.the330.model.CompanyFavoriteModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.SecondHandModel
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.view.*
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
@@ -74,7 +75,7 @@ class SecondHandMypageFragment : BaseFragment() {
                     Lifecycle.Event.ON_CREATE -> {
                         stateOptions.value = GetDummyData.getSortFavoriteCompany(context)
                         accessToken?.let {
-                            viewModel.getMySecondHand(it)
+                            viewModel.getMySecondHand(it, 0)
                         }
                     }
                     Lifecycle.Event.ON_STOP -> {}
@@ -184,10 +185,15 @@ class SecondHandMypageFragment : BaseFragment() {
                     .background(ColorUtils.gray_E1E1E1)
             )
             val listSecondhand = viewModel.stateListSecondhand
-            LazyColumn(state = rememberLazyListState()) {
+            val lazyListState = rememberLazyListState()
+            LazyColumn(state = lazyListState) {
                 itemsIndexed(listSecondhand) { _, obj ->
                     SecondhandItem(obj)
                 }
+            }
+
+            LoadmoreHandler(lazyListState) { page ->
+                viewModel.getMySecondHand(accessToken!!, page)
             }
         }
     }
@@ -268,7 +274,7 @@ class SecondHandMypageFragment : BaseFragment() {
                                     viewModel.sort = null
                                     viewModel.transactionStatus = selectionOption.id
                                 }
-                                viewModel.getMySecondHand(accessToken!!)
+                                viewModel.getMySecondHand(accessToken!!, 0)
                             }
                         ) {
                             Text(text = selectionOption.name!!)

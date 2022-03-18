@@ -34,18 +34,13 @@ import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
-import com.nagaja.the330.view.Header
-import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompany.ApplyCompanyFragment
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
-import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
 import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageFragment
-import com.nagaja.the330.view.reservationregis.ReservationRegisFragment
 import com.nagaja.the330.view.secondhandmypage.SecondHandMypageFragment
-import com.nagaja.the330.view.secondhanddetail.SecondHandDetailFragment
-import com.nagaja.the330.view.text14_222
 import com.nagaja.the330.view.usage.UsageFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,24 +59,28 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
             ScreenId.SCREEN_FAV_COMPANY,
             FavCompanyFragment.newInstance()
         )
+        showMessDebug("SCREEN_FAV_COMPANY", context)
     }
     val clickUsage: () -> Unit = {
         viewController?.pushFragment(
             ScreenId.SCREEN_USAGE,
             UsageFragment.newInstance()
         )
+        showMessDebug("SCREEN_USAGE", context)
     }
     val clickSecondHandPurchase: () -> Unit = {
         viewController?.pushFragment(
             ScreenId.SCREEN_SECONDHAND_PURCHARGE,
             SecondHandMypageFragment.newInstance()
         )
+        showMessDebug("SCREEN_SECONDHAND_PURCHARGE", context)
     }
     val clickOtherSetting: () -> Unit = {
         viewController?.pushFragment(
             ScreenId.SCREEN_OTHER_SETTING,
             OtherSettingFragment.newInstance()
         )
+        showMessDebug("SCREEN_OTHER_SETTING", context)
     }
 
     val clickReport: () -> Unit = {
@@ -89,6 +88,7 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
             ScreenId.SCREEN_REPORT_MISSING_MYPAGE,
             ReportMissingMyPageFragment.newInstance()
         )
+        showMessDebug("SCREEN_REPORT_MISSING_MYPAGE", context)
     }
     val viewModelStoreOwner: ViewModelStoreOwner =
         checkNotNull(LocalViewModelStoreOwner.current) {
