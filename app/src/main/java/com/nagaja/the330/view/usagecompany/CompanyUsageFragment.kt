@@ -1,4 +1,4 @@
-package com.nagaja.the330.view.usage
+package com.nagaja.the330.view.usagecompany
 
 import android.content.Context
 import android.os.Bundle
@@ -10,16 +10,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,6 +40,7 @@ import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
+import com.nagaja.the330.view.usage.UsageVM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -74,14 +71,8 @@ class CompanyUsageFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        // Get dummy data here
-//                        accessToken?.let {
-//                            viewModel.getFavoriteCompany(
-//                                it,
-//                                0,
-//                                stateOptions.value[0].id!!
-//                            )
-//                        }
+                        accessToken?.let {
+                        }
                     }
                     Lifecycle.Event.ON_STOP -> {}
                     else -> {}
@@ -180,21 +171,40 @@ class CompanyUsageFragment : BaseFragment() {
         }
     }
 
-    @OptIn(ExperimentalPagerApi::class)
     @Composable
     private fun CorporateUseTab(context: Context) {
+        val data = GetDummyData.getCompanyUsageList()
         Column(Modifier.fillMaxWidth()) {
-            Box(
-                Modifier
-                    .fillMaxWidth()
+            Row(
+                modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .padding(top = 12.dp, bottom = 16.dp),
-                contentAlignment = Alignment.CenterEnd
+                    .padding(top = 12.dp, bottom = 16.dp)
+                    .height(IntrinsicSize.Max)
             ) {
-                HandleSortUI(context = context)
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .noRippleClickable {
+                            Toast.makeText(requireContext(), "click", Toast.LENGTH_LONG).show()
+                        },
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    Text(
+                        text = "총 ${data.size}건 이용",
+                        color = ColorUtils.black_000000,
+                        fontSize = 13.sp,
+                        textAlign = TextAlign.Start
+                    )
+                }
+                Box(
+                    Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    HandleSortUI(context = context)
+                }
             }
             Divider(color = ColorUtils.gray_E1E1E1)
-            val data = GetDummyData.getCompanyUsageList()
             LazyColumn(Modifier.padding(top = 16.dp),
                 state = rememberLazyListState()) {
                 itemsIndexed(data) {_, item ->
@@ -206,18 +216,38 @@ class CompanyUsageFragment : BaseFragment() {
 
     @Composable
     private fun MyUsageTab(context: Context) {
+        val data = GetDummyData.getCompanyUsageList()
         Column(Modifier.fillMaxWidth()) {
-            Box(
-                Modifier
-                    .fillMaxWidth()
+            Row(
+                modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .padding(top = 12.dp, bottom = 16.dp),
-                contentAlignment = Alignment.CenterEnd
+                    .padding(top = 12.dp, bottom = 16.dp)
+                    .height(IntrinsicSize.Max)
             ) {
-                HandleSortUI(context = context)
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .noRippleClickable {
+                            Toast.makeText(requireContext(), "click", Toast.LENGTH_LONG).show()
+                        },
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    Text(
+                        text = "총 ${data.size}건 이용",
+                        color = ColorUtils.black_000000,
+                        fontSize = 13.sp,
+                        textAlign = TextAlign.Start
+                    )
+                }
+                Box(
+                    Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    HandleSortUI(context = context)
+                }
             }
             Divider(color = ColorUtils.gray_E1E1E1)
-            val data = GetDummyData.getCompanyUsageList()
             LazyColumn(Modifier.padding(top = 16.dp),
                 state = rememberLazyListState()) {
                 itemsIndexed(data) {_, item ->
@@ -277,39 +307,45 @@ class CompanyUsageFragment : BaseFragment() {
         }
     }
 
-    @Preview
+    @Preview(showBackground = true)
     @Composable
     fun ItemUsage(item: CompanyUsageModel = CompanyUsageModel().apply {
         id = 0
         name = "name"
-        date = "YYYY/MM/DD HH:MM"
+        date = "2022/03/18 00:00"
         numberOfUsers = 100
     }){
-        Row(
-            Modifier.padding(16.dp)
-                .background(ColorUtils.white_FFFFFF)
+        Row(Modifier.padding(16.dp)
+            .height(IntrinsicSize.Max)
         ) {
-            Column(Modifier.weight(1f)
-                .fillMaxSize(),
+            Column(
+                Modifier.weight(5f),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start) {
+                horizontalAlignment = Alignment.Start
+            ) {
                 Text("${item.name}(${item.id})",
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(end = 2.dp),
                     color = ColorUtils.black_000000,
                     fontSize = 13.sp,
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
                 )
-                Text("number of users : ${item.numberOfUsers} people",
+                Text("이용건수: ${item.numberOfUsers}회",
+                    modifier = Modifier.padding(top = 12.dp)
+                        .fillMaxWidth()
+                        .padding(end = 2.dp),
                     color = ColorUtils.black_000000,
                     fontSize = 13.sp,
                     textAlign = TextAlign.Start
                 )
             }
-
-            Column(Modifier.weight(1f)
-                .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start) {
-                Text(text = "이용일시:${item.date}",
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .weight(6f),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                Text(modifier = Modifier.fillMaxWidth(),
+                    text = "이용일시:${item.date}",
                     color = ColorUtils.black_000000,
                     fontSize = 13.sp,
                     textAlign = TextAlign.Start
