@@ -1,7 +1,6 @@
 package com.nagaja.the330.view.mypage
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,7 +24,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.google.gson.Gson
-import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
 import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
@@ -36,16 +34,13 @@ import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
-import com.nagaja.the330.view.Header
-import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompany.ApplyCompanyFragment
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
-import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
 import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageFragment
 import com.nagaja.the330.view.secondhandmypage.SecondHandMypageFragment
-import com.nagaja.the330.view.text14_222
 import com.nagaja.the330.view.usage.UsageFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -301,8 +296,4 @@ private fun getUserDetailFromDataStore(context: Context) {
             userDetail?.let { viewModel.userDetailState.value = userDetail }
         }
     }
-}
-
-fun showMessDebug(mess: String?, context: Context) {
-    if (BuildConfig.DEBUG) Toast.makeText(context, mess ?: "", Toast.LENGTH_SHORT).show()
 }

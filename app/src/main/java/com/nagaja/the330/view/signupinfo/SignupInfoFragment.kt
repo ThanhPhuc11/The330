@@ -299,7 +299,7 @@ class SignupInfoFragment : BaseFragment() {
                         )
                     }
 
-                    AnimatedVisibility(!isSNS) {
+                    if(!isSNS) {
                         //TODO: Password
                         Text(
                             stringResource(R.string.password),
