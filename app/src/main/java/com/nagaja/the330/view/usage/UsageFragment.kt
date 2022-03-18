@@ -29,17 +29,22 @@ import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.model.CompanyFavoriteModel
 import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.ReservationModel
+import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.reservation.ReservationVM
+import com.nagaja.the330.view.reservationregis.ReservationRegisFragment
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
 
 class UsageFragment : BaseFragment() {
-    private lateinit var viewModel: UsageVM
+    private lateinit var viewModel: ReservationVM
 
     private var options: MutableList<KeyValueModel> = mutableListOf(KeyValueModel())
 //    private var stateOptions = mutableStateOf(options)
@@ -49,7 +54,7 @@ class UsageFragment : BaseFragment() {
     }
 
     override fun SetupViewModel() {
-        viewModel = getViewModelProvider(this)[UsageVM::class.java]
+        viewModel = getViewModelProvider(this)[ReservationVM::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
@@ -63,13 +68,10 @@ class UsageFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
                         stateOptions.value = GetDummyData.getSortFavoriteCompany(context)
-//                        accessToken?.let {
-//                            viewModel.getFavoriteCompany(
-//                                it,
-//                                0,
-//                                stateOptions.value[0].id!!
-//                            )
-//                        }
+                        viewModel.status = "USAGE_COMPLETED"
+                        accessToken?.let {
+                            viewModel.getReservationMain(it, 0)
+                        }
                     }
                     Lifecycle.Event.ON_STOP -> {}
                     else -> {}
@@ -108,15 +110,16 @@ class UsageFragment : BaseFragment() {
                         .fillMaxWidth()
                         .background(ColorUtils.gray_E1E1E1)
                 ) {
-                    val listCompany = viewModel.listCompany.apply {
-                        add(CompanyFavoriteModel())
-                        add(CompanyFavoriteModel())
-                        add(CompanyFavoriteModel())
-                    }
-                    LazyColumn(state = rememberLazyListState()) {
-                        itemsIndexed(listCompany) { _, obj ->
-                            CompanyItem(obj)
+                    val listReservation = viewModel.stateListData
+                    val lazyListState = rememberLazyListState()
+                    LazyColumn(state = lazyListState) {
+                        itemsIndexed(listReservation) { _, obj ->
+                            ItemUsage(obj)
                         }
+                    }
+
+                    LoadmoreHandler(lazyListState) { page ->
+                        viewModel.getReservationMain(accessToken!!, page)
                     }
                 }
 
@@ -126,7 +129,7 @@ class UsageFragment : BaseFragment() {
 
     @Composable
     private fun HandleSortUI(modifier: Modifier = Modifier) {
-        val options = GetDummyData.getSortFavoriteCompany(LocalContext.current)
+        val options = GetDummyData.getSortReservation(LocalContext.current)
         var expanded by remember { mutableStateOf(false) }
         var selectedOptionText by remember { mutableStateOf(options[0]) }
         Box(
@@ -174,6 +177,8 @@ class UsageFragment : BaseFragment() {
                             onClick = {
                                 selectedOptionText = selectionOption
                                 expanded = false
+                                viewModel.timeLimit = selectionOption.id!!
+                                viewModel.getReservationMain(accessToken!!, 0)
                             }
                         ) {
                             Text(text = selectionOption.name!!)
@@ -185,7 +190,7 @@ class UsageFragment : BaseFragment() {
     }
 
     @Composable
-    private fun CompanyItem(obj: CompanyFavoriteModel) {
+    private fun ItemUsage(obj: ReservationModel) {
         Row(
             Modifier
                 .padding(bottom = 1.dp)
@@ -201,19 +206,25 @@ class UsageFragment : BaseFragment() {
             )
             Column(Modifier.padding(start = 9.dp)) {
                 Text(
-                    obj.target?.name?.get(0)?.name ?: "",
+                    "${obj.companyOwner?.name?.getOrNull(0)?.name}",
                     color = ColorUtils.gray_222222,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Black
                 )
                 Text(
-                    "단골 등록일: 2021년 10월 26일",
+                    "이용일시: ${
+                        AppDateUtils.changeDateFormat(
+                            AppDateUtils.FORMAT_16,
+                            AppDateUtils.FORMAT_15,
+                            obj.reservationDateTime ?: ""
+                        )
+                    }",
                     modifier = Modifier.padding(top = 3.dp),
                     color = ColorUtils.gray_626262,
                     fontSize = 14.sp
                 )
                 Text(
-                    "이용 건수: ${obj.usageCount ?: 0}회",
+                    "사용인원: ${obj.reservationNumber ?: 0}명",
                     modifier = Modifier.padding(top = 3.dp),
                     color = ColorUtils.gray_626262,
                     fontSize = 14.sp
@@ -226,7 +237,13 @@ class UsageFragment : BaseFragment() {
                         Modifier
                             .width(76.dp)
                             .height(32.dp)
-                            .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp)),
+                            .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp))
+                            .noRippleClickable {
+                                viewController?.pushFragment(
+                                    ScreenId.SCREEN_RESERVATION_REGIS,
+                                    ReservationRegisFragment.newInstance(obj.companyOwner?.id!!)
+                                )
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text("재예약", color = ColorUtils.white_FFFFFF, fontSize = 12.sp)
