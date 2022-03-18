@@ -44,6 +44,7 @@ import com.nagaja.the330.model.TimeReservation
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
@@ -122,11 +123,12 @@ class ReservationRegisFragment : BaseFragment() {
                 rightText = "예",
                 onClick = {
                     if (it) {
+                        viewController?.popToFragment(ScreenId.SCREEN_MAIN)
 //                    accessToken?.let { viewModel.makeReservation(accessToken!!) }
                     }
                 }
             )
-        LaunchedEffect(Unit) {
+        LaunchedEffect(viewModel.callbackMakeReservationSuccess.value) {
             if (viewModel.callbackMakeReservationSuccess.value) {
                 stateDialogSuccess.value = true
             }

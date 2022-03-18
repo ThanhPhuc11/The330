@@ -13,6 +13,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Divider
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -468,6 +476,84 @@ fun DialogReport(
                             fontWeight = FontWeight.Bold
                         )
                     }
+                }
+            }
+        },
+        properties = DialogProperties(
+            dismissOnClickOutside = false,
+            dismissOnBackPress = false
+        )
+    )
+}
+
+@Composable
+fun DialogCancelComment(
+    state: MutableState<Boolean>,
+    onClick: ((Boolean) -> Unit)?
+) {
+    Dialog(
+        onDismissRequest = { state.value = false },
+        content = {
+            Column(
+                Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                Column(
+                    Modifier
+                        .padding(bottom = 7.dp)
+                        .fillMaxWidth()
+                        .background(
+                            color = ColorUtils.white_FFFFFF,
+                            shape = RoundedCornerShape(10.dp)
+                        ),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "댓글 더보기",
+                        color = ColorUtils.gray_9F9F9F,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(13.dp)
+                    )
+                    Divider(color = ColorUtils.gray_E1E1E1)
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .noRippleClickable {
+                                state.value = false
+                                onClick?.invoke(true)
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "삭제",
+                            color = ColorUtils.blue_2177E4,
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
+                Box(
+                    Modifier
+                        .padding(bottom = 10.dp)
+                        .fillMaxWidth()
+                        .height(57.dp)
+                        .background(
+                            color = ColorUtils.white_FFFFFF,
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .noRippleClickable {
+                            state.value = false
+                            onClick?.invoke(false)
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "취소",
+                        color = ColorUtils.blue_2177E4,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         },

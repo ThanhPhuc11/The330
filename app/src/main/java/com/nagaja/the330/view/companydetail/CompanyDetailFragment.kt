@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 
 class CompanyDetailFragment : BaseFragment() {
     private lateinit var viewModel: CompanyDetailVM
-    private var userDetail = mutableStateOf(UserDetail())
+    private var userDetail1 = mutableStateOf(UserDetail())
 
     companion object {
         fun newInstance(id: Int) = CompanyDetailFragment().apply {
@@ -439,7 +439,7 @@ class CompanyDetailFragment : BaseFragment() {
                 get[DataStorePref.USER_DETAIL] ?: ""
             }.collect {
                 val userDetail = Gson().fromJson(it, UserDetail::class.java)
-                userDetail?.let { this@CompanyDetailFragment.userDetail.value = userDetail }
+                userDetail?.let { this@CompanyDetailFragment.userDetail1.value = userDetail }
             }
         }
     }

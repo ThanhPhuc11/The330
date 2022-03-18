@@ -337,4 +337,28 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("id") id: Int
     ): FAQModel
+
+    @GET("comments")
+    suspend fun getCommentsById(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String,
+        @Query("status") status: String?,
+        @Query("freeNoticeBoardId") freeNoticeBoardId: Int?,
+        @Query("localNewsId") localNewsId: Int?,
+        @Query("reportMissingId") reportMissingId: Int?,
+    ): ResponseModel<MutableList<CommentModel>>
+
+    @POST("comments")
+    suspend fun postComments(
+        @Header("Authorization") token: String,
+        @Body body: CommentModel
+    ): CommentModel
+
+    @PATCH("comments")
+    suspend fun editComments(
+        @Header("Authorization") token: String,
+        @Body body: CommentModel
+    ): Response<Unit>
 }

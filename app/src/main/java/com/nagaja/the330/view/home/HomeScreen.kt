@@ -50,6 +50,7 @@ import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.notification.NotificationsFragment
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchFragment
 import com.nagaja.the330.view.reportmissing.ReportMissingFragment
+import com.nagaja.the330.view.searchmain.SearchMainFragment
 import com.nagaja.the330.view.secondhandmarket.SecondHandMarketFragment
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
@@ -90,7 +91,7 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
     }
 
     LayoutTheme330 {
-        LogoAndSearch()
+        LogoAndSearch(viewController)
         SearchFilter()
         Column(
             Modifier
@@ -128,7 +129,7 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
 }
 
 @Composable
-private fun LogoAndSearch() {
+private fun LogoAndSearch(viewController: ViewController?) {
     Row(
         Modifier
             .padding(top = 7.dp, bottom = 3.dp)
@@ -148,7 +149,13 @@ private fun LogoAndSearch() {
                 .weight(1f)
 //                .clip(RoundedCornerShape(4.dp))
                 .background(ColorUtils.blue_2177E4_opacity_5, RoundedCornerShape(4.dp))
-                .border(1.dp, ColorUtils.blue_2177E4_opacity_10, RoundedCornerShape(4.dp)),
+                .border(1.dp, ColorUtils.blue_2177E4_opacity_10, RoundedCornerShape(4.dp))
+                .noRippleClickable {
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_SEARCH_MAIN,
+                        SearchMainFragment.newInstance()
+                    )
+                },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -390,7 +397,6 @@ private fun MoneyValue(
     }
 }
 
-@Preview
 @Composable
 private fun BannerEvent(viewController: ViewController?) {
     Image(

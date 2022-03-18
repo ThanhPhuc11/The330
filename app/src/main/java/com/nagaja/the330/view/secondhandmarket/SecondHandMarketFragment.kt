@@ -30,6 +30,7 @@ import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.model.ChooseKeyValue
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.SecondHandModel
 import com.nagaja.the330.utils.AppDateUtils
@@ -251,12 +252,6 @@ class SecondHandMarketFragment : BaseFragment() {
             }
         }
     }
-
-    class ChooseKeyValue(
-        var id: String? = null,
-        var name: String? = null,
-        var isSelected: Boolean = false
-    )
 
     @Composable
     private fun ItemCategory(obj: ChooseKeyValue, index: Int) {
