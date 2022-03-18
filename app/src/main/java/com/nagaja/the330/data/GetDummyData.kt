@@ -201,7 +201,7 @@ object GetDummyData {
                 id = i
                 name = "Dummy $i"
                 numberOfUsers = 10
-                date = "YYYY/MM/DD HH:MM"
+                date = "2022/03/18 00:00"
             })
         }
         return list

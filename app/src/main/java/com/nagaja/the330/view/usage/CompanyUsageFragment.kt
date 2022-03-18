@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -277,39 +274,45 @@ class CompanyUsageFragment : BaseFragment() {
         }
     }
 
-    @Preview
+    @Preview(showBackground = true)
     @Composable
     fun ItemUsage(item: CompanyUsageModel = CompanyUsageModel().apply {
         id = 0
         name = "name"
-        date = "YYYY/MM/DD HH:MM"
+        date = "2022/03/18 00:00"
         numberOfUsers = 100
     }){
-        Row(
-            Modifier.padding(16.dp)
-                .background(ColorUtils.white_FFFFFF)
+        Row(Modifier.padding(16.dp)
+            .height(IntrinsicSize.Max)
         ) {
-            Column(Modifier.weight(1f)
-                .fillMaxSize(),
+            Column(
+                Modifier.weight(5f),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start) {
+                horizontalAlignment = Alignment.Start
+            ) {
                 Text("${item.name}(${item.id})",
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(end = 2.dp),
                     color = ColorUtils.black_000000,
                     fontSize = 13.sp,
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
                 )
-                Text("number of users : ${item.numberOfUsers} people",
+                Text("이용건수: ${item.numberOfUsers}회",
+                    modifier = Modifier.padding(top = 12.dp)
+                        .fillMaxWidth()
+                        .padding(end = 2.dp),
                     color = ColorUtils.black_000000,
                     fontSize = 13.sp,
                     textAlign = TextAlign.Start
                 )
             }
-
-            Column(Modifier.weight(1f)
-                .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start) {
-                Text(text = "이용일시:${item.date}",
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .weight(6f),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                Text(modifier = Modifier.fillMaxWidth(),
+                    text = "이용일시:${item.date}",
                     color = ColorUtils.black_000000,
                     fontSize = 13.sp,
                     textAlign = TextAlign.Start
