@@ -92,6 +92,15 @@ class FreeNoticeDetailFragment : BaseFragment() {
                                 it,
                                 requireArguments().getInt(AppConstants.EXTRA_KEY1)
                             )
+                            commentViewModel.getCommentsById(
+                                it,
+                                0,
+                                10,
+                                "ACTIVATED",
+                                requireArguments().getInt(AppConstants.EXTRA_KEY1),
+                                null,
+                                null
+                            )
                         }
                     }
                     else -> {}
@@ -315,7 +324,7 @@ class FreeNoticeDetailFragment : BaseFragment() {
                     accessToken!!,
                     CommentModel().apply {
                         body = it
-                        localNews = IdentityModel().apply {
+                        freeNoticeBoard = IdentityModel().apply {
                             id = requireArguments().getInt(AppConstants.EXTRA_KEY1)
                         }
                     }

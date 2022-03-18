@@ -88,6 +88,16 @@ class ReportMissingDetailFragment : BaseFragment() {
                                 it,
                                 requireArguments().getInt(AppConstants.EXTRA_KEY1)
                             )
+
+                            commentViewModel.getCommentsById(
+                                it,
+                                0,
+                                10,
+                                "ACTIVATED",
+                                null,
+                                null,
+                                requireArguments().getInt(AppConstants.EXTRA_KEY1)
+                            )
                         }
                     }
                     else -> {}
@@ -254,7 +264,7 @@ class ReportMissingDetailFragment : BaseFragment() {
                     accessToken!!,
                     CommentModel().apply {
                         body = it
-                        localNews = IdentityModel().apply {
+                        reportMissing = IdentityModel().apply {
                             id = requireArguments().getInt(AppConstants.EXTRA_KEY1)
                         }
                     }
