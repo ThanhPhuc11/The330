@@ -45,13 +45,13 @@ class ReportMissingVM(
                     callbackSuccess.value = Unit
                     it.content?.let { it1 ->
                         if (type == AppConstants.REPORT) {
-                            listDataReport.clear()
-                            listDataReport.addAll(it1)
-                            stateListDataReport.addAll(listDataReport)
+//                            listDataReport.clear()
+//                            listDataReport.addAll(it1)
+                            if (page == 0) stateListDataReport.clear()
+                            stateListDataReport.addAll(it1)
                         } else {
-                            listDataMissing.clear()
-                            listDataMissing.addAll(it1)
-                            stateListDataMissing.addAll(listDataReport)
+                            if (page == 0) stateListDataMissing.clear()
+                            stateListDataMissing.addAll(it1)
                         }
                     }
                 }

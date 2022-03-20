@@ -47,13 +47,11 @@ class RecruitmentJobSearchVM(
                     callbackSuccess.value = Unit
                     it.content?.let { it1 ->
                         if (type == AppConstants.RECRUITMENT) {
-                            listDataRecruitment.clear()
-                            listDataRecruitment.addAll(it1)
-                            stateListDataRecruitment.addAll(listDataRecruitment)
+                            if (page == 0) stateListDataRecruitment.clear()
+                            stateListDataRecruitment.addAll(it1)
                         } else {
-                            listDataJobs.clear()
-                            listDataJobs.addAll(it1)
-                            stateListDataJobs.addAll(listDataJobs)
+                            if (page == 0) stateListDataJobs.clear()
+                            stateListDataJobs.addAll(it1)
                         }
                     }
                 }

@@ -41,11 +41,9 @@ class ReportMissingMyPageVM(
                 .catch { handleError(it) }
                 .collect {
                     callbackSuccess.value = Unit
+                    if (page == 0) stateListDataReport.clear()
                     it.content?.let { it1 ->
-                        listDataReport.clear()
-                        listDataReport.addAll(it1)
-                        stateListDataReport.clear()
-                        stateListDataReport.addAll(listDataReport)
+                        stateListDataReport.addAll(it1)
                     }
                 }
         }

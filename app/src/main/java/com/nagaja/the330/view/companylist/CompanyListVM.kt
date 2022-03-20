@@ -28,16 +28,26 @@ class CompanyListVM(
         all: String? = null
     ) {
         viewModelScope.launch {
-            repo.findCompany(token, page, size = 20, sort, filter, cType, authentication, cityId, districtId, all)
+            repo.findCompany(
+                token,
+                page,
+                size = 20,
+                sort,
+                filter,
+                cType,
+                authentication,
+                cityId,
+                districtId,
+                all
+            )
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }
                 .catch { handleError(it) }
                 .collect {
                     callbackSuccess.value = Unit
+                    if (page == 0) stateListData.clear()
                     it.content?.let { data ->
-                        listData.clear()
-                        listData.addAll(data)
-                        stateListData.addAll(listData)
+                        stateListData.addAll(data)
                     }
                 }
         }

@@ -194,7 +194,7 @@ class CompanyUsageFragment : BaseFragment() {
             }
         }
 
-        Column(Modifier.fillMaxWidth()) {
+        Column(Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -257,7 +257,7 @@ class CompanyUsageFragment : BaseFragment() {
         }
 
 
-        Column(Modifier.fillMaxWidth()) {
+        Column(Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -273,7 +273,7 @@ class CompanyUsageFragment : BaseFragment() {
                                 .makeText(requireContext(), "click", Toast.LENGTH_LONG)
                                 .show()
                         },
-                    contentAlignment = Alignment.CenterStart,
+                    contentAlignment = Alignment.BottomStart,
                 ) {
                     Text(
                         text = "총 ${viewModel.stateTotalGeneralTab.value}건 이용",

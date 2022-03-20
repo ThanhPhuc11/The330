@@ -240,7 +240,7 @@ private fun Tab1(viewModel: ReservationCompanyVM, token: String) {
             owner.lifecycle.removeObserver(observer)
         }
     }
-    Column {
+    Column(Modifier.fillMaxSize()) {
         Divider(color = ColorUtils.gray_E1E1E1)
         Row(
             Modifier
@@ -506,7 +506,7 @@ private fun Tab2(viewModel: ReservationCompanyVM, token: String) {
         }
     }
 
-    Column {
+    Column(Modifier.fillMaxSize()) {
         Divider(color = ColorUtils.gray_E1E1E1)
         Row(
             Modifier
