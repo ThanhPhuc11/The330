@@ -78,11 +78,11 @@ class SecondHandMarketVM(
                 .collect {
                     callbackSuccess.value = Unit
                     if (page == 0) {
-                        listData.clear()
+                        stateListData.clear()
                     }
                     it.content?.let { it1 ->
-                        listData.addAll(it1)
-                        stateListData.addAll(listData)
+//                        listData.addAll(it1)
+                        stateListData.addAll(it1)
                     }
                 }
         }

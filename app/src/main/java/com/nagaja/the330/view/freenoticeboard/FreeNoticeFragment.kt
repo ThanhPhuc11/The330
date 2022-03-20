@@ -1,12 +1,10 @@
 package com.nagaja.the330.view.freenoticeboard
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,14 +32,16 @@ import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.FreeNoticeModel
 import com.nagaja.the330.model.KeyValueModel
-import com.nagaja.the330.utils.*
+import com.nagaja.the330.utils.AppDateUtils
+import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.HeaderSearch
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.freenoticedetail.FreeNoticeDetailFragment
 import com.nagaja.the330.view.freenoticeregis.FreeNoticeRegisFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
-import kotlinx.coroutines.flow.collect
 
 class FreeNoticeFragment : BaseFragment() {
     private lateinit var viewModel: FreeNoticeVM
@@ -200,7 +200,7 @@ class FreeNoticeFragment : BaseFragment() {
                 }
             }
 
-            LoadmoreHandler(lazyListState) { page->
+            LoadmoreHandler(lazyListState) { page ->
                 viewModel.getFreeNoticeBoard(accessToken!!, page)
             }
         }

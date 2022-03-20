@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.LocalNewsModel
-import com.nagaja.the330.model.SecondHandModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -36,10 +35,11 @@ class LocalNewsVM(
                 .catch { handleError(it) }
                 .collect {
                     callbackSuccess.value = Unit
-                    listData.clear()
+                    if (page == 0) {
+                        stateListData.clear()
+                    }
                     it.content?.let { it1 ->
-                        listData.addAll(it1)
-                        stateListData.addAll(listData)
+                        stateListData.addAll(it1)
                     }
                 }
         }

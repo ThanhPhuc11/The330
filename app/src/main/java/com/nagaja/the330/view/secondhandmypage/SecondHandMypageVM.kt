@@ -20,12 +20,15 @@ class SecondHandMypageVM(
     fun getMySecondHand(token: String, page: Int) {
         viewModelScope.launch {
             repo.getMySecondHand(token, page, 20, sort, transactionStatus)
-                .onStart { }
+                .onStart { callbackStart.value = Unit }
                 .onCompletion { }
-                .catch { }
+                .catch { handleError(it) }
                 .collect {
-                    it.content?.let { it1 ->
+                    callbackSuccess.value = Unit
+                    if (page == 0) {
                         stateListSecondhand.clear()
+                    }
+                    it.content?.let { it1 ->
                         stateListSecondhand.addAll(it1)
                     }
                 }

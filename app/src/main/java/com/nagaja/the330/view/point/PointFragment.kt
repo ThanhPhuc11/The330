@@ -286,7 +286,7 @@ class PointFragment : BaseFragment() {
                 owner.lifecycle.removeObserver(observer)
             }
         }
-        Column(Modifier.fillMaxWidth()) {
+        Column(Modifier.fillMaxSize()) {
             Box(
                 Modifier
                     .fillMaxWidth()
@@ -343,7 +343,7 @@ class PointFragment : BaseFragment() {
                 owner.lifecycle.removeObserver(observer)
             }
         }
-        Column(Modifier.fillMaxWidth()) {
+        Column(Modifier.fillMaxSize()) {
             Box(
                 Modifier
                     .fillMaxWidth()
