@@ -145,6 +145,11 @@ interface ApiService {
         @Query("cityId") cityId: Int
     ): ResponseModel<MutableList<DistrictModel>>
 
+    @GET("areas")
+    suspend fun getPopularAreas(
+        @Header("Authorization") token: String,
+    ): ResponseModel<MutableList<DistrictModel>>
+
     @POST("secondhand_posts")
     suspend fun makeSecondhandPost(
         @Header("Authorization") token: String,

@@ -18,4 +18,16 @@ class ApplyCompanyRepo(private val apiService: ApiService) {
     suspend fun uploadImage(url: String, body: RequestBody) = flow {
         emit(apiService.uploadImage(url, body))
     }
+
+    suspend fun getCity(token: String) = flow {
+        emit(apiService.getCity(token))
+    }
+
+    suspend fun getDistrict(token: String, cityId: Int) = flow {
+        emit(apiService.getDistrict(token, cityId))
+    }
+
+    suspend fun getPopularAreas(token: String) = flow {
+        emit(apiService.getPopularAreas(token))
+    }
 }

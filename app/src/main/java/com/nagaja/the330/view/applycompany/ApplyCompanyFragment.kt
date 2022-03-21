@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,7 +45,10 @@ import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.FileModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.model.TimeReservation
-import com.nagaja.the330.utils.*
+import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.NameUtils
+import com.nagaja.the330.utils.RealPathUtil
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompanyproduct.ProductCompanyFragment
 import com.skydoves.landscapist.glide.GlideImage
@@ -69,6 +71,18 @@ class ApplyCompanyFragment : BaseFragment() {
         shareViewModel = ViewModelProvider(this)[ShareApplyCompanyVM::class.java]
         viewController = (activity as MainActivity).viewController
 
+        viewModel.callbackStart.observe(viewLifecycleOwner) {
+            showLoading()
+        }
+        viewModel.callbackSuccess.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.callbackFail.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.showMessCallback.observe(viewLifecycleOwner) {
+            showMess(it)
+        }
     }
 
     @Composable
@@ -77,8 +91,10 @@ class ApplyCompanyFragment : BaseFragment() {
         DisposableEffect(owner) {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
-                    Lifecycle.Event.ON_START -> {
+                    Lifecycle.Event.ON_CREATE -> {
                         viewModel.getCategory(accessToken!!)
+                        viewModel.getPopularAreas(accessToken!!)
+                        viewModel.getCity(accessToken!!)
                     }
                     Lifecycle.Event.ON_STOP -> {
 
@@ -174,6 +190,7 @@ class ApplyCompanyFragment : BaseFragment() {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
+                //TODO: Area Selection
                 AreaSelection()
 
                 TextFieldCustom(
@@ -250,7 +267,7 @@ class ApplyCompanyFragment : BaseFragment() {
                         .padding(top = 8.dp)
                         .height(40.dp),
                     hint = stringResource(R.string.please_enter_payment_method),
-                    textStateId = viewModel.textStateNumReservation
+                    textStateId = viewModel.textStatePaymethod
                 )
 
                 //TODO: attach Ducument
@@ -596,20 +613,38 @@ class ApplyCompanyFragment : BaseFragment() {
                 modifier = Modifier
                     .padding(end = 5.dp)
                     .weight(1f),
-                list = GetDummyData.getSortFavoriteCompany(LocalContext.current),
-                initValue = GetDummyData.getSortFavoriteCompany(LocalContext.current)[0]
+                list = viewModel.listPopularAreas.map {
+                    KeyValueModel(it.id.toString(), it.name?.getOrNull(0)?.name)
+                }.toMutableList(),
+                initValue = KeyValueModel(null, "인기지역"),
+                callback = {
+                    viewModel.popularAreaId = it.id?.toInt()
+                }
             )
             BaseSeletion(
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 5.dp),
-                list = GetDummyData.getSortFavoriteCompany(LocalContext.current),
-                initValue = GetDummyData.getSortFavoriteCompany(LocalContext.current)[0]
+                list = viewModel.listCity.map {
+                    KeyValueModel(it.id.toString(), it.name?.getOrNull(0)?.name)
+                }.toMutableList(),
+                initValue = KeyValueModel(null, "시/도"),
+                callback = {
+                    it.id?.let { item ->
+                        viewModel.cityId = item.toInt()
+                        viewModel.getDistrict(accessToken!!, item.toInt())
+                    }
+                }
             )
             BaseSeletion(
                 modifier = Modifier.weight(1f),
-                list = GetDummyData.getSortFavoriteCompany(LocalContext.current),
-                initValue = GetDummyData.getSortFavoriteCompany(LocalContext.current)[0]
+                list = viewModel.listDistrict.map {
+                    KeyValueModel(it.id.toString(), it.name?.getOrNull(0)?.name)
+                }.toMutableList(),
+                initValue = KeyValueModel("null", "구/군"),
+                callback = {
+                    viewModel.popularAreaId = it.id?.toInt()
+                }
             )
         }
     }
@@ -667,7 +702,7 @@ class ApplyCompanyFragment : BaseFragment() {
                             callback?.invoke(selectionOption)
                         }
                     ) {
-                        Text(text = selectionOption.name!!)
+                        Text(text = selectionOption.name ?: "")
                     }
                 }
             }
@@ -774,12 +809,9 @@ class ApplyCompanyFragment : BaseFragment() {
     @Preview
     @Composable
     private fun ChooseService() {
-        val listService = listOf(
-            AppConstants.DELIVERY,
-            AppConstants.RESERVATION,
-            AppConstants.PICKUP_DROP
-        )
-        val chooseState = remember { mutableStateOf(listService[0]) }
+        val isChooseTab1 = remember { mutableStateOf(viewModel.serviceType[0].isSelected) }
+        val isChooseTab2 = remember { mutableStateOf(viewModel.serviceType[1].isSelected) }
+        val isChooseTab3 = remember { mutableStateOf(viewModel.serviceType[2].isSelected) }
         Column(
             Modifier
                 .padding(horizontal = 16.dp)
@@ -799,8 +831,11 @@ class ApplyCompanyFragment : BaseFragment() {
                 SelectedService(
                     text = "배달",
                     modifier = Modifier.weight(1f),
-                    isSelected = chooseState.value == AppConstants.DELIVERY,
-                    onClick = { chooseState.value = AppConstants.DELIVERY }
+                    isSelected = isChooseTab1.value,
+                    onClick = {
+                        viewModel.serviceType[0].isSelected = !viewModel.serviceType[0].isSelected
+                        isChooseTab1.value = !isChooseTab1.value
+                    }
                 )
                 Spacer(
                     modifier = Modifier
@@ -812,8 +847,11 @@ class ApplyCompanyFragment : BaseFragment() {
                 SelectedService(
                     text = "예약",
                     modifier = Modifier.weight(1f),
-                    isSelected = chooseState.value == AppConstants.RESERVATION,
-                    onClick = { chooseState.value = AppConstants.RESERVATION }
+                    isSelected = isChooseTab2.value,
+                    onClick = {
+                        viewModel.serviceType[1].isSelected = !viewModel.serviceType[1].isSelected
+                        isChooseTab2.value = !isChooseTab2.value
+                    }
                 )
                 Spacer(
                     modifier = Modifier
@@ -824,8 +862,11 @@ class ApplyCompanyFragment : BaseFragment() {
                 SelectedService(
                     text = "픽업/드랍",
                     modifier = Modifier.weight(1f),
-                    isSelected = chooseState.value == AppConstants.PICKUP_DROP,
-                    onClick = { chooseState.value = AppConstants.PICKUP_DROP }
+                    isSelected = isChooseTab3.value,
+                    onClick = {
+                        viewModel.serviceType[2].isSelected = !viewModel.serviceType[2].isSelected
+                        isChooseTab3.value = !isChooseTab3.value
+                    }
                 )
             }
         }
@@ -961,6 +1002,14 @@ class ApplyCompanyFragment : BaseFragment() {
                     }
                     listTime.removeAt(index)
                     listTime.add(index, temp)
+
+                    viewModel.reservationTime = listTime.onEachIndexed { index, obj ->
+                        obj.time = index.toString()
+                    }.filter {
+                        it.isSelected
+                    }.map {
+                        it.time.toInt()
+                    }.toMutableList()
                 }
             }
             Box(
