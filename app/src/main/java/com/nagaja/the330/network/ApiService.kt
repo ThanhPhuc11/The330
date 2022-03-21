@@ -395,5 +395,17 @@ interface ApiService {
         @Query("type") type: String?,
         @Query("startTime") startTime: String?,
         @Query("endTime") endTime: String?,
-    ): Response<Unit>
+    ): ResponseModel<MutableList<ChatDetailModel>>
+
+    @POST("chat/start")
+    suspend fun startChat(
+        @Header("Authorization") token: String,
+        @Body body: StartChatRequest
+    ): ChatDetailModel
+
+    @POST("chat/newMessage")
+    suspend fun sendMess(
+        @Header("Authorization") token: String,
+        @Body body: ItemMessageModel
+    )
 }

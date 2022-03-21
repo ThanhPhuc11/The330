@@ -152,10 +152,12 @@ class CompanyDetailFragment : BaseFragment() {
                         .padding(top = 13.dp)
                         .padding(horizontal = 16.dp)
                         .noRippleClickable {
-                            viewController?.pushFragment(
-                                ScreenId.SCREEN_CHAT_DETAIL,
-                                ChatDetailFragment.newInstance()
-                            )
+                            viewModel.companyDetail.value.user?.id?.let {
+                                viewController?.pushFragment(
+                                    ScreenId.SCREEN_CHAT_DETAIL,
+                                    ChatDetailFragment.newInstance(it)
+                                )
+                            }
                         }
                 )
                 Row(Modifier.padding(horizontal = 16.dp, vertical = 25.dp)) {

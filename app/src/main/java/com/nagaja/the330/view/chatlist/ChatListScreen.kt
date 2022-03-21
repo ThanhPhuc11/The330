@@ -27,12 +27,13 @@ import com.nagaja.the330.R
 import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
 import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.ChatDetailModel
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
@@ -143,22 +144,22 @@ fun ChatListScreen(accessToken: String, viewController: ViewController?, user: U
 
         Divider(color = ColorUtils.gray_E1E1E1)
 
-        val listChat = mutableListOf<KeyValueModel>().apply {
-            add(KeyValueModel())
-            add(KeyValueModel())
-            add(KeyValueModel())
-        }
-
-        LazyColumn(state = rememberLazyListState()) {
+        val listChat = viewModel.stateListRoom
+        val lazyListState = rememberLazyListState()
+        LazyColumn(state = lazyListState) {
             itemsIndexed(listChat) { index, obj ->
-                ItemGeneralMember() {
+                ItemGeneralMember(obj) {
                     viewController?.pushFragment(
                         ScreenId.SCREEN_CHAT_DETAIL,
-                        ChatDetailFragment.newInstance()
+                        ChatDetailFragment.newInstance(obj.target?.id!!)
                     )
                 }
                 Divider(color = ColorUtils.gray_E1E1E1)
             }
+        }
+
+        LoadmoreHandler(lazyListState) { page ->
+            viewModel.getChatList(accessToken, page)
         }
     }
 }
@@ -218,7 +219,7 @@ private fun ItemCompanyMember() {
 }
 
 @Composable
-private fun ItemGeneralMember(onClick: () -> Unit) {
+private fun ItemGeneralMember(obj: ChatDetailModel, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()

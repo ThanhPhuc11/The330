@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.chatdetail
 
+import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,28 +9,40 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
-import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.ItemMessageModel
+import com.nagaja.the330.model.StartChatRequest
 import com.nagaja.the330.model.UserDetail
+import com.nagaja.the330.utils.AppConstants
+import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
@@ -37,25 +50,55 @@ import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.reservationregis.ReservationRegisFragment
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class ChatDetailFragment : BaseFragment() {
     private lateinit var viewModel: ChatDetailVM
+    private var partnerId: Int = 0
+    private var isFirst = true
+    private lateinit var database: DatabaseReference
 
     companion object {
-        fun newInstance() = ChatDetailFragment()
+        fun newInstance(partnerId: Int) = ChatDetailFragment().apply {
+            arguments = Bundle().apply {
+                putInt(AppConstants.EXTRA_KEY1, partnerId)
+            }
+        }
     }
 
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[ChatDetailVM::class.java]
         viewController = (activity as MainActivity).viewController
+
+        database = Firebase.database.reference
     }
 
     @Composable
     override fun UIData() {
+        val owner = LocalLifecycleOwner.current
+
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+
+                        partnerId = requireArguments().getInt(AppConstants.EXTRA_KEY1)
+                        viewModel.startChat(
+                            accessToken!!,
+                            StartChatRequest().apply { userId = partnerId })
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
+        LaunchedEffect(viewModel.stateRoomInfo.value) {
+            viewModel.stateRoomInfo.value.id?.let {
+                listenRealtime()
+            }
+        }
         LayoutTheme330 {
             Header("") {
                 viewController?.popFragment()
@@ -70,9 +113,7 @@ class ChatDetailFragment : BaseFragment() {
             )
 
             //TODO: Content Mess
-            val listMess = remember {
-                mutableStateListOf<KeyValueModel>()
-            }
+            val listMess = viewModel.stateListMess
             Box(
                 Modifier
                     .fillMaxWidth()
@@ -98,17 +139,13 @@ class ChatDetailFragment : BaseFragment() {
                         .padding(horizontal = 16.dp)
                 ) {
                     itemsIndexed(listMess) { index, obj ->
-                        ItemCapture()
+                        if (obj.userId?.toInt() == userDetailBase?.id) {
+                            ItemMeChat(obj)
+                        } else {
+                            ItemYouChat(obj)
+                        }
+//                        ItemCapture()
                     }
-                }
-            }
-
-            LaunchedEffect(Unit) {
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(5000)
-                    listMess.add(KeyValueModel())
-                    delay(5000)
-                    listMess.removeAt(0)
                 }
             }
 
@@ -171,6 +208,7 @@ class ChatDetailFragment : BaseFragment() {
     @Preview
     @Composable
     private fun InputChat() {
+        val stateInputChat = remember { mutableStateOf(TextFieldValue("")) }
         Row(
             Modifier
                 .fillMaxWidth()
@@ -194,19 +232,46 @@ class ChatDetailFragment : BaseFragment() {
                     .padding(start = 17.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    "메세지를 입력해 주세요.",
-                    color = ColorUtils.gray_BEBEBE,
-                    fontSize = 14.sp,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Start
+                BasicTextField(
+                    value = stateInputChat.value,
+                    onValueChange = {
+                        if (it.text.length <= 50) stateInputChat.value = it
+                    },
+                    Modifier
+                        .fillMaxWidth(),
+                    singleLine = true,
+                    textStyle = TextStyle(
+                        color = ColorUtils.black_000000
+                    ),
+                    decorationBox = { innerTextField ->
+                        Row {
+                            if (stateInputChat.value.text.isEmpty()) {
+                                Text(
+                                    "메세지를 입력해 주세요.",
+                                    color = ColorUtils.gray_BEBEBE,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.weight(1f),
+                                    textAlign = TextAlign.Start
+                                )
+                            }
+                        }
+                        innerTextField()
+                    }
                 )
             }
 
             Image(
                 painterResource(R.drawable.ic_sent_chat),
                 null,
-                modifier = Modifier.padding(start = 6.dp, end = 2.dp)
+                modifier = Modifier
+                    .padding(start = 6.dp, end = 2.dp)
+                    .noRippleClickable {
+                        viewModel.sendMess(accessToken!!, ItemMessageModel().apply {
+                            chatRoomId = viewModel.stateRoomInfo.value.id
+                            message = stateInputChat.value.text
+                            type = "INIT"
+                        })
+                    }
             )
         }
     }
@@ -236,10 +301,8 @@ class ChatDetailFragment : BaseFragment() {
         }
     }
 
-
-    @Preview
     @Composable
-    private fun ItemMeChat() {
+    private fun ItemMeChat(obj: ItemMessageModel) {
         Box(
             Modifier
                 .fillMaxWidth()
@@ -256,7 +319,7 @@ class ChatDetailFragment : BaseFragment() {
                         )
                         .padding(12.dp), contentAlignment = Alignment.CenterStart
                 ) {
-                    Text("hahaha", color = ColorUtils.white_FFFFFF, fontSize = 14.sp)
+                    Text("${obj.message}", color = ColorUtils.white_FFFFFF, fontSize = 14.sp)
                 }
                 Row(Modifier.width(200.dp)) {
                     Text(
@@ -265,15 +328,20 @@ class ChatDetailFragment : BaseFragment() {
                         fontSize = 12.sp,
                         modifier = Modifier.weight(1f)
                     )
-                    Text("2021. 10. 22, 16:08 PM", color = ColorUtils.gray_9E9E9E, fontSize = 12.sp)
+                    Text(
+                        AppDateUtils.changeDateFormat(
+                            AppDateUtils.FORMAT_7,
+                            AppDateUtils.FORMAT_5,
+                            AppDateUtils.convertTime(obj.createdOn ?: 0)
+                        ), color = ColorUtils.gray_9E9E9E, fontSize = 12.sp
+                    )
                 }
             }
         }
     }
 
-    @Preview
     @Composable
-    private fun ItemYouChat() {
+    private fun ItemYouChat(obj: ItemMessageModel) {
         Box(
             Modifier
                 .fillMaxWidth()
@@ -290,7 +358,7 @@ class ChatDetailFragment : BaseFragment() {
                         )
                         .padding(12.dp), contentAlignment = Alignment.CenterStart
                 ) {
-                    Text("hahaha", color = ColorUtils.white_FFFFFF, fontSize = 14.sp)
+                    Text("${obj.message}", color = ColorUtils.white_FFFFFF, fontSize = 14.sp)
                 }
                 Row(Modifier.width(200.dp)) {
                     Text(
@@ -324,5 +392,40 @@ class ChatDetailFragment : BaseFragment() {
                 textAlign = TextAlign.Center
             )
         }
+    }
+
+    private fun listenRealtime() {
+        database.child("chat_rooms").child(viewModel.stateRoomInfo.value.id.toString())
+            .child("messages").limitToLast(1).addChildEventListener(eventListenerRealtime)
+    }
+
+    private val eventListenerRealtime = object : ChildEventListener {
+        override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+            val newMess = ItemMessageModel().apply {
+                messageId = snapshot.child("messageId").value as Long?
+                userId = (snapshot.child("userId").value as String?)
+                name = (snapshot.child("name").value as String?)
+                message = (snapshot.child("message").value as String?)
+                createdOn = snapshot.child("createdOn").value as Long?
+            }
+            if (isFirst) {
+                isFirst = false
+            } else {
+                viewModel.stateListMess.add(0, newMess)
+            }
+        }
+
+        override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+        }
+
+        override fun onChildRemoved(snapshot: DataSnapshot) {
+        }
+
+        override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+        }
+
     }
 }
