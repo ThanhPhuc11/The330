@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.*
@@ -73,6 +74,10 @@ class ApplyCompanyVM(
 
     var fileName = ""
     var filePath = "" //TODO: path sau khi lay realpath
+    var totalFileUpload = 0
+    var fileUploaded = 0
+
+    val callbackMakeSuccess = MutableLiveData<Unit>()
 
     fun getCategory(token: String) {
         viewModelScope.launch {
@@ -149,7 +154,9 @@ class ApplyCompanyVM(
     fun saveCompanyTransfer(): CompanyModel {
         return CompanyModel().apply {
             ctype = selectedOptionCategory.value.ctype
-            images = listImageRepresentative
+            images = listImageRepresentative.onEachIndexed { index, obj ->
+                obj.priority = index
+            }
             name = mutableListOf<NameModel>().apply {
                 add(NameModel(name = textStateNameEng.value.text, lang = AppConstants.Lang.EN))
                 add(NameModel(name = textStateNamePhi.value.text, lang = AppConstants.Lang.PH))
@@ -202,6 +209,7 @@ class ApplyCompanyVM(
                 .onCompletion { }
                 .catch { }
                 .collect {
+                    totalFileUpload = listImageRepresentative.size + 1
                     if (it.images != null && it.images!!.size > 0)
                         it.images?.onEach { fileModel ->
                             listImageRepresentative.forEach { fileLocal ->
@@ -216,7 +224,7 @@ class ApplyCompanyVM(
         }
     }
 
-    fun uploadImageTest(url: String, path: String) {
+    private fun uploadImageTest(url: String, path: String) {
         val requestFile: RequestBody =
             File(path).asRequestBody("application/octet-stream".toMediaTypeOrNull())
 
@@ -228,10 +236,14 @@ class ApplyCompanyVM(
                     Log.e("Catch", this.toString() + path)
                 }
                 .collect {
+                    fileUploaded++
                     if (it.raw().isSuccessful && it.raw().code == 200) {
                         Log.e("Success", path)
                     } else {
                         Log.e("Fail", path)
+                    }
+                    if (fileUploaded == totalFileUpload) {
+                        callbackMakeSuccess.value = Unit
                     }
                 }
         }

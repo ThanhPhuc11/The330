@@ -173,6 +173,8 @@
     <string name="attach_file_note_1">* 사업자 등록번호가 기재된 ‘사업자등록증’ 파일을 첨부해주세요.</string>
     <string name="attach_file_note_2">* 기업 회원 신청을 위해 사업자등록증은 필수로 첨부해주세요.</string>
     <string name="attach_file_note_3">* 문서 파일, 이미지 파일, 압축 파일만 업로드 해주세요.</string>
+    <string name="apply_company_completed">신청 완료</string>
+    <string name="enter_prod_info">상품 정보 입력</string>
     <string name="modifier_completed">수정 완료</string>
     <string name="edit_prod_info">상품 정보 수정</string>
 

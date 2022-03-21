@@ -51,6 +51,7 @@ import com.nagaja.the330.utils.RealPathUtil
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompanyproduct.ProductCompanyFragment
+import com.nagaja.the330.view.applycompanyresult.ApplyResultFragment
 import com.skydoves.landscapist.glide.GlideImage
 import java.io.File
 
@@ -71,6 +72,12 @@ class ApplyCompanyFragment : BaseFragment() {
         shareViewModel = ViewModelProvider(this)[ShareApplyCompanyVM::class.java]
         viewController = (activity as MainActivity).viewController
 
+        viewModel.callbackMakeSuccess.observe(viewLifecycleOwner) {
+            viewController?.pushFragment(
+                ScreenId.SCREEN_APPLY_COMPANY_RESULT,
+                ApplyResultFragment.newInstance()
+            )
+        }
         viewModel.callbackStart.observe(viewLifecycleOwner) {
             showLoading()
         }
@@ -379,7 +386,7 @@ class ApplyCompanyFragment : BaseFragment() {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            stringResource(R.string.modifier_completed),
+                            stringResource(R.string.apply_company_completed),
                             color = ColorUtils.white_FFFFFF,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold
@@ -405,7 +412,7 @@ class ApplyCompanyFragment : BaseFragment() {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            stringResource(R.string.edit_prod_info),
+                            stringResource(R.string.enter_prod_info),
                             color = ColorUtils.white_FFFFFF,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold
