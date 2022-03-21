@@ -249,7 +249,8 @@ class ApplyCompanyFragment : BaseFragment() {
                         .padding(top = 8.dp)
                         .height(40.dp),
                     hint = stringResource(R.string.please_enter_number_people_who_can_make_reservation),
-                    textStateId = viewModel.textStateNumReservation
+                    textStateId = viewModel.textStateNumReservation,
+                    inputType = KeyboardType.Number
                 )
 
                 //TODO: Payment method
@@ -1003,13 +1004,12 @@ class ApplyCompanyFragment : BaseFragment() {
                     listTime.removeAt(index)
                     listTime.add(index, temp)
 
-                    viewModel.reservationTime = listTime.onEachIndexed { index, obj ->
-                        obj.time = index.toString()
-                    }.filter {
-                        it.isSelected
-                    }.map {
-                        it.time.toInt()
-                    }.toMutableList()
+                    viewModel.reservationTime!!.clear()
+                    listTime.forEachIndexed { index1, obj ->
+                        if (obj.isSelected) {
+                            viewModel.reservationTime!!.add(index1)
+                        }
+                    }
                 }
             }
             Box(

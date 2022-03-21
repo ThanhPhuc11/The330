@@ -66,7 +66,7 @@ class ApplyCompanyVM(
     val textStateOpenTime = mutableStateOf(-1)
     val textStateCloseTime = mutableStateOf(-1)
 
-    var reservationTime: MutableList<Int>? = null
+    var reservationTime: MutableList<Int>? = mutableListOf()
 
     val textStateNumReservation = mutableStateOf(TextFieldValue(""))
     val textStatePaymethod = mutableStateOf(TextFieldValue(""))
