@@ -42,6 +42,7 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
+import com.nagaja.the330.view.editcompany.EditCompanyFragment
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
 import com.nagaja.the330.view.point.PointFragment
 import com.nagaja.the330.view.recruimentcompany.RecruitmentCompanyFragment
@@ -315,7 +316,12 @@ private fun MyInfoCompany(viewController: ViewController?) {
                         width = 1.dp,
                         color = ColorUtils.gray_222222,
                         shape = RoundedCornerShape(99.dp)
-                    ), contentAlignment = Alignment.Center
+                    ).noRippleClickable {
+                          viewController?.pushFragment(
+                              ScreenId.SCREEN_EDIT_COMPANY,
+                              EditCompanyFragment.newInstance()
+                          )
+                    }, contentAlignment = Alignment.Center
             ) {
                 Text("수정", color = ColorUtils.gray_222222, fontSize = 12.sp)
             }

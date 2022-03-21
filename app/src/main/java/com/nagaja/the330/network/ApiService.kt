@@ -313,6 +313,11 @@ interface ApiService {
         @Body body: List<ReservationModel>
     ): Response<Unit> //200
 
+    @POST("reservations/closeToday")
+    suspend fun closeToday(
+        @Header("Authorization") token: String
+    ): Response<Unit> //200
+
     @GET("company_requests/find")
     suspend fun findCompany(
         @Header("Authorization") token: String,

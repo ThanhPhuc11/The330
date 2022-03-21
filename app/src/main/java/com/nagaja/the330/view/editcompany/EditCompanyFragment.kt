@@ -1,4 +1,4 @@
-package com.nagaja.the330.view.applycompany
+package com.nagaja.the330.view.editcompany
 
 import android.app.Activity
 import android.content.Intent
@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,13 +51,13 @@ import com.nagaja.the330.utils.NameUtils
 import com.nagaja.the330.utils.RealPathUtil
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.applycompany.ShareApplyCompanyVM
 import com.nagaja.the330.view.applycompanyproduct.ProductCompanyFragment
-import com.nagaja.the330.view.applycompanyresult.ApplyResultFragment
 import com.skydoves.landscapist.glide.GlideImage
 import java.io.File
 
-class ApplyCompanyFragment : BaseFragment() {
-    private lateinit var viewModel: ApplyCompanyVM
+class EditCompanyFragment : BaseFragment() {
+    private lateinit var viewModel: EditCompanyVM
     private lateinit var shareViewModel: ShareApplyCompanyVM
     private var onClickRemove: ((Int) -> Unit)? = null
     private var onClickChoose: ((Int) -> Unit)? = null
@@ -64,20 +65,20 @@ class ApplyCompanyFragment : BaseFragment() {
     private var callbackAttachFile: ((Uri?) -> Unit)? = null
 
     companion object {
-        fun newInstance() = ApplyCompanyFragment()
+        fun newInstance() = EditCompanyFragment()
     }
 
     override fun SetupViewModel() {
-        viewModel = getViewModelProvider(this)[ApplyCompanyVM::class.java]
+        viewModel = getViewModelProvider(this)[EditCompanyVM::class.java]
         shareViewModel = ViewModelProvider(this)[ShareApplyCompanyVM::class.java]
         viewController = (activity as MainActivity).viewController
 
-        viewModel.callbackMakeSuccess.observe(viewLifecycleOwner) {
-            viewController?.pushFragment(
-                ScreenId.SCREEN_APPLY_COMPANY_RESULT,
-                ApplyResultFragment.newInstance()
-            )
-        }
+//        viewModel.callbackMakeSuccess.observe(viewLifecycleOwner) {
+//            viewController?.pushFragment(
+//                ScreenId.SCREEN_APPLY_COMPANY_RESULT,
+//                ApplyResultFragment.newInstance()
+//            )
+//        }
         viewModel.callbackStart.observe(viewLifecycleOwner) {
             showLoading()
         }
@@ -99,6 +100,10 @@ class ApplyCompanyFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        viewModel.getCompanyDetail(
+                            accessToken!!,
+                            userDetailBase?.companyRequest?.id ?: 0
+                        )
                         viewModel.getCategory(accessToken!!)
                         viewModel.getPopularAreas(accessToken!!)
                         viewModel.getCity(accessToken!!)
@@ -113,6 +118,41 @@ class ApplyCompanyFragment : BaseFragment() {
             onDispose {
                 owner.lifecycle.removeObserver(observer)
             }
+        }
+        LaunchedEffect(viewModel.companyDetail.value) {
+            val obj = viewModel.companyDetail.value
+            viewModel.selectedOptionCategory.value = CategoryModel(ctype = obj.ctype)
+            obj.images?.let { viewModel.listImageRepresentative.addAll(it) }
+            obj.name?.associate { it -> it.lang to it.name }?.let {
+                viewModel.textStateNameEng.value = TextFieldValue(it["en"] ?: "")
+                viewModel.textStateNamePhi.value = TextFieldValue(it["ph"] ?: "")
+                viewModel.textStateNameKr.value = TextFieldValue(it["kr"] ?: "")
+                viewModel.textStateNameCN.value = TextFieldValue(it["cn"] ?: "")
+                viewModel.textStateNameJP.value = TextFieldValue(it["jp"] ?: "")
+            }
+            viewModel.textStateAdress.value = TextFieldValue(obj.address ?: "")
+            obj.description?.associate { it -> it.lang to it.name }?.let {
+                viewModel.textStateDesEng.value = TextFieldValue(it["en"] ?: "")
+                viewModel.textStateDesPhi.value = TextFieldValue(it["ph"] ?: "")
+                viewModel.textStateDesKr.value = TextFieldValue(it["kr"] ?: "")
+                viewModel.textStateDesCN.value = TextFieldValue(it["cn"] ?: "")
+                viewModel.textStateDesJP.value = TextFieldValue(it["jp"] ?: "")
+            }
+            viewModel.textStateName.value = TextFieldValue(obj.chargeName ?: "")
+            viewModel.textStatePhone.value = TextFieldValue(obj.chargePhone ?: "")
+            viewModel.textStateMailAddress.value = TextFieldValue(obj.chargeEmail ?: "")
+            viewModel.textStateFb.value = TextFieldValue(obj.chargeFacebook ?: "")
+            viewModel.textStateKakao.value = TextFieldValue(obj.chargeKakao ?: "")
+            viewModel.textStateLine.value = TextFieldValue(obj.chargeLine ?: "")
+
+            viewModel.textStateOpenTime.value = obj.openHour ?: 0
+            viewModel.textStateCloseTime.value = obj.closeHour ?: 0
+
+            viewModel.reservationTime = obj.reservationTime?.toMutableList()
+
+            viewModel.textStateNumReservation.value =
+                TextFieldValue((obj.reservationNumber ?: 0).toString())
+            viewModel.textStatePaymethod.value = TextFieldValue(obj.paymentMethod ?: "")
         }
 
         LayoutTheme330 {
@@ -150,7 +190,7 @@ class ApplyCompanyFragment : BaseFragment() {
                     callbackListImage = { uri ->
                         val fileTemp = File(
                             RealPathUtil.getPath(
-                                this@ApplyCompanyFragment.requireContext(),
+                                this@EditCompanyFragment.requireContext(),
                                 uri
                             )
                         )
@@ -168,7 +208,7 @@ class ApplyCompanyFragment : BaseFragment() {
                     }
                     RepresentativeImage(count) {
                         if (count.value == 5) return@RepresentativeImage
-                        checkPermissBeforeAttachFile(this@ApplyCompanyFragment.requireContext()) {
+                        checkPermissBeforeAttachFile(this@EditCompanyFragment.requireContext()) {
                             val intent = Intent(Intent.ACTION_PICK).apply {
                                 setDataAndType(
                                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -298,7 +338,7 @@ class ApplyCompanyFragment : BaseFragment() {
                 callbackAttachFile = { uri ->
                     val file = File(
                         RealPathUtil.getPath(
-                            this@ApplyCompanyFragment.requireContext(),
+                            this@EditCompanyFragment.requireContext(),
                             uri
                         )
                     )
@@ -319,7 +359,7 @@ class ApplyCompanyFragment : BaseFragment() {
                         )
                         .padding(horizontal = 9.dp)
                         .noRippleClickable {
-                            checkPermissBeforeAttachFile(this@ApplyCompanyFragment.requireContext()) {
+                            checkPermissBeforeAttachFile(this@EditCompanyFragment.requireContext()) {
                                 val intent = Intent(
                                     Intent.ACTION_PICK,
                                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI
@@ -386,7 +426,7 @@ class ApplyCompanyFragment : BaseFragment() {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            stringResource(R.string.apply_company_completed),
+                            stringResource(R.string.modifier_completed),
                             color = ColorUtils.white_FFFFFF,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold
@@ -412,7 +452,7 @@ class ApplyCompanyFragment : BaseFragment() {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            stringResource(R.string.enter_prod_info),
+                            stringResource(R.string.edit_prod_info),
                             color = ColorUtils.white_FFFFFF,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold
@@ -651,7 +691,7 @@ class ApplyCompanyFragment : BaseFragment() {
                 }.toMutableList(),
                 initValue = KeyValueModel("null", "구/군"),
                 callback = {
-                    viewModel.districtId = it.id?.toInt()
+                    viewModel.popularAreaId = it.id?.toInt()
                 }
             )
         }
@@ -956,7 +996,6 @@ class ApplyCompanyFragment : BaseFragment() {
     }
 
     @OptIn(ExperimentalFoundationApi::class)
-    @Preview
     @Composable
     private fun ReservationTime() {
         Column(
@@ -1002,6 +1041,13 @@ class ApplyCompanyFragment : BaseFragment() {
                         TimeReservation("23:00"), TimeReservation("23:30"),
                     )
                 }
+            LaunchedEffect(viewModel.reservationTime) {
+                viewModel.reservationTime?.forEach { obj ->
+                    val temp = TimeReservation(listTime[obj].time, true)
+                    listTime.removeAt(obj)
+                    listTime.add(temp)
+                }
+            }
 
             onClickChoose = { index ->
                 if (index >= 0) {
