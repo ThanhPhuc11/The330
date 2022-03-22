@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.CompanyFavoriteModel
+import com.nagaja.the330.utils.AppConstants
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -18,7 +19,7 @@ class FavCompanyVM(
 
     fun getFavoriteCompany(token: String, page: Int) {
         viewModelScope.launch {
-            repo.getFavoriteCompany(token, page, 10, sort = sort)
+            repo.getFavoriteCompany(token, page, 10, sort = sort, AppConstants.LIKE)
                 .onStart { }
                 .onCompletion { }
                 .catch { }

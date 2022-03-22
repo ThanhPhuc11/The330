@@ -95,12 +95,22 @@ interface ApiService {
         @Query("group") group: String?
     ): ResponseModel<MutableList<CategoryModel>>
 
-    @GET("follows/target")
-    suspend fun getFavoriteCompany(
+    @GET("follows/actor")
+    suspend fun getFollowMe(
         @Header("Authorization") token: String,
         @Query("page") page: Int,
         @Query("size") size: Int,
-        @Query("sort") sort: String
+        @Query("sort") sort: String,
+        @Query("followType") followType: String?,
+    ): ResponseModel<MutableList<CompanyFavoriteModel>>
+
+    @GET("follows/target")
+    suspend fun getMyFollow(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String,
+        @Query("followType") followType: String?
     ): ResponseModel<MutableList<CompanyFavoriteModel>>
 
     @POST("follows")

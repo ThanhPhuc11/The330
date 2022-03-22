@@ -31,6 +31,7 @@ class CompanyModel {
     var pointCharge: Int? = null
     var pointRemain: Int? = null
     var pointUse: Int? = null
+    var usageCount: Int? = null
     var user: UserDetail? = null
 
     //field for request body

@@ -46,7 +46,7 @@ import com.nagaja.the330.view.editcompany.EditCompanyFragment
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
 import com.nagaja.the330.view.point.PointFragment
 import com.nagaja.the330.view.recruimentcompany.RecruitmentCompanyFragment
-import com.nagaja.the330.view.regularcustomer.RegularCustomerFragment
+import com.nagaja.the330.view.regularcustomer.RegularFragment
 import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageFragment
 import com.nagaja.the330.view.secondhandmypage.SecondHandMypageFragment
 import com.nagaja.the330.view.usagecompany.CompanyUsageFragment
@@ -67,7 +67,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
     val clickRegular: (() -> Unit) = {
         viewController?.pushFragment(
             ScreenId.SCREEN_REGULAR_CUSTOMER_HISTORY,
-            RegularCustomerFragment.newInstance()
+            RegularFragment.newInstance()
         )
         showMessDebug("SCREEN_REGULAR_CUSTOMER_HISTORY", context)
     }
@@ -75,7 +75,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
     val clickConsultation: (() -> Unit) = {
         viewController?.pushFragment(
             ScreenId.SCREEN_CONSULTATION,
-            RegularCustomerFragment.newInstance()
+            RegularFragment.newInstance()
         )
         showMessDebug("SCREEN_CONSULTATION", context)
     }

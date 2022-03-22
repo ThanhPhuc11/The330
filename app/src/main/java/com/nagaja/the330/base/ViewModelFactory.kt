@@ -63,6 +63,8 @@ import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailRepo
 import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailVM
 import com.nagaja.the330.view.recruitmentregis.RecruitJobRegisRepo
 import com.nagaja.the330.view.recruitmentregis.RecruitJobRegisVM
+import com.nagaja.the330.view.regularcustomer.RegularRepo
+import com.nagaja.the330.view.regularcustomer.RegularVM
 import com.nagaja.the330.view.reportmissing.ReportMissingRepo
 import com.nagaja.the330.view.reportmissing.ReportMissingVM
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailRepo
@@ -128,6 +130,8 @@ class ViewModelFactory(apiService: ApiService) :
             EditProfileVM(EditProfileRepo(apiService))
         creators[FavCompanyVM::class.java] =
             FavCompanyVM(FavCompanyRepo(apiService))
+        creators[RegularVM::class.java] =
+            RegularVM(RegularRepo(apiService))
         creators[SecondHandMypageVM::class.java] =
             SecondHandMypageVM(SecondHandMypageRepo(apiService))
         creators[SecondHandMarketVM::class.java] =
