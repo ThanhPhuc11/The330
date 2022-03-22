@@ -331,6 +331,12 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<Unit> //200
 
+    @GET("reservations/closeToday/check")
+    suspend fun checkCloseToday(
+        @Header("Authorization") token: String,
+        @Query("companyId") companyId: Int,
+    ): Boolean
+
     @GET("company_requests/find")
     suspend fun findCompany(
         @Header("Authorization") token: String,
@@ -424,8 +430,8 @@ interface ApiService {
     @GET("chat/chatList/findNearMes/{chatRoomId}")
     suspend fun getChatDetail(
         @Header("Authorization") token: String,
-        @Path("chatMesId") chatMesId: Int?,
-        @Path("chatRoomId") chatRoomId: Int
+        @Path("chatRoomId") chatRoomId: Int,
+        @Query("chatMesId") chatMesId: Int?,
     ): ResponseModel<MutableList<ItemMessageModel>>
 
     @POST("chat/newMessage")

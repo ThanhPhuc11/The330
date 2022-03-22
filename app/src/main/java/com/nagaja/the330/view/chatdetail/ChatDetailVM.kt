@@ -20,6 +20,8 @@ class ChatDetailVM(
 
     val stateListMess = mutableStateListOf<ItemMessageModel>()
 
+    val stateIsSeller = mutableStateOf(false)
+
     fun getUserDetails(token: String) {
         viewModelScope.launch {
             repo.getUserDetails(token)
@@ -72,7 +74,7 @@ class ChatDetailVM(
         }
     }
 
-    fun getChatDetail(token: String, roomId: Int, chatMesId: Int) {
+    fun getChatDetail(token: String, roomId: Int, chatMesId: Int? = null) {
         viewModelScope.launch {
             repo.getChatDetail(token, roomId, chatMesId)
                 .onStart {

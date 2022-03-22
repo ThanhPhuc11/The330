@@ -19,4 +19,8 @@ class CompanyDetailRepo(private val apiService: ApiService) {
     suspend fun checkFollowCompany(token: String, targetId: Int, followType: String?) = flow {
         emit(apiService.checkFollowCompany(token, targetId, followType))
     }
+
+    suspend fun checkCloseToday(token: String, targetId: Int) = flow {
+        emit(apiService.checkCloseToday(token, targetId))
+    }
 }

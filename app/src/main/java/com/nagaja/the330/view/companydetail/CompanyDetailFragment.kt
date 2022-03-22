@@ -51,6 +51,7 @@ import com.nagaja.the330.utils.CommonUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.chatdetail.ChatDetailFragment
+import com.nagaja.the330.view.reservationregis.ReservationRegisFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -221,11 +222,26 @@ class CompanyDetailFragment : BaseFragment() {
                     Modifier
                         .fillMaxHeight()
                         .weight(1f)
-                        .background(ColorUtils.blue_2177E4),
+                        .background(ColorUtils.blue_2177E4)
+                        .noRippleClickable {
+                            if (!viewModel.isCloseToday.value)
+                                viewController?.pushFragment(
+                                    ScreenId.SCREEN_RESERVATION_REGIS,
+                                    ReservationRegisFragment.newInstance(
+                                        viewModel.companyDetail.value.id ?: 0
+                                    )
+                                )
+                        },
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("오늘마감", color = ColorUtils.blue_D3E4FA, fontSize = 10.sp)
+                    if (viewModel.isCloseToday.value) {
+                        Text(
+                            "오늘마감",
+                            color = ColorUtils.blue_D3E4FA,
+                            fontSize = 10.sp
+                        )
+                    }
                     Text(
                         "예약하기",
                         color = ColorUtils.white_FFFFFF,

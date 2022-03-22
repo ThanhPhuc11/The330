@@ -18,7 +18,7 @@ class ChatDetailRepo(private val apiService: ApiService) {
         emit(apiService.startChatByRoomId(token, roomId))
     }
 
-    suspend fun getChatDetail(token: String, roomId: Int, chatMesId: Int) = flow {
+    suspend fun getChatDetail(token: String, roomId: Int, chatMesId: Int?) = flow {
         emit(apiService.getChatDetail(token, chatRoomId = roomId, chatMesId = chatMesId))
     }
 

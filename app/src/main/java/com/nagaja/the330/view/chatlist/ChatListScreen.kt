@@ -166,7 +166,7 @@ fun ChatListScreen(accessToken: String, viewController: ViewController?, user: U
                     )
                 }
             }
-            LazyColumn(state = lazyListState) {
+            LazyColumn(state = lazyListState, modifier = Modifier.fillMaxSize()) {
                 itemsIndexed(listChat) { index, obj ->
                     if (obj.target?.id == user.id) {
                         ItemGeneralMember(obj) {
@@ -236,7 +236,7 @@ private fun ItemCompanyMember(obj: RoomDetailModel, onClick: () -> Unit?) {
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                "안녕하세요, 고객님\n원하는 예약시간이 어떻게 되세요?",
+                "${obj.lastMessage?.message}",
                 color = ColorUtils.black_000000,
                 fontSize = 14.sp,
             )

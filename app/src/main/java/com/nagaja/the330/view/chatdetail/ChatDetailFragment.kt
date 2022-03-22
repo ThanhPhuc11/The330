@@ -39,8 +39,8 @@ import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.model.ItemMessageModel
+import com.nagaja.the330.model.RoomDetailModel
 import com.nagaja.the330.model.StartChatRequest
-import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
@@ -105,8 +105,11 @@ class ChatDetailFragment : BaseFragment() {
             }
         }
         LaunchedEffect(viewModel.stateRoomInfo.value) {
+            viewModel.stateIsSeller.value =
+                userDetailBase?.id == viewModel.stateRoomInfo.value.target?.id
             viewModel.stateRoomInfo.value.id?.let {
                 listenRealtime()
+                viewModel.getChatDetail(accessToken!!, it)
             }
         }
         LayoutTheme330 {
@@ -114,7 +117,7 @@ class ChatDetailFragment : BaseFragment() {
                 viewController?.popFragment()
             }
             //TODO: Info
-            InfoFriend()
+            InfoFriend(viewModel.stateRoomInfo.value)
             Divider(
                 color = ColorUtils.gray_E1E1E1,
                 modifier = Modifier
@@ -187,30 +190,55 @@ class ChatDetailFragment : BaseFragment() {
         }
     }
 
-    @Preview
     @Composable
-    private fun InfoFriend(userDetail: UserDetail = UserDetail()) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            GlideImage(
-                imageModel = "${BuildConfig.BASE_S3}${""}",
+    private fun InfoFriend(roomInfo: RoomDetailModel) {
+        if (viewModel.stateIsSeller.value) {
+            Row(
                 Modifier
-                    .size(96.dp)
-                    .clip(RoundedCornerShape(4.dp)),
-                placeHolder = painterResource(R.drawable.ic_default_nagaja),
-                error = painterResource(R.drawable.ic_default_nagaja)
-            )
-            Column(Modifier.padding(start = 13.dp)) {
-                Text("Name", color = ColorUtils.gray_222222, fontSize = 16.sp)
-                Text(
-                    "2021. 10. 20, 14:22",
-                    color = ColorUtils.gray_9F9F9F,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 2.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Column(Modifier.padding(start = 13.dp)) {
+                    Text(
+                        "${roomInfo.actor?.name}",
+                        color = ColorUtils.gray_222222,
+                        fontSize = 16.sp
+                    )
+                    Text(
+                        "${roomInfo.createdOn}",
+                        color = ColorUtils.gray_9F9F9F,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                }
+            }
+        } else {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                GlideImage(
+                    imageModel = "${BuildConfig.BASE_S3}${roomInfo.companyOwner}",
+                    Modifier
+                        .size(96.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    placeHolder = painterResource(R.drawable.ic_default_nagaja),
+                    error = painterResource(R.drawable.ic_default_nagaja)
                 )
+                Column(Modifier.padding(start = 13.dp)) {
+                    Text(
+                        "${roomInfo.companyOwner?.name?.getOrNull(0)?.name}",
+                        color = ColorUtils.gray_222222,
+                        fontSize = 16.sp
+                    )
+                    Text(
+                        "${roomInfo.createdOn}",
+                        color = ColorUtils.gray_9F9F9F,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                }
             }
         }
     }
@@ -339,11 +367,7 @@ class ChatDetailFragment : BaseFragment() {
                         modifier = Modifier.weight(1f)
                     )
                     Text(
-                        AppDateUtils.changeDateFormat(
-                            AppDateUtils.FORMAT_7,
-                            AppDateUtils.FORMAT_5,
-                            AppDateUtils.convertTime(obj.createdOn ?: 0)
-                        ), color = ColorUtils.gray_9E9E9E, fontSize = 12.sp
+                        obj.createdOn ?: "", color = ColorUtils.gray_9E9E9E, fontSize = 12.sp
                     )
                 }
             }
@@ -368,11 +392,11 @@ class ChatDetailFragment : BaseFragment() {
                         )
                         .padding(12.dp), contentAlignment = Alignment.CenterStart
                 ) {
-                    Text("${obj.message}", color = ColorUtils.white_FFFFFF, fontSize = 14.sp)
+                    Text("${obj.message}", color = ColorUtils.black_000000, fontSize = 14.sp)
                 }
                 Row(Modifier.width(200.dp)) {
                     Text(
-                        "2021. 10. 22, 16:08 PM",
+                        "${obj.createdOn}",
                         color = ColorUtils.gray_9E9E9E,
                         fontSize = 12.sp,
                         modifier = Modifier.weight(1f)
@@ -416,7 +440,15 @@ class ChatDetailFragment : BaseFragment() {
                 userId = (snapshot.child("userId").value as String?)
                 name = (snapshot.child("name").value as String?)
                 message = (snapshot.child("message").value as String?)
-                createdOn = snapshot.child("createdOn").value as Long?
+                createdOn = try {
+                    AppDateUtils.changeDateFormat(
+                        AppDateUtils.FORMAT_7,
+                        AppDateUtils.FORMAT_5,
+                        AppDateUtils.convertTime(snapshot.child("createdOn").value as Long)
+                    )
+                } catch (e: Exception) {
+                    ""
+                }
             }
             if (isFirst) {
                 isFirst = false

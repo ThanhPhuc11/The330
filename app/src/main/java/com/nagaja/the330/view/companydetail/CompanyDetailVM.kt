@@ -17,6 +17,7 @@ class CompanyDetailVM(
     var companyDetail = mutableStateOf(CompanyModel())
     var isLike = mutableStateOf(false)
     var isRecommend = mutableStateOf(false)
+    var isCloseToday = mutableStateOf(false)
 
 
     fun getCompanyDetail(
@@ -37,6 +38,20 @@ class CompanyDetailVM(
                     companyDetail.value = it
                     checkLikeCompany(token)
                     checkRecommendCompany(token)
+                    checkCloseToday(token, id)
+                }
+        }
+    }
+
+    fun checkCloseToday(token: String, companyId: Int) {
+        viewModelScope.launch {
+            repo.checkCloseToday(token, companyId)
+                .onStart { callbackStart.value = Unit }
+                .onCompletion {}
+                .catch { handleError(it) }
+                .collect {
+                    callbackSuccess.value = Unit
+                    isCloseToday.value = it
                 }
         }
     }
@@ -129,7 +144,8 @@ class CompanyDetailVM(
                     callbackSuccess.value = Unit
                     if (it.raw().isSuccessful && it.raw().code == 201) {
                         isRecommend.value = true
-                        companyDetail.value.numberRecommend = (companyDetail.value.numberRecommend ?: 0) + 1
+                        companyDetail.value.numberRecommend =
+                            (companyDetail.value.numberRecommend ?: 0) + 1
                     }
                 }
         }
@@ -147,7 +163,8 @@ class CompanyDetailVM(
                     callbackSuccess.value = Unit
                     if (it.raw().isSuccessful && it.raw().code == 204) {
                         isRecommend.value = false
-                        companyDetail.value.numberRecommend = (companyDetail.value.numberRecommend ?: 0) - 1
+                        companyDetail.value.numberRecommend =
+                            (companyDetail.value.numberRecommend ?: 0) - 1
                     }
                 }
         }
