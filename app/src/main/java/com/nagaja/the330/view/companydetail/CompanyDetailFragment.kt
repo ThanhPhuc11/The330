@@ -155,7 +155,7 @@ class CompanyDetailFragment : BaseFragment() {
                             viewModel.companyDetail.value.user?.id?.let {
                                 viewController?.pushFragment(
                                     ScreenId.SCREEN_CHAT_DETAIL,
-                                    ChatDetailFragment.newInstance(it)
+                                    ChatDetailFragment.newInstance(partnerId = it)
                                 )
                             }
                         }

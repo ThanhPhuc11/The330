@@ -182,9 +182,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                     onClick = {
                         stateShowCompany.value = !stateShowCompany.value
                     },
-                    modifier = Modifier
-                        .height(32.dp)
-                        .padding(horizontal = 16.dp),
+                    modifier = Modifier.height(32.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = ColorUtils.gray_222222)
                 ) {
                     Text(
@@ -316,11 +314,12 @@ private fun MyInfoCompany(viewController: ViewController?) {
                         width = 1.dp,
                         color = ColorUtils.gray_222222,
                         shape = RoundedCornerShape(99.dp)
-                    ).noRippleClickable {
-                          viewController?.pushFragment(
-                              ScreenId.SCREEN_EDIT_COMPANY,
-                              EditCompanyFragment.newInstance()
-                          )
+                    )
+                    .noRippleClickable {
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_EDIT_COMPANY,
+                            EditCompanyFragment.newInstance()
+                        )
                     }, contentAlignment = Alignment.Center
             ) {
                 Text("수정", color = ColorUtils.gray_222222, fontSize = 12.sp)

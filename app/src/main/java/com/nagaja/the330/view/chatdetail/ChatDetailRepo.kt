@@ -14,6 +14,14 @@ class ChatDetailRepo(private val apiService: ApiService) {
         emit(apiService.startChat(token, body))
     }
 
+    suspend fun startChatByRoomId(token: String, roomId: Int) = flow {
+        emit(apiService.startChatByRoomId(token, roomId))
+    }
+
+    suspend fun getChatDetail(token: String, roomId: Int, chatMesId: Int) = flow {
+        emit(apiService.getChatDetail(token, chatRoomId = roomId, chatMesId = chatMesId))
+    }
+
     suspend fun sendMess(token: String, body: ItemMessageModel) = flow {
         emit(apiService.sendMess(token, body))
     }

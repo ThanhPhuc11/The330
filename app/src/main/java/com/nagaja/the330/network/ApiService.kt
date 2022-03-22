@@ -383,8 +383,8 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("page") page: Int,
         @Query("size") size: Int,
-        @Query("pointTransactionType") pointTransactionType : String,
-        @Query("timeLimit") timeLimit  : String,
+        @Query("pointTransactionType") pointTransactionType: String,
+        @Query("timeLimit") timeLimit: String,
     ): ResponseModel<MutableList<PointModel>>
 
     @GET("chat/chatList")
@@ -393,19 +393,31 @@ interface ApiService {
         @Query("page") page: Int,
         @Query("size") size: Int,
         @Query("type") type: String?,
-        @Query("startTime") startTime: String?,
-        @Query("endTime") endTime: String?,
-    ): ResponseModel<MutableList<ChatDetailModel>>
+        @Query("typeSearchChat") typeSearchChat: String?,
+    ): ResponseModel<MutableList<RoomDetailModel>>
 
     @POST("chat/start")
     suspend fun startChat(
         @Header("Authorization") token: String,
         @Body body: StartChatRequest
-    ): ChatDetailModel
+    ): RoomDetailModel
+
+    @GET("chat/startByChatRoom/{chatRoomId}")
+    suspend fun startChatByRoomId(
+        @Header("Authorization") token: String,
+        @Path("chatRoomId") chatRoomId: Int
+    ): RoomDetailModel
+
+    @GET("chat/chatList/findNearMes/{chatRoomId}")
+    suspend fun getChatDetail(
+        @Header("Authorization") token: String,
+        @Path("chatMesId") chatMesId: Int?,
+        @Path("chatRoomId") chatRoomId: Int
+    ): ResponseModel<MutableList<ItemMessageModel>>
 
     @POST("chat/newMessage")
     suspend fun sendMess(
         @Header("Authorization") token: String,
         @Body body: ItemMessageModel
-    )
+    ): Response<Unit>
 }

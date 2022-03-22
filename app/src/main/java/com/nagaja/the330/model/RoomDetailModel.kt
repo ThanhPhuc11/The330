@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose
 
 import com.google.gson.annotations.SerializedName
 
-class ChatDetailModel {
+class RoomDetailModel {
     @SerializedName("actor")
     @Expose
     var actor: UserDetail? = null
@@ -40,4 +40,16 @@ class ChatDetailModel {
     @SerializedName("type")
     @Expose
     var type: String? = null
+
+    @SerializedName("lastMessage")
+    @Expose
+    var lastMessage: ItemMessageModel? = null
+
+    @SerializedName("createdOn")
+    @Expose
+    var createdOn: String? = null
+
+    @SerializedName("status")
+    @Expose
+    var status: String? = null
 }

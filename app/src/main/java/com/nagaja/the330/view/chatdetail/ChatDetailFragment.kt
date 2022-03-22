@@ -53,14 +53,16 @@ import com.skydoves.landscapist.glide.GlideImage
 
 class ChatDetailFragment : BaseFragment() {
     private lateinit var viewModel: ChatDetailVM
-    private var partnerId: Int = 0
+    private var partnerId: Int? = null
+    private var roomId: Int? = null
     private var isFirst = true
     private lateinit var database: DatabaseReference
 
     companion object {
-        fun newInstance(partnerId: Int) = ChatDetailFragment().apply {
+        fun newInstance(partnerId: Int? = null, roomId: Int? = null) = ChatDetailFragment().apply {
             arguments = Bundle().apply {
-                putInt(AppConstants.EXTRA_KEY1, partnerId)
+                partnerId?.let { putInt(AppConstants.EXTRA_KEY1, it) }
+                roomId?.let { putInt(AppConstants.EXTRA_KEY2, it) }
             }
         }
     }
@@ -80,11 +82,19 @@ class ChatDetailFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-
-                        partnerId = requireArguments().getInt(AppConstants.EXTRA_KEY1)
-                        viewModel.startChat(
-                            accessToken!!,
-                            StartChatRequest().apply { userId = partnerId })
+                        partnerId = requireArguments().getInt(AppConstants.EXTRA_KEY1, -1)
+                        roomId = requireArguments().getInt(AppConstants.EXTRA_KEY2, -1)
+                        if (partnerId != null && partnerId != -1) {
+                            viewModel.startChat(
+                                accessToken!!,
+                                StartChatRequest().apply { userId = partnerId })
+                        }
+                        if (roomId != null && roomId != -1) {
+                            viewModel.startChatByRoomId(
+                                accessToken!!,
+                                roomId!!
+                            )
+                        }
                     }
                     else -> {}
                 }
