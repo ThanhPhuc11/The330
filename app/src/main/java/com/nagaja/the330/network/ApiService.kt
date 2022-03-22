@@ -432,6 +432,7 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("chatRoomId") chatRoomId: Int,
         @Query("chatMesId") chatMesId: Int?,
+        @Query("size") size: Int,
     ): ResponseModel<MutableList<ItemMessageModel>>
 
     @POST("chat/newMessage")

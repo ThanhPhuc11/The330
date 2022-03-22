@@ -21,6 +21,8 @@ class ChatDetailVM(
     val stateListMess = mutableStateListOf<ItemMessageModel>()
 
     val stateIsSeller = mutableStateOf(false)
+    val stateBottomItem = mutableStateOf(ItemMessageModel())
+    var isFirst = true
 
     fun getUserDetails(token: String) {
         viewModelScope.launch {
@@ -76,7 +78,7 @@ class ChatDetailVM(
 
     fun getChatDetail(token: String, roomId: Int, chatMesId: Int? = null) {
         viewModelScope.launch {
-            repo.getChatDetail(token, roomId, chatMesId)
+            repo.getChatDetail(token, roomId, chatMesId, 5)
                 .onStart {
                     callbackStart.value = Unit
                 }
@@ -86,7 +88,13 @@ class ChatDetailVM(
                 }
                 .collect {
                     callbackSuccess.value = Unit
-                    it.content?.let { data -> stateListMess.addAll(data) }
+                    it.content?.let { data ->
+                        stateListMess.addAll(0, data)
+                        if (isFirst) {
+                            isFirst = false
+                            stateBottomItem.value = data.last()
+                        }
+                    }
                 }
         }
     }

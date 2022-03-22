@@ -18,8 +18,10 @@ class ItemMessageModel {
     var type: String? = null
 
     var userId: String? = null // writer
+    var user: UserDetail? = null
     var name: String? = null
     var createdOn: String? = null
     var chatId: Int? = null
+    var id: Int? = null
     var messageId: Long? = null
 }

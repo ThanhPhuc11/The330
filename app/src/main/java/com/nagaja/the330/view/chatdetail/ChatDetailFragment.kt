@@ -1,6 +1,7 @@
 package com.nagaja.the330.view.chatdetail
 
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -56,6 +57,7 @@ class ChatDetailFragment : BaseFragment() {
     private var partnerId: Int? = null
     private var roomId: Int? = null
     private var isFirst = true
+    private var onAddToBottom: (() -> Unit)? = null
     private lateinit var database: DatabaseReference
 
     companion object {
@@ -144,21 +146,25 @@ class ChatDetailFragment : BaseFragment() {
                         )
                     }
                 }
+                val lazyListState = rememberLazyListState()
                 LazyColumn(
-                    state = rememberLazyListState(),
-                    reverseLayout = true,
+                    state = lazyListState,
+                    reverseLayout = false,
                     modifier = Modifier
                         .fillMaxHeight()
                         .padding(horizontal = 16.dp)
                 ) {
                     itemsIndexed(listMess) { index, obj ->
-                        if (obj.userId?.toInt() == userDetailBase?.id) {
+                        if (obj.userId?.toInt() == userDetailBase?.id || obj.user?.id == userDetailBase?.id) {
                             ItemMeChat(obj)
                         } else {
                             ItemYouChat(obj)
                         }
 //                        ItemCapture()
                     }
+                }
+                LaunchedEffect(viewModel.stateBottomItem.value) {
+                    lazyListState.animateScrollToItem(viewModel.stateListMess.size)
                 }
             }
 
@@ -309,6 +315,7 @@ class ChatDetailFragment : BaseFragment() {
                             message = stateInputChat.value.text
                             type = "INIT"
                         })
+                        stateInputChat.value = TextFieldValue("")
                     }
             )
         }
@@ -453,7 +460,8 @@ class ChatDetailFragment : BaseFragment() {
             if (isFirst) {
                 isFirst = false
             } else {
-                viewModel.stateListMess.add(0, newMess)
+                viewModel.stateListMess.add(viewModel.stateListMess.size, newMess)
+                viewModel.stateBottomItem.value = newMess
             }
         }
 
