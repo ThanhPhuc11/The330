@@ -8,15 +8,15 @@ class CompanyDetailRepo(private val apiService: ApiService) {
         emit(apiService.getCompanyDetail(token, id))
     }
 
-    suspend fun followCompany(token: String, targetId: Int) = flow {
-        emit(apiService.followCompany(token, targetId))
+    suspend fun followCompany(token: String, targetId: Int, followType: String?) = flow {
+        emit(apiService.followCompany(token, targetId, followType))
     }
 
-    suspend fun unfollowCompany(token: String, targetId: Int) = flow {
-        emit(apiService.unfollowCompany(token, targetId))
+    suspend fun unfollowCompany(token: String, targetId: Int, followType: String?) = flow {
+        emit(apiService.unfollowCompany(token, targetId, followType))
     }
 
-    suspend fun checkFollowCompany(token: String, targetId: Int) = flow {
-        emit(apiService.checkFollowCompany(token, targetId))
+    suspend fun checkFollowCompany(token: String, targetId: Int, followType: String?) = flow {
+        emit(apiService.checkFollowCompany(token, targetId, followType))
     }
 }

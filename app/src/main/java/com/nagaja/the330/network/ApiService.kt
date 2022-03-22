@@ -106,19 +106,22 @@ interface ApiService {
     @POST("follows")
     suspend fun followCompany(
         @Header("Authorization") token: String,
-        @Query("targetId") targetId: Int
+        @Query("targetId") targetId: Int,
+        @Query("followType") followType: String?
     ): Response<Unit> //201
 
     @DELETE("follows")
     suspend fun unfollowCompany(
         @Header("Authorization") token: String,
-        @Query("targetId") targetId: Int
+        @Query("targetId") targetId: Int,
+        @Query("followType") followType: String?
     ): Response<Unit> //204
 
     @GET("follows/checkFollow")
     suspend fun checkFollowCompany(
         @Header("Authorization") token: String,
-        @Query("targetId") targetId: Int
+        @Query("targetId") targetId: Int,
+        @Query("followType") followType: String?
     ): Boolean
 
     @POST("company_requests")

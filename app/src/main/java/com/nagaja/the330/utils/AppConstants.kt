@@ -16,6 +16,9 @@ object AppConstants {
     const val RECRUITMENT = "RECRUITMENT"
     const val JOB_SEARCH = "JOB_SEARCH"
 
+    const val LIKE = "LIKE"
+    const val RECOMMEND = "RECOMMEND"
+
     var YES = 0
     var NO = 1
 

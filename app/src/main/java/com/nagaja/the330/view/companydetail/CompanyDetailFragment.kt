@@ -163,16 +163,18 @@ class CompanyDetailFragment : BaseFragment() {
                 Row(Modifier.padding(horizontal = 16.dp, vertical = 25.dp)) {
                     ButtonLike(
                         "추천",
-                        R.drawable.ic_like,
-                        10
-                    ) {}
+                        if (viewModel.isRecommend.value) R.drawable.ic_recommend else R.drawable.ic_recommend_empty,
+                        viewModel.companyDetail.value.numberRecommend ?: 0
+                    ) {
+                        accessToken?.let { viewModel.recommendOrNot(it) }
+                    }
                     Spacer(modifier = Modifier.width(8.dp))
                     ButtonLike(
                         "단골",
-                        if (viewModel.isFollowing.value) R.drawable.ic_tim else R.drawable.ic_heart_empty,
+                        if (viewModel.isLike.value) R.drawable.ic_heard else R.drawable.ic_heart_empty,
                         viewModel.companyDetail.value.likedCount ?: 0
                     ) {
-                        accessToken?.let { viewModel.followOrNot(it) }
+                        accessToken?.let { viewModel.likeOrNot(it) }
                     }
                 }
 

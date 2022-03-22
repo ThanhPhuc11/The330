@@ -41,7 +41,7 @@ class FavCompanyVM(
 
     private fun follow(token: String, targetId: Int) {
         viewModelScope.launch {
-            repo.followCompany(token, targetId)
+            repo.followCompany(token, targetId, null)
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }
                 .catch {
@@ -70,7 +70,7 @@ class FavCompanyVM(
 
     private fun unfollow(token: String, targetId: Int) {
         viewModelScope.launch {
-            repo.unfollowCompany(token, targetId)
+            repo.unfollowCompany(token, targetId, null)
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }
                 .catch {
