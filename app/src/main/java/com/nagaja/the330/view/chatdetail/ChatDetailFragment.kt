@@ -1,7 +1,6 @@
 package com.nagaja.the330.view.chatdetail
 
 import android.os.Bundle
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -172,16 +171,20 @@ class ChatDetailFragment : BaseFragment() {
             InputChat()
             Row(Modifier.fillMaxWidth()) {
                 //TODO: make reservation
-                ButtonFooter(
-                    modifier = Modifier.weight(1f),
-                    text = "예약하기",
-                    ColorUtils.blue_2177E4
-                ) {
-                    showMessDEBUG("make reservation")
-                    viewController?.pushFragment(
-                        ScreenId.SCREEN_RESERVATION_REGIS,
-                        ReservationRegisFragment.newInstance(48)
-                    )
+                if (!viewModel.stateIsSeller.value) {
+                    ButtonFooter(
+                        modifier = Modifier.weight(1f),
+                        text = "예약하기",
+                        ColorUtils.blue_2177E4
+                    ) {
+                        showMessDEBUG("make reservation")
+                        viewModel.stateRoomInfo.value.target?.id?.let {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_RESERVATION_REGIS,
+                                ReservationRegisFragment.newInstance(it)
+                            )
+                        }
+                    }
                 }
 
                 //TODO: chatting end
