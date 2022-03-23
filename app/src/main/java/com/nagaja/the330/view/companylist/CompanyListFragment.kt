@@ -3,6 +3,7 @@ package com.nagaja.the330.view.companylist
 import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -30,6 +32,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
+import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
@@ -74,6 +80,7 @@ class CompanyListFragment : BaseFragment() {
         }
     }
 
+    @OptIn(ExperimentalPagerApi::class)
     @Preview
     @Composable
     override fun UIData() {
@@ -84,7 +91,10 @@ class CompanyListFragment : BaseFragment() {
                     Lifecycle.Event.ON_CREATE -> {
                         val cType = requireArguments().getString(AppConstants.EXTRA_KEY1)
                         viewModel.cType = cType
-                        accessToken?.let { viewModel.findCompany(it, 0) }
+                        accessToken?.let {
+                            viewModel.findCompany(it, 0)
+                            viewModel.getBanner(it)
+                        }
                     }
                     else -> {}
                 }
@@ -215,20 +225,29 @@ class CompanyListFragment : BaseFragment() {
             //TODO: Banner
             val configuration = LocalConfiguration.current
             val screenWidth = configuration.screenWidthDp
-            GlideImage(
-                imageModel = "",
-                contentDescription = "",
-                placeHolder = painterResource(R.drawable.ic_default_nagaja),
-                error = painterResource(R.drawable.ic_default_nagaja),
-                requestOptions = {
-                    RequestOptions()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .centerInside()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height((screenWidth * 160 / 375).dp)
+            val pagerState = rememberPagerState(
+                pageCount = viewModel.stateListBanner.size
             )
+            HorizontalPager(state = pagerState) { page ->
+                GlideImage(
+                    imageModel = "${BuildConfig.BASE_S3}${
+                        viewModel.stateListBanner.getOrNull(page)?.images?.getOrNull(
+                            0
+                        )?.url ?: ""
+                    }",
+                    contentDescription = "",
+                    placeHolder = painterResource(R.drawable.ic_default_nagaja),
+                    error = painterResource(R.drawable.ic_default_nagaja),
+                    requestOptions = {
+                        RequestOptions()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .centerInside()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height((screenWidth * 160 / 375).dp)
+                )
+            }
             Box(Modifier.padding(horizontal = 16.dp)) {
                 val listData = viewModel.stateListData
                 val lazyListState = rememberLazyListState()
@@ -277,7 +296,9 @@ class CompanyListFragment : BaseFragment() {
                         fontWeight = FontWeight.Black
                     )
                     //TODO: like button
-//                    ButtonLike(obj)
+                    ButtonLike(true) {
+
+                    }
                 }
                 Text(
                     "배달 불가능/ 예약 가능 (오늘마감)",
@@ -308,34 +329,34 @@ class CompanyListFragment : BaseFragment() {
         }
     }
 
-//    @Composable
-//    private fun ButtonLike(obj: CompanyFavoriteModel) {
-//        Row(
-//            verticalAlignment = Alignment.CenterVertically,
-//            modifier = Modifier
-//                .padding(horizontal = 6.dp)
-//                .border(
-//                    width = 1.dp,
-//                    color = ColorUtils.gray_E1E1E1,
-//                    shape = RoundedCornerShape(12.dp)
-//                )
-//                .padding(horizontal = 7.dp, vertical = 5.dp)
-//                .noRippleClickable {
-//                    viewModel.followOrNot(accessToken!!, obj.target?.id!!, obj.isFollow)
-//                }
-//        ) {
-//            Box(Modifier.padding(end = 3.dp)) {
-//                Image(
-//                    painter = painterResource(R.drawable.ic_heart_content),
-//                    contentDescription = null,
-//                    colorFilter = ColorFilter.tint(if (obj.isFollow) ColorUtils.pink_FF4949 else ColorUtils.white_FFFFFF)
-//                )
-//                Image(
-//                    painter = painterResource(R.drawable.ic_heart_empty),
-//                    contentDescription = null
-//                )
-//            }
-//            Text("단골 3,000", color = ColorUtils.black_000000, fontSize = 12.sp)
-//        }
-//    }
+    @Composable
+    private fun ButtonLike(isLike: Boolean, onClick: () -> Unit) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(horizontal = 6.dp)
+                .border(
+                    width = 1.dp,
+                    color = ColorUtils.gray_E1E1E1,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(horizontal = 7.dp, vertical = 5.dp)
+                .noRippleClickable {
+                    onClick()
+                }
+        ) {
+            Box(Modifier.padding(end = 3.dp)) {
+                Image(
+                    painter = painterResource(R.drawable.ic_heart_content),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(if (isLike) ColorUtils.pink_FF4949 else ColorUtils.white_FFFFFF)
+                )
+                Image(
+                    painter = painterResource(R.drawable.ic_heart_empty),
+                    contentDescription = null
+                )
+            }
+            Text("단골", color = ColorUtils.black_000000, fontSize = 12.sp)
+        }
+    }
 }

@@ -2,7 +2,6 @@ package com.nagaja.the330.view.reservationregis
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -450,7 +449,8 @@ class ReservationRegisFragment : BaseFragment() {
 //                    listTime.add(index, temp)
 //                    onClick?.invoke(index, listTime[index].time)
                     val indexOldSelected = listTime.indexOfFirst { it.status == 2 }
-                    listTime[indexOldSelected] = listTime[indexOldSelected].copy(status = 1)
+                    if (indexOldSelected >= 0)
+                        listTime[indexOldSelected] = listTime[indexOldSelected].copy(status = 1)
                     listTime[index] = listTime[index].copy(status = 2)
                 }
             }
