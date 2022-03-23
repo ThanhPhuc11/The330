@@ -27,12 +27,13 @@ import com.nagaja.the330.R
 import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
 import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.RoomDetailModel
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
@@ -55,11 +56,15 @@ fun ChatListScreen(accessToken: String, viewController: ViewController?, user: U
                 ?.create(ApiService::class.java)!!
         )
     )[ChatListVM::class.java]
+    val options =
+        if (user.userType == AppConstants.GENERAL) GetDummyData.getSortReservation(context)
+        else GetDummyData.getSortReservationRoleCompany(context)
 
     DisposableEffect(owner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
+                    viewModel.sort = options[0].id!!
                     viewModel.getChatList(
                         accessToken,
                         0
@@ -92,9 +97,7 @@ fun ChatListScreen(accessToken: String, viewController: ViewController?, user: U
                 modifier = Modifier.weight(1f)
             )
 
-            val options =
-                if (user.userType == AppConstants.GENERAL) GetDummyData.getSortReservation(context)
-                else GetDummyData.getSortReservationRoleCompany(context)
+
             var expanded by remember { mutableStateOf(false) }
             var selectedOptionText by remember { mutableStateOf(options[0]) }
             Row(
@@ -132,6 +135,8 @@ fun ChatListScreen(accessToken: String, viewController: ViewController?, user: U
                             onClick = {
                                 selectedOptionText = selectionOption
                                 expanded = false
+                                viewModel.sort = selectionOption.id!!
+                                viewModel.getChatList(accessToken, 0)
                             }
                         ) {
                             Text(text = selectionOption.name!!)
@@ -142,33 +147,62 @@ fun ChatListScreen(accessToken: String, viewController: ViewController?, user: U
         }
 
         Divider(color = ColorUtils.gray_E1E1E1)
-
-        val listChat = mutableListOf<KeyValueModel>().apply {
-            add(KeyValueModel())
-            add(KeyValueModel())
-            add(KeyValueModel())
-        }
-
-        LazyColumn(state = rememberLazyListState()) {
-            itemsIndexed(listChat) { index, obj ->
-                ItemGeneralMember() {
-                    viewController?.pushFragment(
-                        ScreenId.SCREEN_CHAT_DETAIL,
-                        ChatDetailFragment.newInstance()
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentAlignment = Alignment.Center
+        ) {
+            val listChat = viewModel.stateListRoom
+            val lazyListState = rememberLazyListState()
+            if (listChat.isEmpty()) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Image(painterResource(R.drawable.ic_empty_mess_detail), "")
+                    Text(
+                        "채팅 목록이 없습니다.",
+                        color = ColorUtils.gray_9B9A99,
+                        fontSize = 13.sp,
+                        modifier = Modifier.padding(top = 16.dp)
                     )
                 }
-                Divider(color = ColorUtils.gray_E1E1E1)
+            }
+            LazyColumn(state = lazyListState, modifier = Modifier.fillMaxSize()) {
+                itemsIndexed(listChat) { index, obj ->
+                    if (obj.target?.id == user.id) {
+                        ItemGeneralMember(obj) {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_CHAT_DETAIL,
+                                ChatDetailFragment.newInstance(roomId = obj.id!!)
+                            )
+                        }
+                    } else {
+                        ItemCompanyMember(obj) {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_CHAT_DETAIL,
+                                ChatDetailFragment.newInstance(roomId = obj.id!!)
+                            )
+                        }
+                    }
+                    Divider(color = ColorUtils.gray_E1E1E1)
+                }
+            }
+
+            LoadmoreHandler(lazyListState) { page ->
+                viewModel.getChatList(accessToken, page)
             }
         }
     }
 }
 
 @Composable
-private fun ItemCompanyMember() {
+private fun ItemCompanyMember(obj: RoomDetailModel, onClick: () -> Unit?) {
     Row(
         Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .noRippleClickable {
+                onClick.invoke()
+            }
     ) {
         GlideImage(
             imageModel = "${BuildConfig.BASE_S3}${""}",
@@ -186,7 +220,7 @@ private fun ItemCompanyMember() {
         ) {
             Row(Modifier.fillMaxWidth()) {
                 Text(
-                    "토마호크 스테이크",
+                    "${obj.target?.name}",
                     color = ColorUtils.gray_222222,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
@@ -202,7 +236,7 @@ private fun ItemCompanyMember() {
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                "안녕하세요, 고객님\n원하는 예약시간이 어떻게 되세요?",
+                "${obj.lastMessage?.message}",
                 color = ColorUtils.black_000000,
                 fontSize = 14.sp,
             )
@@ -218,7 +252,7 @@ private fun ItemCompanyMember() {
 }
 
 @Composable
-private fun ItemGeneralMember(onClick: () -> Unit) {
+private fun ItemGeneralMember(obj: RoomDetailModel, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -234,7 +268,7 @@ private fun ItemGeneralMember(onClick: () -> Unit) {
         ) {
             Row(Modifier.fillMaxWidth()) {
                 Text(
-                    "토마호크 스테이크",
+                    "${obj.actor?.name}",
                     color = ColorUtils.gray_222222,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
@@ -250,7 +284,7 @@ private fun ItemGeneralMember(onClick: () -> Unit) {
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                "안녕하세요, 고객님\n원하는 예약시간이 어떻게 되세요?",
+                "${obj.lastMessage?.message}",
                 color = ColorUtils.black_000000,
                 fontSize = 14.sp,
             )

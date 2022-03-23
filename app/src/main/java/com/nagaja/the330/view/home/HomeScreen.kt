@@ -28,6 +28,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
 import com.nagaja.the330.base.ViewController
@@ -36,6 +38,7 @@ import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.CompanyRecommendModel
 import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.TokenFCMRequest
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
@@ -75,8 +78,10 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
+                    viewModel.token = accessToken
                     viewModel.getCategory(accessToken, null)
                     viewModel.getCompanyRecommendAds(accessToken)
+                    registerFCM(viewModel)
                 }
                 Lifecycle.Event.ON_STOP -> {
 
@@ -480,4 +485,20 @@ private fun CompanyItemView(obj: CompanyRecommendModel) {
             )
         }
     }
+}
+
+private fun registerFCM(viewModel: HomeScreenVM) {
+    FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+        if (!task.isSuccessful) {
+            Log.e("TOKEN", "Fetching FCM registration token failed", task.exception)
+            return@OnCompleteListener
+        }
+
+        val token = task.result
+
+        Log.d("TOKEN", token ?: "null")
+        viewModel.registerFCM(viewModel.token, TokenFCMRequest().apply {
+            this.token = token
+        })
+    })
 }

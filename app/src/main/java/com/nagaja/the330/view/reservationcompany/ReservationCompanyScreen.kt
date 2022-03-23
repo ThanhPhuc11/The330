@@ -52,10 +52,7 @@ import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.LoadmoreHandler
-import com.nagaja.the330.view.Header
-import com.nagaja.the330.view.LayoutTheme330
-import com.nagaja.the330.view.noRippleClickable
-import com.nagaja.the330.view.text14_62
+import com.nagaja.the330.view.*
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -307,10 +304,29 @@ private fun Tab1(viewModel: ReservationCompanyVM, token: String) {
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
         ) {
+            val stateDialogCloseToday = remember {mutableStateOf(false)}
+            if (stateDialogCloseToday.value) {
+                Dialog2Button(
+                    state = stateDialogCloseToday,
+                    title = "{TODAY} 예약을 마감\n" +
+                            "하시겠습니까?",
+                    content = null,
+                    leftText = "아니요",
+                    rightText = "예",
+                    onClick = {
+                        if (it) {
+                            viewModel.closeToday(token)
+                        }
+                    }
+                )
+            }
             Box(
                 Modifier
                     .size(98.dp, 36.dp)
-                    .background(ColorUtils.blue_2177E4, RoundedCornerShape(4.dp)),
+                    .background(ColorUtils.blue_2177E4, RoundedCornerShape(4.dp))
+                    .noRippleClickable {
+                        stateDialogCloseToday.value = true
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text("오늘 예약 마감", color = ColorUtils.white_FFFFFF, fontSize = 14.sp)

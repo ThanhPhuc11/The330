@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.CompanyRecommendModel
+import com.nagaja.the330.model.TokenFCMRequest
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 class HomeScreenVM(
     private val repo: HomeScreenRepo
 ) : BaseViewModel() {
-
+    var token: String = ""
     //    val listCategoryState = mutableStateListOf<CategoryModel>()
     val listCategoryState = mutableStateOf(mutableListOf<CategoryModel>())
     val statelistCompany = mutableStateListOf<CompanyRecommendModel>()
@@ -43,6 +44,24 @@ class HomeScreenVM(
                     it.content?.let { it1 ->
                         statelistCompany.clear()
                         statelistCompany.addAll(it1)
+                    }
+                }
+        }
+    }
+
+    fun registerFCM(token: String, tokenFCM: TokenFCMRequest) {
+        viewModelScope.launch {
+            repo.registerFCM(token, tokenFCM)
+                .onStart {
+                    callbackStart.value = Unit
+                }
+                .onCompletion { }
+                .catch {
+                    handleError(it)
+                }
+                .collect {
+                    if (it.raw().isSuccessful && it.raw().code == 201) {
+                        callbackSuccess.value = Unit
                     }
                 }
         }

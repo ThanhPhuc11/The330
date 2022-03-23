@@ -4,15 +4,15 @@ import com.nagaja.the330.network.ApiService
 import kotlinx.coroutines.flow.flow
 
 class FavCompanyRepo(private val apiService: ApiService) {
-    suspend fun getFavoriteCompany(token: String, page: Int, size: Int, sort: String) = flow {
-        emit(apiService.getFavoriteCompany(token, page, size, sort))
+    suspend fun getFavoriteCompany(token: String, page: Int, size: Int, sort: String, followType: String?) = flow {
+        emit(apiService.getMyFollow(token, page, size, sort, followType))
     }
 
-    suspend fun followCompany(token: String, targetId: Int) = flow {
-        emit(apiService.followCompany(token, targetId))
+    suspend fun followCompany(token: String, targetId: Int, followType: String?) = flow {
+        emit(apiService.followCompany(token, targetId, followType))
     }
 
-    suspend fun unfollowCompany(token: String, targetId: Int) = flow {
-        emit(apiService.unfollowCompany(token, targetId))
+    suspend fun unfollowCompany(token: String, targetId: Int, followType: String?) = flow {
+        emit(apiService.unfollowCompany(token, targetId, followType))
     }
 }

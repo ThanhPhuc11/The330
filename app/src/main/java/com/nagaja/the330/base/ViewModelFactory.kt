@@ -7,6 +7,8 @@ import com.nagaja.the330.view.applycompany.ApplyCompanyRepo
 import com.nagaja.the330.view.applycompany.ApplyCompanyVM
 import com.nagaja.the330.view.applycompanyproduct.ProductCompanyRepo
 import com.nagaja.the330.view.applycompanyproduct.ProductCompanyVM
+import com.nagaja.the330.view.applycompanyresult.ApplyResultRepo
+import com.nagaja.the330.view.applycompanyresult.ApplyResultVM
 import com.nagaja.the330.view.chatdetail.ChatDetailRepo
 import com.nagaja.the330.view.chatdetail.ChatDetailVM
 import com.nagaja.the330.view.chatlist.ChatListRepo
@@ -19,6 +21,8 @@ import com.nagaja.the330.view.companylist.CompanyListRepo
 import com.nagaja.the330.view.companylist.CompanyListVM
 import com.nagaja.the330.view.edit_profile.EditProfileRepo
 import com.nagaja.the330.view.edit_profile.EditProfileVM
+import com.nagaja.the330.view.editcompany.EditCompanyRepo
+import com.nagaja.the330.view.editcompany.EditCompanyVM
 import com.nagaja.the330.view.event.EventRepo
 import com.nagaja.the330.view.event.EventViewModel
 import com.nagaja.the330.view.faq.FAQRepo
@@ -59,6 +63,8 @@ import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailRepo
 import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailVM
 import com.nagaja.the330.view.recruitmentregis.RecruitJobRegisRepo
 import com.nagaja.the330.view.recruitmentregis.RecruitJobRegisVM
+import com.nagaja.the330.view.regularcustomer.RegularRepo
+import com.nagaja.the330.view.regularcustomer.RegularVM
 import com.nagaja.the330.view.reportmissing.ReportMissingRepo
 import com.nagaja.the330.view.reportmissing.ReportMissingVM
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailRepo
@@ -124,6 +130,8 @@ class ViewModelFactory(apiService: ApiService) :
             EditProfileVM(EditProfileRepo(apiService))
         creators[FavCompanyVM::class.java] =
             FavCompanyVM(FavCompanyRepo(apiService))
+        creators[RegularVM::class.java] =
+            RegularVM(RegularRepo(apiService))
         creators[SecondHandMypageVM::class.java] =
             SecondHandMypageVM(SecondHandMypageRepo(apiService))
         creators[SecondHandMarketVM::class.java] =
@@ -140,6 +148,8 @@ class ViewModelFactory(apiService: ApiService) :
             ApplyCompanyVM(ApplyCompanyRepo(apiService))
         creators[ProductCompanyVM::class.java] =
             ProductCompanyVM(ProductCompanyRepo(apiService))
+        creators[ApplyResultVM::class.java] =
+            ApplyResultVM(ApplyResultRepo(apiService))
         creators[LocalNewsVM::class.java] =
             LocalNewsVM(LocalNewsRepo(apiService))
         creators[LocalNewsDetailVM::class.java] =
@@ -188,6 +198,8 @@ class ViewModelFactory(apiService: ApiService) :
             ChatDetailVM(ChatDetailRepo(apiService))
         creators[CommentVM::class.java] =
             CommentVM(CommentRepo(apiService))
+        creators[EditCompanyVM::class.java] =
+            EditCompanyVM(EditCompanyRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

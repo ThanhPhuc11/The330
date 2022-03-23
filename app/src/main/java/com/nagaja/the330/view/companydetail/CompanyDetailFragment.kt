@@ -51,6 +51,7 @@ import com.nagaja.the330.utils.CommonUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.chatdetail.ChatDetailFragment
+import com.nagaja.the330.view.reservationregis.ReservationRegisFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -152,25 +153,29 @@ class CompanyDetailFragment : BaseFragment() {
                         .padding(top = 13.dp)
                         .padding(horizontal = 16.dp)
                         .noRippleClickable {
-                            viewController?.pushFragment(
-                                ScreenId.SCREEN_CHAT_DETAIL,
-                                ChatDetailFragment.newInstance()
-                            )
+                            viewModel.companyDetail.value.user?.id?.let {
+                                viewController?.pushFragment(
+                                    ScreenId.SCREEN_CHAT_DETAIL,
+                                    ChatDetailFragment.newInstance(partnerId = it)
+                                )
+                            }
                         }
                 )
                 Row(Modifier.padding(horizontal = 16.dp, vertical = 25.dp)) {
                     ButtonLike(
                         "추천",
-                        R.drawable.ic_like,
-                        10
-                    ) {}
+                        if (viewModel.isRecommend.value) R.drawable.ic_recommend else R.drawable.ic_recommend_empty,
+                        viewModel.companyDetail.value.numberRecommend ?: 0
+                    ) {
+                        accessToken?.let { viewModel.recommendOrNot(it) }
+                    }
                     Spacer(modifier = Modifier.width(8.dp))
                     ButtonLike(
                         "단골",
-                        if (viewModel.isFollowing.value) R.drawable.ic_tim else R.drawable.ic_heart_empty,
+                        if (viewModel.isLike.value) R.drawable.ic_heard else R.drawable.ic_heart_empty,
                         viewModel.companyDetail.value.likedCount ?: 0
                     ) {
-                        accessToken?.let { viewModel.followOrNot(it) }
+                        accessToken?.let { viewModel.likeOrNot(it) }
                     }
                 }
 
@@ -217,11 +222,26 @@ class CompanyDetailFragment : BaseFragment() {
                     Modifier
                         .fillMaxHeight()
                         .weight(1f)
-                        .background(ColorUtils.blue_2177E4),
+                        .background(ColorUtils.blue_2177E4)
+                        .noRippleClickable {
+                            if (!viewModel.isCloseToday.value)
+                                viewController?.pushFragment(
+                                    ScreenId.SCREEN_RESERVATION_REGIS,
+                                    ReservationRegisFragment.newInstance(
+                                        viewModel.companyDetail.value.id ?: 0
+                                    )
+                                )
+                        },
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("오늘마감", color = ColorUtils.blue_D3E4FA, fontSize = 10.sp)
+                    if (viewModel.isCloseToday.value) {
+                        Text(
+                            "오늘마감",
+                            color = ColorUtils.blue_D3E4FA,
+                            fontSize = 10.sp
+                        )
+                    }
                     Text(
                         "예약하기",
                         color = ColorUtils.white_FFFFFF,

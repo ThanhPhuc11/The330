@@ -23,6 +23,10 @@ class ReservationCompanyRepo(private val apiService: ApiService) {
         emit(apiService.editReservation(token, body))
     }
 
+    suspend fun closeToday(token: String, ) = flow {
+        emit(apiService.closeToday(token))
+    }
+
     suspend fun reservationOverview(
         token: String,
         userId: Int,

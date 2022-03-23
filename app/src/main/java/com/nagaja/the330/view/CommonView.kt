@@ -730,58 +730,6 @@ fun TabSelected(
         }
 }
 
-@Preview
-@Composable
-fun ItemRegular(item: CompanyUsageModel = CompanyUsageModel().apply {
-    id = 0
-    name = "name"
-    date = "2022/03/18 00:00"
-    numberOfUsers = 100
-}){
-    Row(Modifier.padding(16.dp)
-        .height(IntrinsicSize.Max)
-    ) {
-        Column(
-            Modifier.weight(5f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start
-        ) {
-            Text("${item.name}(${item.id})",
-                modifier = Modifier.fillMaxWidth()
-                    .padding(end = 2.dp),
-                color = ColorUtils.black_000000,
-                fontSize = 13.sp,
-                textAlign = TextAlign.Start,
-            )
-            Text("이용건수: ${item.numberOfUsers}회",
-                modifier = Modifier.padding(top = 12.dp)
-                    .fillMaxWidth()
-                    .padding(end = 2.dp),
-                color = ColorUtils.black_000000,
-                fontSize = 13.sp,
-                textAlign = TextAlign.Start
-            )
-        }
-        Box(modifier = Modifier
-            .fillMaxHeight()
-            .weight(6f),
-            contentAlignment = Alignment.BottomStart
-        ) {
-            Text(modifier = Modifier.fillMaxWidth(),
-                text = "이용일시:${item.date}",
-                color = ColorUtils.black_000000,
-                fontSize = 13.sp,
-                textAlign = TextAlign.Start
-            )
-        }
-    }
-    Divider(
-        Modifier
-            .height(1.dp)
-            .background(ColorUtils.gray_E1E1E1)
-    )
-}
-
 @Composable
 fun HandleSortUI(context: Context, ft : MutableList<KeyValueModel>) {
     val filters = remember { ft }

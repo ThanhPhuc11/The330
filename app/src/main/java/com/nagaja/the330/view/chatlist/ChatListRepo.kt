@@ -9,9 +9,8 @@ class ChatListRepo(private val apiService: ApiService) {
         page: Int,
         size: Int,
         type: String?,
-        startTime: String?,
-        endTime: String?
+        typeSearchChat: String?,
     ) = flow {
-        emit(apiService.getChatList(token, page, size, type, startTime, endTime))
+        emit(apiService.getChatList(token, page, size, type, typeSearchChat))
     }
 }

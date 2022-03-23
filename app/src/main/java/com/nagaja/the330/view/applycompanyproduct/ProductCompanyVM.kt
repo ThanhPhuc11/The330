@@ -85,7 +85,9 @@ class ProductCompanyVM(
             textStateDollar.value.text.isBlank()
         ) return
         val productModel = ProductModel().apply {
-            images = listImageProduct
+            images = listImageProduct.onEachIndexed { index, obj ->
+                obj.priority = index
+            }
             name = mutableListOf<NameModel>().apply {
                 add(NameModel(name = textStateNameEng.value.text, lang = AppConstants.Lang.EN))
                 add(NameModel(name = textStateNamePhi.value.text, lang = AppConstants.Lang.PH))

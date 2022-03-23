@@ -38,6 +38,7 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.secondhanddetail.SecondHandDetailFragment
 import com.nagaja.the330.view.secondhandregis.SecondHandRegisFragment
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -93,23 +94,21 @@ class SecondHandMarketFragment : BaseFragment() {
             val listCategory = remember {
                 GetDummyData.getSecondHandCategory().map {
                     ChooseKeyValue(it.id, it.name, false)
-                }.toMutableList()
+                }.toMutableStateList().apply {
+                    add(0, ChooseKeyValue(null, "전체", true))
+                }
             }
             onClickChoose = { index ->
-//                val temp = listCategory[index].apply {
-//                    isSelected = !isSelected
-//                }
-//                val listTemp = mutableListOf<ChooseKeyValue>().apply {
-//                    addAll(listCategory)
-//                }
-//                listTemp.onEach { obj ->
-//                    obj.isSelected = false
-//                }
-//                listTemp.removeAt(index)
-//                listTemp.add(index, temp)
-//                listCategory.clear()
-//                listCategory.addAll(listTemp)
-                listCategory[index].isSelected = true
+                if (viewModel.category != listCategory[index].id) {
+                    listCategory.onEach {
+                        it.isSelected = false
+                    }
+                    val newObj = listCategory[index].apply { isSelected = true }
+                    listCategory.removeAt(index)
+                    listCategory.add(index, newObj)
+                    viewModel.category = listCategory[index].id
+                    viewModel.getListSecondHandMarket(accessToken!!, 0)
+                }
             }
 //            LazyRow(
 //                modifier = Modifier
@@ -193,7 +192,11 @@ class SecondHandMarketFragment : BaseFragment() {
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(stringResource(R.string.register_secondhand), color = ColorUtils.white_FFFFFF, fontSize = 14.sp)
+                    Text(
+                        stringResource(R.string.register_secondhand),
+                        color = ColorUtils.white_FFFFFF,
+                        fontSize = 14.sp
+                    )
                 }
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -208,7 +211,7 @@ class SecondHandMarketFragment : BaseFragment() {
                 }
                 onClickSort = { id ->
                     viewModel.sort = id
-                    viewModel.getListSecondHandMarket(accessToken!! , 0)
+                    viewModel.getListSecondHandMarket(accessToken!!, 0)
                 }
                 Row {
                     Image(painter = painterResource(R.drawable.ic_sort), contentDescription = null)
@@ -249,7 +252,12 @@ class SecondHandMarketFragment : BaseFragment() {
                 val lazyListState = rememberLazyListState()
                 LazyColumn(state = lazyListState) {
                     itemsIndexed(listSecondHand) { index, obj ->
-                        ItemSecondHand(obj)
+                        ItemSecondHand(obj) {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_SECONDHAND_DETAIL,
+                                SecondHandDetailFragment.newInstance(obj.id!!)
+                            )
+                        }
                     }
                 }
 
@@ -365,13 +373,16 @@ class SecondHandMarketFragment : BaseFragment() {
     }
 
     @Composable
-    private fun ItemSecondHand(obj: SecondHandModel) {
+    private fun ItemSecondHand(obj: SecondHandModel, onClick: () -> Unit) {
         Column(
             Modifier
                 .padding(bottom = 1.dp)
                 .fillMaxWidth()
                 .background(ColorUtils.white_FFFFFF)
                 .padding(vertical = 20.dp)
+                .noRippleClickable {
+                    onClick.invoke()
+                }
         ) {
             Row {
                 GlideImage(

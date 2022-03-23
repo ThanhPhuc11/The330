@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -42,10 +43,11 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
+import com.nagaja.the330.view.editcompany.EditCompanyFragment
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
 import com.nagaja.the330.view.point.PointFragment
 import com.nagaja.the330.view.recruimentcompany.RecruitmentCompanyFragment
-import com.nagaja.the330.view.regularcustomer.RegularCustomerFragment
+import com.nagaja.the330.view.regularcustomer.RegularFragment
 import com.nagaja.the330.view.reportmissingmypage.ReportMissingMyPageFragment
 import com.nagaja.the330.view.secondhandmypage.SecondHandMypageFragment
 import com.nagaja.the330.view.usagecompany.CompanyUsageFragment
@@ -66,7 +68,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
     val clickRegular: (() -> Unit) = {
         viewController?.pushFragment(
             ScreenId.SCREEN_REGULAR_CUSTOMER_HISTORY,
-            RegularCustomerFragment.newInstance()
+            RegularFragment.newInstance()
         )
         showMessDebug("SCREEN_REGULAR_CUSTOMER_HISTORY", context)
     }
@@ -74,7 +76,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
     val clickConsultation: (() -> Unit) = {
         viewController?.pushFragment(
             ScreenId.SCREEN_CONSULTATION,
-            RegularCustomerFragment.newInstance()
+            RegularFragment.newInstance()
         )
         showMessDebug("SCREEN_CONSULTATION", context)
     }
@@ -144,12 +146,12 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
+                    getUserDetailFromDataStore(context)
                     viewModel.cbUpdateUserDataStore.observe(owner) {
                         DataStorePref(context).setUserDetail(it)
                     }
                 }
                 Lifecycle.Event.ON_START -> {
-                    getUserDetailFromDataStore(context)
                     viewModel.getUserDetails(accessToken)
                 }
                 Lifecycle.Event.ON_STOP -> {
@@ -181,9 +183,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                     onClick = {
                         stateShowCompany.value = !stateShowCompany.value
                     },
-                    modifier = Modifier
-                        .height(32.dp)
-                        .padding(horizontal = 16.dp),
+                    modifier = Modifier.height(32.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = ColorUtils.gray_222222)
                 ) {
                     Text(
@@ -284,7 +284,7 @@ private fun MyInfoCompany(viewController: ViewController?) {
                 }",
                 Modifier
                     .size(84.dp)
-                    .clip(shape = RoundedCornerShape(4.dp)),
+                    .clip(shape = CircleShape),
                 placeHolder = painterResource(R.drawable.ic_default_avt),
                 error = painterResource(R.drawable.ic_default_avt),
                 circularReveal = CircularReveal(duration = 0),
@@ -315,7 +315,13 @@ private fun MyInfoCompany(viewController: ViewController?) {
                         width = 1.dp,
                         color = ColorUtils.gray_222222,
                         shape = RoundedCornerShape(99.dp)
-                    ), contentAlignment = Alignment.Center
+                    )
+                    .noRippleClickable {
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_EDIT_COMPANY,
+                            EditCompanyFragment.newInstance()
+                        )
+                    }, contentAlignment = Alignment.Center
             ) {
                 Text("수정", color = ColorUtils.gray_222222, fontSize = 12.sp)
             }

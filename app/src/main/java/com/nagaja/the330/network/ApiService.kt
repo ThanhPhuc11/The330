@@ -89,36 +89,55 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<Unit> // 204
 
+    @PUT("fcm")
+    suspend fun registerFCM(
+        @Header("Authorization") token: String,
+        @Body tokenfcm: TokenFCMRequest
+    ): Response<Unit>
+
     @GET("main_categories")
     suspend fun getCategory(
         @Header("Authorization") token: String,
         @Query("group") group: String?
     ): ResponseModel<MutableList<CategoryModel>>
 
-    @GET("follows/target")
-    suspend fun getFavoriteCompany(
+    @GET("follows/actor")
+    suspend fun getFollowMe(
         @Header("Authorization") token: String,
         @Query("page") page: Int,
         @Query("size") size: Int,
-        @Query("sort") sort: String
+        @Query("sort") sort: String,
+        @Query("followType") followType: String?,
+    ): ResponseModel<MutableList<CompanyFavoriteModel>>
+
+    @GET("follows/target")
+    suspend fun getMyFollow(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String,
+        @Query("followType") followType: String?
     ): ResponseModel<MutableList<CompanyFavoriteModel>>
 
     @POST("follows")
     suspend fun followCompany(
         @Header("Authorization") token: String,
-        @Query("targetId") targetId: Int
+        @Query("targetId") targetId: Int,
+        @Query("followType") followType: String?
     ): Response<Unit> //201
 
     @DELETE("follows")
     suspend fun unfollowCompany(
         @Header("Authorization") token: String,
-        @Query("targetId") targetId: Int
+        @Query("targetId") targetId: Int,
+        @Query("followType") followType: String?
     ): Response<Unit> //204
 
     @GET("follows/checkFollow")
     suspend fun checkFollowCompany(
         @Header("Authorization") token: String,
-        @Query("targetId") targetId: Int
+        @Query("targetId") targetId: Int,
+        @Query("followType") followType: String?
     ): Boolean
 
     @POST("company_requests")
@@ -145,10 +164,21 @@ interface ApiService {
         @Query("cityId") cityId: Int
     ): ResponseModel<MutableList<DistrictModel>>
 
+    @GET("areas")
+    suspend fun getPopularAreas(
+        @Header("Authorization") token: String,
+    ): ResponseModel<MutableList<DistrictModel>>
+
     @POST("secondhand_posts")
     suspend fun makeSecondhandPost(
         @Header("Authorization") token: String,
         @Body body: SecondHandRequest
+    ): SecondHandPostResponse
+
+    @PATCH("secondhand_posts")
+    suspend fun editSecondhandPost(
+        @Header("Authorization") token: String,
+        @Body body: SecondHandModel
     ): SecondHandPostResponse
 
     @POST("secondhand_posts/viewDetail")
@@ -308,6 +338,25 @@ interface ApiService {
         @Body body: List<ReservationModel>
     ): Response<Unit> //200
 
+    @POST("reservations/closeToday")
+    suspend fun closeToday(
+        @Header("Authorization") token: String
+    ): Response<Unit> //200
+
+    @GET("reservations/closeToday/check")
+    suspend fun checkCloseToday(
+        @Header("Authorization") token: String,
+        @Query("companyId") companyId: Int,
+    ): Boolean
+
+    @GET("reservations/getReservationAvailableTime")
+    suspend fun getReservationAvailableTime(
+        @Header("Authorization") token: String,
+        @Query("companyOwnerId") companyOwnerId: Int,
+        @Query("dateBegin") dateBegin: String,
+        @Query("dateEnd") dateEnd: String,
+    ): MutableList<ReservationRemainModel>
+
     @GET("company_requests/find")
     suspend fun findCompany(
         @Header("Authorization") token: String,
@@ -373,8 +422,8 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("page") page: Int,
         @Query("size") size: Int,
-        @Query("pointTransactionType") pointTransactionType : String,
-        @Query("timeLimit") timeLimit  : String,
+        @Query("pointTransactionType") pointTransactionType: String,
+        @Query("timeLimit") timeLimit: String,
     ): ResponseModel<MutableList<PointModel>>
 
     @GET("chat/chatList")
@@ -383,7 +432,32 @@ interface ApiService {
         @Query("page") page: Int,
         @Query("size") size: Int,
         @Query("type") type: String?,
-        @Query("startTime") startTime: String?,
-        @Query("endTime") endTime: String?,
+        @Query("typeSearchChat") typeSearchChat: String?,
+    ): ResponseModel<MutableList<RoomDetailModel>>
+
+    @POST("chat/start")
+    suspend fun startChat(
+        @Header("Authorization") token: String,
+        @Body body: StartChatRequest
+    ): RoomDetailModel
+
+    @GET("chat/startByChatRoom/{chatRoomId}")
+    suspend fun startChatByRoomId(
+        @Header("Authorization") token: String,
+        @Path("chatRoomId") chatRoomId: Int
+    ): RoomDetailModel
+
+    @GET("chat/chatList/findNearMes/{chatRoomId}")
+    suspend fun getChatDetail(
+        @Header("Authorization") token: String,
+        @Path("chatRoomId") chatRoomId: Int,
+        @Query("chatMesId") chatMesId: Int?,
+        @Query("size") size: Int,
+    ): ResponseModel<MutableList<ItemMessageModel>>
+
+    @POST("chat/newMessage")
+    suspend fun sendMess(
+        @Header("Authorization") token: String,
+        @Body body: ItemMessageModel
     ): Response<Unit>
 }

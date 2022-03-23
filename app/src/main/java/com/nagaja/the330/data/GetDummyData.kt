@@ -175,6 +175,14 @@ object GetDummyData {
         }
     }
 
+    fun getSelectedSecondhandOwner(context: Context): MutableList<KeyValueModel> {
+        return mutableListOf<KeyValueModel>().apply {
+            add(KeyValueModel("EDIT", "수정"))
+            add(KeyValueModel("DELETE", "삭제"))
+            add(KeyValueModel("COMPLETED", "거래완료"))
+        }
+    }
+
     fun getNotificationDetail(): MutableState<NotificationModel> {
         return mutableStateOf(NotificationModel().apply {
             id = 7

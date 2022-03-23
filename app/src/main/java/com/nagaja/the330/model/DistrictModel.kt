@@ -5,4 +5,6 @@ class DistrictModel(
     var name: MutableList<NameModel>? = null,
     var city: CityModel? = null,
     var priority: Int? = null,
+    var status: String? = null,
+    var createdOn: String? = null
 )

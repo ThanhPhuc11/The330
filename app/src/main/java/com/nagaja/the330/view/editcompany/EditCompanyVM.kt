@@ -1,4 +1,4 @@
-package com.nagaja.the330.view.applycompany
+package com.nagaja.the330.view.editcompany
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
@@ -20,9 +20,11 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
 
-class ApplyCompanyVM(
-    private val repo: ApplyCompanyRepo
+class EditCompanyVM(
+    private val repo: EditCompanyRepo
 ) : BaseViewModel() {
+    var companyDetail = mutableStateOf(CompanyModel())
+
     val listCategoryState = mutableStateListOf<CategoryModel>()
     val selectedOptionCategory = mutableStateOf(CategoryModel())
 
@@ -164,9 +166,9 @@ class ApplyCompanyVM(
                 add(NameModel(name = textStateNameCN.value.text, lang = AppConstants.Lang.CN))
                 add(NameModel(name = textStateNameJP.value.text, lang = AppConstants.Lang.JP))
             }
-            popularAreaId = this@ApplyCompanyVM.popularAreaId
-            cityId = this@ApplyCompanyVM.cityId
-            districtId = this@ApplyCompanyVM.districtId
+            popularAreaId = this@EditCompanyVM.popularAreaId
+            cityId = this@EditCompanyVM.cityId
+            districtId = this@EditCompanyVM.districtId
             address = textStateAdress.value.text
             description = mutableListOf<NameModel>().apply {
                 add(NameModel(name = textStateDesEng.value.text, lang = AppConstants.Lang.EN))
@@ -182,7 +184,7 @@ class ApplyCompanyVM(
             chargeKakao = textStateKakao.value.text
             chargeLine = textStateLine.value.text
 
-            serviceTypes = this@ApplyCompanyVM.serviceType.filter {
+            serviceTypes = this@EditCompanyVM.serviceType.filter {
                 it.isSelected
             }.map {
                 it.id!!
@@ -191,7 +193,7 @@ class ApplyCompanyVM(
             openHour = textStateOpenTime.value
             closeHour = textStateCloseTime.value
 
-            reservationTime = this@ApplyCompanyVM.reservationTime
+            reservationTime = this@EditCompanyVM.reservationTime
             reservationNumber = textStateNumReservation.value.text.ifBlank { null }?.toInt()
             paymentMethod = textStatePaymethod.value.text.ifBlank { null }
 
@@ -245,6 +247,26 @@ class ApplyCompanyVM(
                     if (fileUploaded == totalFileUpload) {
                         callbackMakeSuccess.value = Unit
                     }
+                }
+        }
+    }
+
+    fun getCompanyDetail(
+        token: String,
+        id: Int
+    ) {
+        viewModelScope.launch {
+            repo.getCompanyDetail(
+                token = token, id
+            )
+                .onStart { callbackStart.value = Unit }
+                .onCompletion { }
+                .catch {
+                    handleError(it)
+                }
+                .collect {
+                    callbackSuccess.value = Unit
+                    companyDetail.value = it
                 }
         }
     }

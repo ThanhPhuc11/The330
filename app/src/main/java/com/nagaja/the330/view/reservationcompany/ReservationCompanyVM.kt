@@ -130,6 +130,22 @@ class ReservationCompanyVM(
         }
     }
 
+    fun closeToday(token: String) {
+        viewModelScope.launch {
+            repo.closeToday(token)
+                .onStart {}
+                .onCompletion {}
+                .catch { handleError(it) }
+                .collect {
+                    if (it.raw().isSuccessful && it.raw().code == 200) {
+
+                    } else {
+                        handleError2(it)
+                    }
+                }
+        }
+    }
+
     private fun <T> updateItem(index: Int, newObj: T, list: MutableList<T>) {
         list.removeAt(index)
         list.add(index, newObj)

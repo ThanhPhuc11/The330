@@ -15,7 +15,7 @@ class CompanyModel {
     var chargeFacebook: String? = null
     var chargeKakao: String? = null
     var chargeLine: String? = null
-    var serviceTypes: List<String>? = null
+    var serviceTypes: MutableList<String>? = null
     var openHour: Int? = null
     var closeHour: Int? = null
     var reservationTime: List<Int>? = null
@@ -27,7 +27,15 @@ class CompanyModel {
     var fileTemp: FileModel? = null
     var products: MutableList<ProductModel>? = null
     var likedCount: Int? = null
+    var numberRecommend: Int? = null
     var pointCharge: Int? = null
     var pointRemain: Int? = null
     var pointUse: Int? = null
+    var usageCount: Int? = null
+    var user: UserDetail? = null
+
+    //field for request body
+    var popularAreaId: Int? = null
+    var cityId: Int? = null
+    var districtId: Int? = null
 }

@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
+        android:name=".The330Application"
         android:allowBackup="false"
         android:icon="@mipmap/ic_app_icon_nagaja"
         android:label="${app_name}"
