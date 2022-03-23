@@ -3,6 +3,7 @@ package com.nagaja.the330.view.companylist
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
+import com.nagaja.the330.model.BannerCompanyModel
 import com.nagaja.the330.model.CompanyModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -19,6 +20,7 @@ class CompanyListVM(
     var authentication: Boolean? = null
     val listData = mutableListOf<CompanyModel>()
     val stateListData = mutableStateListOf<CompanyModel>()
+    val stateListBanner = mutableStateListOf<BannerCompanyModel>()
 
     fun findCompany(
         token: String,
@@ -49,6 +51,19 @@ class CompanyListVM(
                     it.content?.let { data ->
                         stateListData.addAll(data)
                     }
+                }
+        }
+    }
+
+    fun getBanner(token: String) {
+        viewModelScope.launch {
+            repo.getBanner(token, cType ?: "")
+                .onStart { callbackStart.value = Unit }
+                .onCompletion { }
+                .catch { handleError(it) }
+                .collect {
+                    callbackSuccess.value = Unit
+                    it.content?.let { it1 -> stateListBanner.addAll(it1) }
                 }
         }
     }

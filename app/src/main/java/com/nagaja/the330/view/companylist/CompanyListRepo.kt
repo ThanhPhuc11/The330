@@ -18,4 +18,8 @@ class CompanyListRepo(private val apiService: ApiService) {
     ) = flow {
         emit(apiService.findCompany(token, page, size, sort, serviceTypes, cType, authentication, cityId, district, all))
     }
+
+    suspend fun getBanner(token: String, cType: String) = flow {
+        emit(apiService.getBannerCompany(token, cType))
+    }
 }

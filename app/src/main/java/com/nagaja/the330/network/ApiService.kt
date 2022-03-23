@@ -460,4 +460,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body body: ItemMessageModel
     ): Response<Unit>
+
+    @GET("banners/top/getAllActive")
+    suspend fun getBannerCompany(
+        @Header("Authorization") token: String,
+        @Query("cType") cType: String,
+    ): ResponseModel<MutableList<BannerCompanyModel>>
 }
