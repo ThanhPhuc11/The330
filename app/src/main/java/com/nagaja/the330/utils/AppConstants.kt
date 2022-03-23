@@ -46,24 +46,12 @@ object AppConstants {
         const val JP = "jp"
     }
 
-    object Order {
-        const val INIT = "INIT"
-        const val PAYMENT_SUCCESS = "PAYMENT_SUCCESS"
-        const val PREPARING = "PREPARING"
-        const val SHIPPING = "SHIPPING"
-        const val SHIP_COMPLETED = "SHIP_COMPLETED"
-        const val CANCELLED = "CANCELLED"
-        const val RETURN_REQUEST = "RETURN_REQUEST"
-        const val EXCHANGE_REQUEST = "EXCHANGE_REQUEST"
-        const val DELETED = "DELETED "
-    }
-
-
     object Announcement {
         const val ANNOUNCEMENT = "ANNOUNCEMENT"
         const val EVENT = "EVENT"
     }
 
+    const val SECONDHAND = "SECONDHAND"
     object SecondhandCategory {
         const val DIGITAL_DEVICE = "DIGITAL_DEVICE"
         const val HOME_APPLIANCES = "HOME_APPLIANCES"

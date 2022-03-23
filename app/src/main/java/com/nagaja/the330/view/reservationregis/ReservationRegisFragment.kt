@@ -2,6 +2,7 @@ package com.nagaja.the330.view.reservationregis
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -40,7 +41,7 @@ import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.data.dataStore
-import com.nagaja.the330.model.TimeReservation
+import com.nagaja.the330.model.TimeAvailable
 import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
@@ -132,6 +133,10 @@ class ReservationRegisFragment : BaseFragment() {
             if (viewModel.callbackMakeReservationSuccess.value) {
                 stateDialogSuccess.value = true
             }
+        }
+
+        LaunchedEffect(viewModel.stateEdtNumber.value) {
+            viewModel.checkAvailable()
         }
 
         LayoutTheme330 {
@@ -250,6 +255,7 @@ class ReservationRegisFragment : BaseFragment() {
                             stateDate.value = date
                             viewModel.date = date
                             showDate.value = false
+                            viewModel.checkTimeAvailable(accessToken!!)
                         }
                     }
                     Divider(color = ColorUtils.gray_E1E1E1)
@@ -260,7 +266,9 @@ class ReservationRegisFragment : BaseFragment() {
                             .fillMaxWidth()
                             .height(46.dp)
                             .noRippleClickable {
-                                showTime.value = !showTime.value
+                                if (viewModel.date.isNotEmpty()) {
+                                    showTime.value = !showTime.value
+                                }
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -278,7 +286,7 @@ class ReservationRegisFragment : BaseFragment() {
                         ReservationTime { index, time ->
                             stateTime.value = time
                             viewModel.time = index
-                            showTime.value = false
+//                            showTime.value = false
                         }
                     }
                     Divider(color = ColorUtils.gray_E1E1E1)
@@ -431,44 +439,19 @@ class ReservationRegisFragment : BaseFragment() {
                 fontSize = 12.sp
             )
 
-            val listTime =
-                remember {
-                    mutableStateListOf(
-                        TimeReservation("00:00"), TimeReservation("00:30"),
-                        TimeReservation("01:00"), TimeReservation("01:30"),
-                        TimeReservation("02:00"), TimeReservation("02:30"),
-                        TimeReservation("03:00"), TimeReservation("03:30"),
-                        TimeReservation("04:00"), TimeReservation("04:30"),
-                        TimeReservation("05:00"), TimeReservation("05:30"),
-                        TimeReservation("06:00"), TimeReservation("06:30"),
-                        TimeReservation("07:00"), TimeReservation("07:30"),
-                        TimeReservation("08:00"), TimeReservation("08:30"),
-                        TimeReservation("09:00"), TimeReservation("09:30"),
-                        TimeReservation("10:00"), TimeReservation("10:30"),
-                        TimeReservation("11:00"), TimeReservation("11:30"),
-                        TimeReservation("12:00"), TimeReservation("12:30"),
-                        TimeReservation("13:00"), TimeReservation("13:30"),
-                        TimeReservation("14:00"), TimeReservation("14:30"),
-                        TimeReservation("15:00"), TimeReservation("15:30"),
-                        TimeReservation("16:00"), TimeReservation("16:30"),
-                        TimeReservation("17:00"), TimeReservation("17:30"),
-                        TimeReservation("18:00"), TimeReservation("18:30"),
-                        TimeReservation("19:00"), TimeReservation("19:30"),
-                        TimeReservation("20:00"), TimeReservation("20:30"),
-                        TimeReservation("21:00"), TimeReservation("21:30"),
-                        TimeReservation("22:00"), TimeReservation("22:30"),
-                        TimeReservation("23:00"), TimeReservation("23:30"),
-                    )
-                }
+            val listTime = viewModel.stateReservationTime
 
             onClickChoose = { index ->
                 if (index >= 0) {
-                    val temp = listTime[index].apply {
-                        isSelected = !isSelected
-                    }
-                    listTime.removeAt(index)
-                    listTime.add(index, temp)
-                    onClick?.invoke(index, listTime[index].time)
+//                    val temp = listTime[index].apply {
+//                        status = if (status == 1) 2 else 1
+//                    }
+//                    listTime.removeAt(index)
+//                    listTime.add(index, temp)
+//                    onClick?.invoke(index, listTime[index].time)
+                    val indexOldSelected = listTime.indexOfFirst { it.status == 2 }
+                    listTime[indexOldSelected] = listTime[indexOldSelected].copy(status = 1)
+                    listTime[index] = listTime[index].copy(status = 2)
                 }
             }
             Box(
@@ -485,36 +468,79 @@ class ReservationRegisFragment : BaseFragment() {
                         .fillMaxWidth()
                         .wrapContentHeight(),
                     horizontalArrangement = Arrangement.spacedBy(5.dp),
-//                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     itemsIndexed(listTime) { index, time ->
                         ItemTime(index, time)
                     }
                 }
             }
+
+            Row(
+                Modifier
+                    .padding(top = 12.dp)
+                    .fillMaxWidth()
+                    .background(ColorUtils.gray_F5F5F5)
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("버튼선택", style = text14_222, modifier = Modifier.padding(end = 7.dp))
+                ItemTime(
+                    index = 0,
+                    time = TimeAvailable("선택불가", 0),
+                    Modifier
+                        .weight(1f)
+                        .padding(end = 3.dp)
+                )
+                ItemTime(
+                    index = 0,
+                    time = TimeAvailable("선택가능", 1),
+                    Modifier
+                        .weight(1f)
+                        .padding(end = 3.dp)
+                )
+                ItemTime(
+                    index = 0,
+                    time = TimeAvailable("선택", 2),
+                    Modifier
+                        .weight(1f)
+                        .padding(end = 3.dp)
+                )
+            }
         }
     }
 
     @Composable
-    private fun ItemTime(index: Int, time: TimeReservation, modifier: Modifier = Modifier) {
+    private fun ItemTime(index: Int, time: TimeAvailable, modifier: Modifier = Modifier) {
         Box(
             modifier
-                .padding(top = 8.dp)
                 .height(32.dp)
                 .border(
                     width = 1.dp,
-                    color = if (time.isSelected) ColorUtils.blue_2177E4 else ColorUtils.gray_E1E1E1,
+                    color = if (time.status == 2) ColorUtils.blue_2177E4 else ColorUtils.gray_E1E1E1,
                     shape = RoundedCornerShape(4.dp)
                 )
-                .background(if (time.isSelected) ColorUtils.blue_E9F1FC else ColorUtils.white_FFFFFF)
+                .background(
+                    when (time.status) {
+                        0 -> ColorUtils.gray_E1E1E1
+                        1 -> ColorUtils.white_FFFFFF
+                        else -> ColorUtils.blue_E9F1FC
+                    },
+                    RoundedCornerShape(4.dp)
+                )
                 .noRippleClickable {
-                    onClickChoose?.invoke(index)
+                    if (time.status != 0)
+                        onClickChoose?.invoke(index)
                 },
             contentAlignment = Alignment.Center
         ) {
             Text(
                 time.time,
-                color = if (time.isSelected) ColorUtils.blue_2177E4 else ColorUtils.gray_626262,
+                color = when (time.status) {
+                    0 -> ColorUtils.gray_9F9F9F
+                    1 -> ColorUtils.gray_626262
+                    else -> ColorUtils.blue_2177E4
+                },
                 fontSize = 14.sp
             )
         }

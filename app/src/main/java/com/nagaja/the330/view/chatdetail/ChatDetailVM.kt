@@ -92,7 +92,9 @@ class ChatDetailVM(
                         stateListMess.addAll(0, data)
                         if (isFirst) {
                             isFirst = false
-                            stateBottomItem.value = data.last()
+                            if (data.isNotEmpty()) {
+                                stateBottomItem.value = data.last()
+                            }
                         }
                     }
                 }

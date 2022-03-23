@@ -41,10 +41,7 @@ import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.model.ItemMessageModel
 import com.nagaja.the330.model.RoomDetailModel
 import com.nagaja.the330.model.StartChatRequest
-import com.nagaja.the330.utils.AppConstants
-import com.nagaja.the330.utils.AppDateUtils
-import com.nagaja.the330.utils.ColorUtils
-import com.nagaja.the330.utils.ScreenId
+import com.nagaja.the330.utils.*
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
@@ -55,6 +52,8 @@ class ChatDetailFragment : BaseFragment() {
     private lateinit var viewModel: ChatDetailVM
     private var partnerId: Int? = null
     private var roomId: Int? = null
+    private var type: String? = null
+    private var postId: String? = null
     private var isFirst = true
     private var onAddToBottom: (() -> Unit)? = null
     private lateinit var database: DatabaseReference
@@ -66,6 +65,15 @@ class ChatDetailFragment : BaseFragment() {
                 roomId?.let { putInt(AppConstants.EXTRA_KEY2, it) }
             }
         }
+
+        fun newInstance(type: String? = null, postId: String? = null, partnerId: Int? = null) =
+            ChatDetailFragment().apply {
+                arguments = Bundle().apply {
+                    partnerId?.let { putInt(AppConstants.EXTRA_KEY1, it) }
+                    type?.let { putString(AppConstants.EXTRA_KEY3, it) }
+                    postId?.let { putString(AppConstants.EXTRA_KEY4, it) }
+                }
+            }
     }
 
     override fun SetupViewModel() {
@@ -85,16 +93,42 @@ class ChatDetailFragment : BaseFragment() {
                     Lifecycle.Event.ON_CREATE -> {
                         partnerId = requireArguments().getInt(AppConstants.EXTRA_KEY1, -1)
                         roomId = requireArguments().getInt(AppConstants.EXTRA_KEY2, -1)
-                        if (partnerId != null && partnerId != -1) {
-                            viewModel.startChat(
-                                accessToken!!,
-                                StartChatRequest().apply { userId = partnerId })
-                        }
-                        if (roomId != null && roomId != -1) {
-                            viewModel.startChatByRoomId(
-                                accessToken!!,
-                                roomId!!
-                            )
+                        type = requireArguments().getString(AppConstants.EXTRA_KEY3)
+                        postId = requireArguments().getString(AppConstants.EXTRA_KEY4)
+                        when (type) {
+                            AppConstants.RECRUITMENT -> {
+                                viewModel.startChat(
+                                    accessToken!!,
+                                    StartChatRequest().apply {
+                                        userId = partnerId
+                                        recruitmentId = postId
+                                    }
+                                )
+                            }
+
+                            AppConstants.SECONDHAND -> {
+                                viewModel.startChat(
+                                    accessToken!!,
+                                    StartChatRequest().apply {
+                                        userId = partnerId
+                                        secondHandPostId = postId
+                                    }
+                                )
+                            }
+
+                            else -> {
+                                if (partnerId != null && partnerId != -1) {
+                                    viewModel.startChat(
+                                        accessToken!!,
+                                        StartChatRequest().apply { userId = partnerId })
+                                }
+                                if (roomId != null && roomId != -1) {
+                                    viewModel.startChatByRoomId(
+                                        accessToken!!,
+                                        roomId!!
+                                    )
+                                }
+                            }
                         }
                     }
                     else -> {}
@@ -118,13 +152,15 @@ class ChatDetailFragment : BaseFragment() {
                 viewController?.popFragment()
             }
             //TODO: Info
-            InfoFriend(viewModel.stateRoomInfo.value)
-            Divider(
-                color = ColorUtils.gray_E1E1E1,
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .padding(horizontal = 16.dp)
-            )
+            if (type.isNullOrEmpty()) {
+                InfoFriend(viewModel.stateRoomInfo.value)
+                Divider(
+                    color = ColorUtils.gray_E1E1E1,
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .padding(horizontal = 16.dp)
+                )
+            }
 
             //TODO: Content Mess
             val listMess = viewModel.stateListMess
@@ -151,7 +187,8 @@ class ChatDetailFragment : BaseFragment() {
                     reverseLayout = false,
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.Bottom
                 ) {
                     itemsIndexed(listMess) { index, obj ->
                         if (obj.userId?.toInt() == userDetailBase?.id || obj.user?.id == userDetailBase?.id) {
@@ -164,6 +201,12 @@ class ChatDetailFragment : BaseFragment() {
                 }
                 LaunchedEffect(viewModel.stateBottomItem.value) {
                     lazyListState.animateScrollToItem(viewModel.stateListMess.size)
+                }
+
+                LoadmoreMessHandler(lazyListState) { page ->
+                    viewModel.stateRoomInfo.value.id?.let {
+                        viewModel.getChatDetail(accessToken!!, it, viewModel.stateListMess[0].id)
+                    }
                 }
             }
 
@@ -354,7 +397,10 @@ class ChatDetailFragment : BaseFragment() {
         Box(
             Modifier
                 .fillMaxWidth()
-                .padding(bottom = 40.dp),
+                .padding(bottom = 40.dp)
+                .noRippleClickable {
+                    showMessDEBUG(obj.id.toString())
+                },
             contentAlignment = Alignment.CenterEnd
         ) {
             Column {
@@ -389,7 +435,10 @@ class ChatDetailFragment : BaseFragment() {
         Box(
             Modifier
                 .fillMaxWidth()
-                .padding(bottom = 40.dp),
+                .padding(bottom = 40.dp)
+                .noRippleClickable {
+                    showMessDEBUG(obj.id.toString())
+                },
             contentAlignment = Alignment.CenterStart
         ) {
             Column {

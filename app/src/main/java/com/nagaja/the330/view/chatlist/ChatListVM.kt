@@ -21,7 +21,7 @@ class ChatListVM(
         type: String? = null,
     ) {
         viewModelScope.launch {
-            repo.getChatList(token, page, size = 20, type, typeSearchChat = sort)
+            repo.getChatList(token, page, size = 20, "COMPANY_INQUIRY", typeSearchChat = sort)
                 .onStart {
                     callbackStart.value = Unit
                 }

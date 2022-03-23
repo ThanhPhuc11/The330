@@ -27,6 +27,7 @@ class SecondHandDetailVM(
     val listDistrict = mutableStateListOf<DistrictModel>()
 
     val callbackPostSuccess = MutableLiveData<Unit>()
+    val callbackDelOrCompletedSuccess = MutableLiveData<Unit>()
 
     fun getCity(token: String) {
         viewModelScope.launch {
@@ -64,6 +65,26 @@ class SecondHandDetailVM(
                 .collect {
                     callbackSuccess.value = Unit
                     secondhandDetail.value = it
+                }
+        }
+    }
+
+    fun completeOrDel(token: String, isDel: Boolean) {
+        viewModelScope.launch {
+            repo.editSecondhandPost(token, SecondHandModel().apply {
+                id = secondhandDetail.value.id
+                if (isDel) {
+                    status = "DELETED"
+                } else {
+                    transactionStatus = "TRANSACTION_COMPLETE"
+                }
+            })
+                .onStart { callbackStart.value = Unit }
+                .onCompletion { }
+                .catch { handleError(it) }
+                .collect {
+                    callbackSuccess.value = Unit
+                    callbackDelOrCompletedSuccess.value = Unit
                 }
         }
     }

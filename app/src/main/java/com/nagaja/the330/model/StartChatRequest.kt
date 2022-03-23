@@ -7,11 +7,11 @@ import com.google.gson.annotations.SerializedName
 class StartChatRequest {
     @SerializedName("recruitmentId")
     @Expose
-    var recruitmentId: Int? = null
+    var recruitmentId: String? = null
 
     @SerializedName("secondHandPostId")
     @Expose
-    var secondHandPostId: Int? = null
+    var secondHandPostId: String? = null
 
     @SerializedName("userId")
     @Expose

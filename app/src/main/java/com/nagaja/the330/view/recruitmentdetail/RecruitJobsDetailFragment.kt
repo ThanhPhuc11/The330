@@ -44,6 +44,7 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.chatdetail.ChatDetailFragment
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
@@ -267,6 +268,14 @@ class RecruitJobsDetailFragment : BaseFragment() {
                         ColorUtils.white_FFFFFF
                     ) {
                         showMessDEBUG("CHAT_INQUIRY")
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_CHAT_DETAIL,
+                            ChatDetailFragment.newInstance(
+                                AppConstants.RECRUITMENT,
+                                viewModel.recruitJobsModel.value.id.toString(),
+                                viewModel.recruitJobsModel.value.writer?.id
+                            )
+                        )
                     }
                 }
             }

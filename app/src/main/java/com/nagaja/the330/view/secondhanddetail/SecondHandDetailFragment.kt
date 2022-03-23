@@ -8,9 +8,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -33,8 +34,11 @@ import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.chatdetail.ChatDetailFragment
+import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -54,6 +58,10 @@ class SecondHandDetailFragment : BaseFragment() {
         viewModel = getViewModelProvider(this)[SecondHandDetailVM::class.java]
         viewController = (activity as MainActivity).viewController
 
+        viewModel.callbackDelOrCompletedSuccess.observe(viewLifecycleOwner) {
+            showMessDEBUG("success")
+            viewController?.popFragment()
+        }
         viewModel.callbackStart.observe(viewLifecycleOwner) {
             showLoading()
         }
@@ -197,21 +205,70 @@ class SecondHandDetailFragment : BaseFragment() {
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Start
                     )
+
+
+                    var expanded by remember { mutableStateOf(false) }
+                    val listFilter =
+                        remember { GetDummyData.getSelectedSecondhandOwner(requireContext()) }
+//                    val itemFilterSelected = remember { mutableStateOf(listFilter[0]) }
                     Box(
                         Modifier
                             .size(120.dp, 40.dp)
                             .background(
                                 color = ColorUtils.blue_2177E4,
                                 shape = RoundedCornerShape(2.dp)
-                            ),
+                            )
+                            .noRippleClickable {
+                                if (viewModel.secondhandDetail.value.seller?.id == userDetailBase?.id) {
+                                    expanded = true
+                                } else {
+                                    viewController?.pushFragment(
+                                        ScreenId.SCREEN_CHAT_DETAIL,
+                                        ChatDetailFragment.newInstance(
+                                            AppConstants.SECONDHAND,
+                                            viewModel.secondhandDetail.value.id.toString(),
+                                            viewModel.secondhandDetail.value.seller?.id
+                                        )
+                                    )
+                                }
+                            },
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             stringResource(R.string.to_consult),
                             color = ColorUtils.white_FFFFFF,
                             fontSize = 16.sp,
-                            fontWeight = FontWeight(500)
+                            fontWeight = FontWeight(500),
                         )
+
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = {
+                                expanded = false
+                            }
+                        ) {
+                            listFilter.forEach { selectionOption ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        when (selectionOption.id) {
+                                            "EDIT" -> {
+
+                                            }
+                                            "DELETE" -> {
+                                                viewModel.completeOrDel(accessToken!!, true)
+                                            }
+                                            else -> {
+                                                viewModel.completeOrDel(accessToken!!, false)
+                                            }
+                                        }
+                                        expanded = false
+                                        showMessDEBUG(selectionOption.id ?: "null")
+                                    }
+                                ) {
+                                    Text(text = selectionOption.name!!)
+                                }
+                            }
+                        }
                     }
                 }
                 Divider(color = ColorUtils.gray_E1E1E1)

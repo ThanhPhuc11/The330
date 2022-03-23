@@ -89,6 +89,12 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<Unit> // 204
 
+    @PUT("fcm")
+    suspend fun registerFCM(
+        @Header("Authorization") token: String,
+        @Body tokenfcm: TokenFCMRequest
+    ): Response<Unit>
+
     @GET("main_categories")
     suspend fun getCategory(
         @Header("Authorization") token: String,
@@ -167,6 +173,12 @@ interface ApiService {
     suspend fun makeSecondhandPost(
         @Header("Authorization") token: String,
         @Body body: SecondHandRequest
+    ): SecondHandPostResponse
+
+    @PATCH("secondhand_posts")
+    suspend fun editSecondhandPost(
+        @Header("Authorization") token: String,
+        @Body body: SecondHandModel
     ): SecondHandPostResponse
 
     @POST("secondhand_posts/viewDetail")
@@ -336,6 +348,14 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("companyId") companyId: Int,
     ): Boolean
+
+    @GET("reservations/getReservationAvailableTime")
+    suspend fun getReservationAvailableTime(
+        @Header("Authorization") token: String,
+        @Query("companyOwnerId") companyOwnerId: Int,
+        @Query("dateBegin") dateBegin: String,
+        @Query("dateEnd") dateEnd: String,
+    ): MutableList<ReservationRemainModel>
 
     @GET("company_requests/find")
     suspend fun findCompany(

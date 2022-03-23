@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -145,12 +146,12 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
+                    getUserDetailFromDataStore(context)
                     viewModel.cbUpdateUserDataStore.observe(owner) {
                         DataStorePref(context).setUserDetail(it)
                     }
                 }
                 Lifecycle.Event.ON_START -> {
-                    getUserDetailFromDataStore(context)
                     viewModel.getUserDetails(accessToken)
                 }
                 Lifecycle.Event.ON_STOP -> {
@@ -283,7 +284,7 @@ private fun MyInfoCompany(viewController: ViewController?) {
                 }",
                 Modifier
                     .size(84.dp)
-                    .clip(shape = RoundedCornerShape(4.dp)),
+                    .clip(shape = CircleShape),
                 placeHolder = painterResource(R.drawable.ic_default_avt),
                 error = painterResource(R.drawable.ic_default_avt),
                 circularReveal = CircularReveal(duration = 0),

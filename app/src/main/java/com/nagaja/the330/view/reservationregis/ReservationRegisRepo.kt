@@ -12,4 +12,13 @@ class ReservationRegisRepo(private val apiService: ApiService) {
     suspend fun makeReservation(token: String, body: ReservationModel) = flow {
         emit(apiService.makeReservation(token, body))
     }
+
+    suspend fun getReservationAvailableTime(
+        token: String,
+        companyOwnerId: Int,
+        dateBegin: String,
+        dateEnd: String
+    ) = flow {
+        emit(apiService.getReservationAvailableTime(token, companyOwnerId, dateBegin, dateEnd))
+    }
 }

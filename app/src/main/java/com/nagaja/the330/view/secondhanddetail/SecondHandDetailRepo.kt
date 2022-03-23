@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.secondhanddetail
 
+import com.nagaja.the330.model.SecondHandModel
 import com.nagaja.the330.model.SecondHandRequest
 import com.nagaja.the330.network.ApiService
 import kotlinx.coroutines.flow.flow
@@ -16,5 +17,9 @@ class SecondHandDetailRepo(private val apiService: ApiService) {
 
     suspend fun viewDetailSecondhandPost(token: String, id: Int) = flow {
         emit(apiService.viewDetailSecondhandPost(token, id))
+    }
+
+    suspend fun editSecondhandPost(token: String, body: SecondHandModel) = flow {
+        emit(apiService.editSecondhandPost(token, body))
     }
 }
