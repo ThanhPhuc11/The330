@@ -311,6 +311,24 @@ interface ApiService {
         @Body body: RecruitmentJobsModel
     ): SecondHandPostResponse
 
+    @PATCH("recruitment_jobs")
+    suspend fun editPostRecruitJobs(
+        @Header("Authorization") token: String,
+        @Body body: RecruitmentJobsModel
+    ): SecondHandPostResponse
+
+    @GET("recruitment_jobs/employmentConfirm/check")
+    suspend fun checkConfirm(
+        @Header("Authorization") token: String,
+        @Query("recruitmentJobId") recruitmentJobId: Int
+    ): Boolean
+
+    @POST("recruitment_jobs/employmentConfirm")
+    suspend fun confirmRecruit(
+        @Header("Authorization") token: String,
+        @Query("recruitmentJobId") recruitmentJobId: Int
+    ): Response<Unit>
+
     @POST("recruitment_jobs/viewDetail")
     suspend fun getRecruitJobsDetail(
         @Header("Authorization") token: String,
@@ -473,5 +491,10 @@ interface ApiService {
     suspend fun getBannerCompany(
         @Header("Authorization") token: String,
         @Query("cType") cType: String,
+    ): ResponseModel<MutableList<BannerCompanyModel>>
+
+    @GET("banners/event/getAllActive")
+    suspend fun getBannerHome(
+        @Header("Authorization") token: String
     ): ResponseModel<MutableList<BannerCompanyModel>>
 }

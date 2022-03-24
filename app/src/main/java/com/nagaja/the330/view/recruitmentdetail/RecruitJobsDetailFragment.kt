@@ -70,6 +70,12 @@ class RecruitJobsDetailFragment : BaseFragment() {
         viewModel = getViewModelProvider(this)[RecruitJobsDetailVM::class.java]
         viewController = (activity as MainActivity).viewController
 
+        viewModel.callbackDelSuccess.observe(viewLifecycleOwner) {
+            viewController?.popFragment()
+        }
+        viewModel.callbackConfirmSuccess.observe(viewLifecycleOwner) {
+            viewController?.popFragment()
+        }
         viewModel.callbackStart.observe(viewLifecycleOwner) {
             showLoading()
         }
@@ -249,6 +255,7 @@ class RecruitJobsDetailFragment : BaseFragment() {
                         ColorUtils.white_FFFFFF
                     ) {
                         showMessDEBUG("CANCEL")
+                        viewModel.cancelPostRecruitJobs(accessToken!!)
                     }
                     ButtonFunction(
                         Modifier.weight(1f),
@@ -258,6 +265,7 @@ class RecruitJobsDetailFragment : BaseFragment() {
                         ColorUtils.white_FFFFFF
                     ) {
                         showMessDEBUG("CONFIRMATION_OF_EMPLOYMENT")
+                        viewModel.confirmRecruit(accessToken!!)
                     }
                 } else {
                     ButtonFunction(
