@@ -17,6 +17,14 @@ class HomeScreenVM(
     var token: String = ""
 
     //    val listCategoryState = mutableStateListOf<CategoryModel>()
+    val listPopularAreas = mutableStateListOf<DistrictModel>()
+    val listCity = mutableStateListOf<CityModel>()
+    val listDistrict = mutableStateListOf<DistrictModel>()
+
+    var popularAreaId: Int? = null
+    var cityId: Int? = null
+    var districtId: Int? = null
+
     val listCategoryState = mutableStateOf(mutableListOf<CategoryModel>())
     val statelistCompany = mutableStateListOf<CompanyRecommendModel>()
     val stateListBanner = mutableStateListOf<BannerCompanyModel>()
@@ -90,6 +98,48 @@ class HomeScreenVM(
                 .collect {
                     callbackSuccess.value = Unit
                     stateCompanyFooter.value = it
+                }
+        }
+    }
+
+    fun getCity(token: String) {
+        viewModelScope.launch {
+            repo.getCity(token)
+                .onStart { }
+                .onCompletion { }
+                .catch { }
+                .collect {
+                    it.content?.let { it1 -> listCity.addAll(it1) }
+                }
+        }
+    }
+
+    fun getDistrict(token: String, cityId: Int) {
+        viewModelScope.launch {
+            repo.getDistrict(token, cityId)
+                .onStart { }
+                .onCompletion { }
+                .catch { }
+                .collect {
+                    it.content?.let { it1 ->
+                        listDistrict.clear()
+                        listDistrict.addAll(it1)
+                    }
+                }
+        }
+    }
+
+    fun getPopularAreas(token: String) {
+        viewModelScope.launch {
+            repo.getPopularAreas(token)
+                .onStart { }
+                .onCompletion { }
+                .catch { }
+                .collect {
+                    it.content?.let { it1 ->
+                        listPopularAreas.clear()
+                        listPopularAreas.addAll(it1)
+                    }
                 }
         }
     }

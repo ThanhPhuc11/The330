@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -93,6 +94,8 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
                     registerFCM(viewModel)
                     viewModel.getBanner(accessToken)
                     viewModel.getConfigCompanyInfo(accessToken)
+                    viewModel.getPopularAreas(accessToken)
+                    viewModel.getCity(accessToken)
                 }
                 Lifecycle.Event.ON_STOP -> {
 
@@ -108,7 +111,8 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
 
     LayoutTheme330 {
         LogoAndSearch(viewController)
-        SearchFilter()
+        //TODO: Area Selection
+        AreaSelection(viewModel, accessToken)
         Column(
             Modifier
                 .fillMaxWidth()
@@ -500,6 +504,110 @@ private fun CompanyItemView(obj: CompanyRecommendModel) {
                 fontSize = 13.sp,
                 modifier = Modifier.padding(start = 4.dp)
             )
+        }
+    }
+}
+
+@Composable
+private fun AreaSelection(viewModel: HomeScreenVM, accessToken: String) {
+    Row(
+        Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 8.dp, bottom = 12.dp)
+            .fillMaxWidth()
+    ) {
+        BaseSeletion(
+            modifier = Modifier
+                .padding(end = 5.dp)
+                .weight(1f),
+            list = viewModel.listPopularAreas.map {
+                KeyValueModel(it.id.toString(), it.name?.getOrNull(0)?.name)
+            }.toMutableList(),
+            initValue = KeyValueModel(null, "인기지역"),
+            callback = {
+                viewModel.popularAreaId = it.id?.toInt()
+            }
+        )
+        BaseSeletion(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 5.dp),
+            list = viewModel.listCity.map {
+                KeyValueModel(it.id.toString(), it.name?.getOrNull(0)?.name)
+            }.toMutableList(),
+            initValue = KeyValueModel(null, "시/도"),
+            callback = {
+                it.id?.let { item ->
+                    viewModel.cityId = item.toInt()
+                    viewModel.getDistrict(accessToken, item.toInt())
+                }
+            }
+        )
+        BaseSeletion(
+            modifier = Modifier.weight(1f),
+            list = viewModel.listDistrict.map {
+                KeyValueModel(it.id.toString(), it.name?.getOrNull(0)?.name)
+            }.toMutableList(),
+            initValue = KeyValueModel("null", "구/군"),
+            callback = {
+                viewModel.popularAreaId = it.id?.toInt()
+            }
+        )
+    }
+}
+
+@Composable
+private fun BaseSeletion(
+    modifier: Modifier = Modifier,
+    list: MutableList<KeyValueModel>,
+    initValue: KeyValueModel,
+    callback: ((KeyValueModel) -> Unit)? = null
+) {
+    val options = list
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOptionText by remember { mutableStateOf(initValue) }
+    Row(
+        modifier = modifier
+            .noRippleClickable {
+                expanded = !expanded
+            }
+            .border(
+                width = 1.dp,
+                color = ColorUtils.blue_2177E4_opacity_10,
+                shape = RoundedCornerShape(4.dp)
+            )
+            .height(44.dp)
+            .padding(horizontal = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            selectedOptionText.name ?: "",
+            modifier = Modifier.weight(1f),
+            style = text14_222,
+            textAlign = TextAlign.Start
+        )
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_filter),
+            contentDescription = "",
+            Modifier.rotate(if (expanded) 180f else 0f)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+            }
+        ) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        selectedOptionText = selectionOption
+                        expanded = false
+                        callback?.invoke(selectionOption)
+                    }
+                ) {
+                    Text(text = selectionOption.name ?: "")
+                }
+            }
         }
     }
 }

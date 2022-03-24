@@ -24,4 +24,16 @@ class HomeScreenRepo(private val apiService: ApiService) {
     suspend fun getConfigCompanyInfo(token: String) = flow {
         emit(apiService.getConfigCompanyInfo(token))
     }
+
+    suspend fun getCity(token: String) = flow {
+        emit(apiService.getCity(token))
+    }
+
+    suspend fun getDistrict(token: String, cityId: Int) = flow {
+        emit(apiService.getDistrict(token, cityId))
+    }
+
+    suspend fun getPopularAreas(token: String) = flow {
+        emit(apiService.getPopularAreas(token))
+    }
 }
