@@ -296,7 +296,7 @@ class CompanyListFragment : BaseFragment() {
                         fontWeight = FontWeight.Black
                     )
                     //TODO: like button
-                    ButtonLike(true) {
+                    ButtonLike(obj.likedByMe ?: false) {
 
                     }
                 }

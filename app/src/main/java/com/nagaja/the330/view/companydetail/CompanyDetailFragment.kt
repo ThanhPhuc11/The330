@@ -373,12 +373,24 @@ class CompanyDetailFragment : BaseFragment() {
                 "${obj.city?.name?.getOrNull(0)?.name} ${obj.district?.name?.getOrNull(0)?.name}"
             )
             RowDataInfo("전화번호", "${obj.chargePhone}")
-            RowDataInfo("배달 여부", "delivery")
-            RowDataInfo("예약가능 여부", "${obj.reservationTime?.getOrNull(0)}")
-            RowDataInfo("픽업가능 여부", "pickup")
-            RowDataInfo("드랍가능 여부", "drop available")
+            RowDataInfo(
+                "배달 여부",
+                if (obj.serviceTypes?.contains(AppConstants.DELIVERY) == true) "가능" else "불가능"
+            )
+            RowDataInfo(
+                "예약가능 여부",
+                if (obj.serviceTypes?.contains(AppConstants.RESERVATION) == true) "가능" else "불가능"
+            )
+            RowDataInfo(
+                "픽업가능 여부",
+                if (obj.serviceTypes?.contains(AppConstants.PICKUP_DROP) == true) "가능" else "불가능"
+            )
+            RowDataInfo(
+                "드랍가능 여부",
+                if (obj.serviceTypes?.contains(AppConstants.PICKUP_DROP) == true) "가능" else "불가능"
+            )
             RowDataInfo("예약가능 인원", "${obj.reservationNumber}")
-            RowDataInfo("결제 수단", "${obj.paymentMethod}")
+            RowDataInfo("결제 수단", obj.paymentMethod ?: "")
         }
     }
 
