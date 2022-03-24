@@ -23,7 +23,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -37,12 +36,12 @@ import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.model.CompanyFavoriteModel
 import com.nagaja.the330.model.KeyValueModel
+import com.nagaja.the330.model.RoomDetailModel
 import com.nagaja.the330.model.SecondHandModel
-import com.nagaja.the330.utils.ColorUtils
-import com.nagaja.the330.utils.LoadmoreHandler
+import com.nagaja.the330.utils.*
 import com.nagaja.the330.view.*
+import com.nagaja.the330.view.chatdetail.ChatDetailFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -74,9 +73,6 @@ class SecondHandMypageFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
                         stateOptions.value = GetDummyData.getSortFavoriteCompany(context)
-                        accessToken?.let {
-                            viewModel.getMySecondHand(it, 0)
-                        }
                     }
                     Lifecycle.Event.ON_STOP -> {}
                     else -> {}
@@ -175,7 +171,25 @@ class SecondHandMypageFragment : BaseFragment() {
 
     @Composable
     private fun SecondHandPurchaseList() {
-        Column(Modifier.fillMaxHeight()) {
+        val owner = LocalLifecycleOwner.current
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+                        accessToken?.let {
+                            viewModel.getMySecondHand(it, 0)
+                        }
+                    }
+                    else -> {}
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
+
+        Column(Modifier.fillMaxSize()) {
             HandleSortUI()
 
             Spacer(
@@ -200,16 +214,38 @@ class SecondHandMypageFragment : BaseFragment() {
 
     @Composable
     private fun ConsultationList() {
-        Column(Modifier.fillMaxSize()) {
-            val listCompany = mutableListOf<CompanyFavoriteModel>().apply {
-                add(CompanyFavoriteModel())
-                add(CompanyFavoriteModel())
-                add(CompanyFavoriteModel())
-            }
-            LazyColumn(state = rememberLazyListState()) {
-                itemsIndexed(listCompany) { _, obj ->
-                    ConsultationItem()
+        val owner = LocalLifecycleOwner.current
+        DisposableEffect(Unit) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+                        viewModel.getChatList(accessToken!!, 0)
+                    }
+                    else -> {}
                 }
+            }
+            owner.lifecycle.addObserver(observer)
+            onDispose {
+                owner.lifecycle.removeObserver(observer)
+            }
+        }
+
+        Column(Modifier.fillMaxSize()) {
+            val listData = viewModel.stateListRoom
+            val lazyListState = rememberLazyListState()
+            LazyColumn(state = lazyListState) {
+                itemsIndexed(listData) { _, obj ->
+                    ConsultationItem(obj) {
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_CHAT_DETAIL,
+                            ChatDetailFragment.newInstance(roomId = obj.id, type = AppConstants.SECONDHAND)
+                        )
+                    }
+                }
+            }
+
+            LoadmoreHandler(lazyListState) { page ->
+                viewModel.getChatList(accessToken!!, page)
             }
         }
     }
@@ -350,18 +386,21 @@ class SecondHandMypageFragment : BaseFragment() {
         }
     }
 
-    @Preview
+    //    @Preview
     @Composable
-    private fun ConsultationItem() {
+    private fun ConsultationItem(obj: RoomDetailModel, onClick: () -> Unit) {
         Column(
             Modifier
                 .padding(horizontal = 16.dp)
                 .padding(top = 16.dp)
                 .background(ColorUtils.white_FFFFFF)
                 .fillMaxWidth()
+                .noRippleClickable {
+                    onClick()
+                }
         ) {
             Text(
-                "게시글제목 게시글제목 게시글제목",
+                "${obj.secondHand?.title}",
                 color = ColorUtils.gray_222222,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Black
@@ -373,14 +412,26 @@ class SecondHandMypageFragment : BaseFragment() {
                 fontSize = 12.sp
             )
             Text(
-                "금액 조정 가능할까요?! 금액 조정 가능할까요?! 금액 조정 가능할까요?!금액 조정 가능할까요?!금액 조정 가능할까요?!",
+                "${obj.lastMessage?.message}",
                 modifier = Modifier.padding(top = 5.dp),
                 style = text14_62,
                 textAlign = TextAlign.Start
             )
             Text(
-                "{YYYY/MM/DD(최초 대화일시)}\n" +
-                        "{YYYY/MM/DD(최종 대화일시)}",
+                "{${
+                    AppDateUtils.changeDateFormat(
+                        AppDateUtils.FORMAT_7,
+                        AppDateUtils.FORMAT_23,
+                        obj.createdOn ?: ""
+                    )
+                }(최초 대화일시)}\n" +
+                        "{${
+                            AppDateUtils.changeDateFormat(
+                                AppDateUtils.FORMAT_7,
+                                AppDateUtils.FORMAT_23,
+                                obj.createdOn ?: ""
+                            )
+                        }(최종 대화일시)}",
                 modifier = Modifier.padding(top = 5.dp),
                 color = ColorUtils.gray_9F9F9F,
                 fontSize = 12.sp

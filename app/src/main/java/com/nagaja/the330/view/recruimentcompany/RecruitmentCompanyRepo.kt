@@ -1,13 +1,12 @@
-package com.nagaja.the330.view.secondhandmypage
+package com.nagaja.the330.view.recruimentcompany
 
 import com.nagaja.the330.network.ApiService
 import kotlinx.coroutines.flow.flow
 
-class SecondHandMypageRepo(private val apiService: ApiService) {
-    suspend fun getMySecondHand(token: String, page: Int, size: Int, sort: String?, transactionStatus: String?) = flow {
-        emit(apiService.getMySecondHand(token, page, size, sort, transactionStatus))
+class RecruitmentCompanyRepo(private val apiService: ApiService) {
+    suspend fun getRecruitmentMypage(token: String, page: Int, size: Int, timeLimit: String) = flow {
+        emit(apiService.getRecruitmentMypage(token, page, size, timeLimit))
     }
-
     suspend fun getChatList(
         token: String,
         page: Int,

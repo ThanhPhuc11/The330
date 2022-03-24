@@ -59,17 +59,23 @@ class ChatDetailFragment : BaseFragment() {
     private lateinit var database: DatabaseReference
 
     companion object {
-        fun newInstance(partnerId: Int? = null, roomId: Int? = null) = ChatDetailFragment().apply {
-            arguments = Bundle().apply {
-                partnerId?.let { putInt(AppConstants.EXTRA_KEY1, it) }
-                roomId?.let { putInt(AppConstants.EXTRA_KEY2, it) }
-            }
-        }
+//        fun newInstance(partnerId: Int? = null, roomId: Int? = null) = ChatDetailFragment().apply {
+//            arguments = Bundle().apply {
+//                partnerId?.let { putInt(AppConstants.EXTRA_KEY1, it) }
+//                roomId?.let { putInt(AppConstants.EXTRA_KEY2, it) }
+//            }
+//        }
 
-        fun newInstance(type: String? = null, postId: String? = null, partnerId: Int? = null) =
+        fun newInstance(
+            type: String? = null,
+            postId: String? = null,
+            partnerId: Int? = null,
+            roomId: Int? = null
+        ) =
             ChatDetailFragment().apply {
                 arguments = Bundle().apply {
                     partnerId?.let { putInt(AppConstants.EXTRA_KEY1, it) }
+                    roomId?.let { putInt(AppConstants.EXTRA_KEY2, it) }
                     type?.let { putString(AppConstants.EXTRA_KEY3, it) }
                     postId?.let { putString(AppConstants.EXTRA_KEY4, it) }
                 }
@@ -95,38 +101,39 @@ class ChatDetailFragment : BaseFragment() {
                         roomId = requireArguments().getInt(AppConstants.EXTRA_KEY2, -1)
                         type = requireArguments().getString(AppConstants.EXTRA_KEY3)
                         postId = requireArguments().getString(AppConstants.EXTRA_KEY4)
-                        when (type) {
-                            AppConstants.RECRUITMENT -> {
-                                viewModel.startChat(
-                                    accessToken!!,
-                                    StartChatRequest().apply {
-                                        userId = partnerId
-                                        recruitmentId = postId
-                                    }
-                                )
-                            }
+                        if (roomId != null && roomId!! > 0) {
+                            viewModel.startChatByRoomId(
+                                accessToken!!,
+                                roomId!!
+                            )
+                        } else {
+                            when (type) {
+                                AppConstants.RECRUITMENT -> {
+                                    viewModel.startChat(
+                                        accessToken!!,
+                                        StartChatRequest().apply {
+                                            userId = partnerId
+                                            recruitmentId = postId
+                                        }
+                                    )
+                                }
 
-                            AppConstants.SECONDHAND -> {
-                                viewModel.startChat(
-                                    accessToken!!,
-                                    StartChatRequest().apply {
-                                        userId = partnerId
-                                        secondHandPostId = postId
-                                    }
-                                )
-                            }
+                                AppConstants.SECONDHAND -> {
+                                    viewModel.startChat(
+                                        accessToken!!,
+                                        StartChatRequest().apply {
+                                            userId = partnerId
+                                            secondHandPostId = postId
+                                        }
+                                    )
+                                }
 
-                            else -> {
-                                if (partnerId != null && partnerId != -1) {
+                                else -> {
+//                                    if (partnerId != null && partnerId != -1) {
                                     viewModel.startChat(
                                         accessToken!!,
                                         StartChatRequest().apply { userId = partnerId })
-                                }
-                                if (roomId != null && roomId != -1) {
-                                    viewModel.startChatByRoomId(
-                                        accessToken!!,
-                                        roomId!!
-                                    )
+//                                    }
                                 }
                             }
                         }

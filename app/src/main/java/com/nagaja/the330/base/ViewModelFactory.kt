@@ -57,6 +57,8 @@ import com.nagaja.the330.view.othersetting.OtherSettingRepo
 import com.nagaja.the330.view.othersetting.OtherSettingVM
 import com.nagaja.the330.view.point.PointRepo
 import com.nagaja.the330.view.point.PointVM
+import com.nagaja.the330.view.recruimentcompany.RecruitmentCompanyRepo
+import com.nagaja.the330.view.recruimentcompany.RecruitmentCompanyVM
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchRepo
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchVM
 import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailRepo
@@ -176,6 +178,8 @@ class ViewModelFactory(apiService: ApiService) :
             RecruitJobsDetailVM(RecruitJobsDetailRepo(apiService))
         creators[RecruitJobRegisVM::class.java] =
             RecruitJobRegisVM(RecruitJobRegisRepo(apiService))
+        creators[RecruitmentCompanyVM::class.java] =
+            RecruitmentCompanyVM(RecruitmentCompanyRepo(apiService))
         creators[ReservationVM::class.java] =
             ReservationVM(ReservationRepo(apiService))
         creators[ReservationCompanyVM::class.java] =

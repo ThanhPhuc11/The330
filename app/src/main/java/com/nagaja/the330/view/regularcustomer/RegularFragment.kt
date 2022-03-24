@@ -153,7 +153,7 @@ class RegularFragment : BaseFragment() {
                     HandleSortUI(
                         context = context,
                         GetDummyData.getSortFavoriteCompany(context = context)
-                    )
+                    ) {}
                 }
             }
             Divider(color = ColorUtils.gray_E1E1E1)
@@ -218,7 +218,7 @@ class RegularFragment : BaseFragment() {
                     HandleSortUI(
                         context = context,
                         GetDummyData.getSortFavoriteCompany(context = context)
-                    )
+                    ) {}
                 }
             }
             Divider(color = ColorUtils.gray_E1E1E1)

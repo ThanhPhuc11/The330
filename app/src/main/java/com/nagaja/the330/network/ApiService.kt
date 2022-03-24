@@ -292,6 +292,14 @@ interface ApiService {
         @Query("all") all: String?,
     ): ResponseModel<MutableList<RecruitmentJobsModel>>
 
+    @GET("recruitment_jobs/in_my_page")
+    suspend fun getRecruitmentMypage(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("timeLimit") timeLimit : String,
+    ): ResponseModel<MutableList<RecruitmentJobsModel>>
+
     @GET("recruitment_jobs/checkExistJobSearch")
     suspend fun checkExistJobSearch(
         @Header("Authorization") token: String,
