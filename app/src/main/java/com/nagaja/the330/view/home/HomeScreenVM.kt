@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
+import com.nagaja.the330.model.BannerCompanyModel
 import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.CompanyRecommendModel
 import com.nagaja.the330.model.TokenFCMRequest
@@ -20,6 +21,7 @@ class HomeScreenVM(
     //    val listCategoryState = mutableStateListOf<CategoryModel>()
     val listCategoryState = mutableStateOf(mutableListOf<CategoryModel>())
     val statelistCompany = mutableStateListOf<CompanyRecommendModel>()
+    val stateListBanner = mutableStateListOf<BannerCompanyModel>()
     fun getCategory(token: String, group: String?) {
         viewModelScope.launch {
             repo.getCategory(token, group)
@@ -63,6 +65,19 @@ class HomeScreenVM(
                     if (it.raw().isSuccessful && it.raw().code == 201) {
                         callbackSuccess.value = Unit
                     }
+                }
+        }
+    }
+
+    fun getBanner(token: String) {
+        viewModelScope.launch {
+            repo.getBanner(token)
+                .onStart { callbackStart.value = Unit }
+                .onCompletion { }
+                .catch { handleError(it) }
+                .collect {
+                    callbackSuccess.value = Unit
+                    it.content?.let { it1 -> stateListBanner.addAll(it1) }
                 }
         }
     }

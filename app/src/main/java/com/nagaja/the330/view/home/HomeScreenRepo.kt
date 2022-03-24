@@ -17,4 +17,7 @@ class HomeScreenRepo(private val apiService: ApiService) {
         emit(apiService.registerFCM(token, tokenFCM))
     }
 
+    suspend fun getBanner(token: String) = flow {
+        emit(apiService.getBannerHome(token))
+    }
 }

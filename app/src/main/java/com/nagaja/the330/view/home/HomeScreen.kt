@@ -28,6 +28,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.rememberPagerState
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.nagaja.the330.BuildConfig
@@ -58,6 +62,7 @@ import com.nagaja.the330.view.secondhandmarket.SecondHandMarketFragment
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HomeScreen(accessToken: String, viewController: ViewController?) {
     val context = LocalContext.current
@@ -82,6 +87,7 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
                     viewModel.getCategory(accessToken, null)
                     viewModel.getCompanyRecommendAds(accessToken)
                     registerFCM(viewModel)
+                    viewModel.getBanner(accessToken)
                 }
                 Lifecycle.Event.ON_STOP -> {
 
@@ -106,7 +112,29 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
         ) {
             CategoryMain(viewModel, viewController)
             ExchangeDollar()
-            BannerEvent(viewController = viewController)
+            val pagerState = rememberPagerState(
+                pageCount = viewModel.stateListBanner.size
+            )
+            HorizontalPager(state = pagerState) { page ->
+                GlideImage(
+                    imageModel = "${BuildConfig.BASE_S3}${
+                        viewModel.stateListBanner.getOrNull(page)?.images?.getOrNull(
+                            0
+                        )?.url ?: ""
+                    }",
+                    contentDescription = null,
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp)
+                        .noRippleClickable {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_ON_GOING_EVENTS,
+                                OnGoingEventsFragment.newInstance()
+                            )
+                        }
+                )
+            }
             Row(
                 Modifier
                     .padding(top = 22.dp, bottom = 8.dp)
@@ -400,24 +428,6 @@ private fun MoneyValue(
             fontWeight = FontWeight.Bold
         )
     }
-}
-
-@Composable
-private fun BannerEvent(viewController: ViewController?) {
-    Image(
-        painter = painterResource(R.drawable.banner_ads),
-        contentDescription = null,
-        contentScale = ContentScale.FillWidth,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(180.dp)
-            .noRippleClickable {
-                viewController?.pushFragment(
-                    ScreenId.SCREEN_ON_GOING_EVENTS,
-                    OnGoingEventsFragment.newInstance()
-                )
-            }
-    )
 }
 
 @Composable
