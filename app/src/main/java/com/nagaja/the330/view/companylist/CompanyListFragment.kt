@@ -296,21 +296,21 @@ class CompanyListFragment : BaseFragment() {
                         fontWeight = FontWeight.Black
                     )
                     //TODO: like button
-                    ButtonLike(true) {
+                    ButtonLike(obj.likedByMe ?: false) {
 
                     }
                 }
                 Text(
                     "배달 불가능/ 예약 가능 (오늘마감)",
                     modifier = Modifier.padding(top = 7.dp),
-                    color = ColorUtils.gray_626262,
-                    fontSize = 14.sp
+                    color = ColorUtils.gray_222222,
+                    fontSize = 12.sp
                 )
                 Text(
                     "픽업 가능 / 드랍 불가능",
                     modifier = Modifier.padding(top = 3.dp),
-                    color = ColorUtils.gray_626262,
-                    fontSize = 14.sp
+                    color = ColorUtils.gray_222222,
+                    fontSize = 12.sp
                 )
                 Box(
                     Modifier

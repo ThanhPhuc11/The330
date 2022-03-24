@@ -13,14 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Divider
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -48,8 +40,6 @@ import androidx.compose.ui.window.DialogProperties
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
-import com.nagaja.the330.data.GetDummyData
-import com.nagaja.the330.model.CompanyUsageModel
 import com.nagaja.the330.model.KeyValueModel
 import com.nagaja.the330.utils.ColorUtils
 
@@ -731,7 +721,7 @@ fun TabSelected(
 }
 
 @Composable
-fun HandleSortUI(context: Context, ft : MutableList<KeyValueModel>) {
+fun HandleSortUI(context: Context, ft: MutableList<KeyValueModel>, onClick: (KeyValueModel) -> Unit) {
     val filters = remember { ft }
     var expanded by remember { mutableStateOf(false) }
     val itemSelected = remember { mutableStateOf(filters[0]) }
@@ -765,8 +755,10 @@ fun HandleSortUI(context: Context, ft : MutableList<KeyValueModel>) {
                     onClick = {
                         itemSelected.value = option
                         expanded = false
+                        onClick.invoke(option)
                         if (BuildConfig.DEBUG)
-                            Toast.makeText(context, "${itemSelected.value.id}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "${itemSelected.value.id}", Toast.LENGTH_LONG)
+                                .show()
                     }
                 ) {
                     option.name?.let { Text(text = it) }

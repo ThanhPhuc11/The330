@@ -47,4 +47,8 @@ class BannerCompanyModel {
     @SerializedName("ctype")
     @Expose
     var ctype: String? = null
+
+    var body: String? = null
+    var viewCount: Int? = null
+    var activated: Boolean? = null
 }

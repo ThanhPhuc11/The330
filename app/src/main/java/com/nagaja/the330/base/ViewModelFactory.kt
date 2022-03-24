@@ -24,7 +24,7 @@ import com.nagaja.the330.view.edit_profile.EditProfileVM
 import com.nagaja.the330.view.editcompany.EditCompanyRepo
 import com.nagaja.the330.view.editcompany.EditCompanyVM
 import com.nagaja.the330.view.event.EventRepo
-import com.nagaja.the330.view.event.EventViewModel
+import com.nagaja.the330.view.event.EventVM
 import com.nagaja.the330.view.faq.FAQRepo
 import com.nagaja.the330.view.faq.FAQViewModel
 import com.nagaja.the330.view.favoritecompany.FavCompanyRepo
@@ -57,6 +57,8 @@ import com.nagaja.the330.view.othersetting.OtherSettingRepo
 import com.nagaja.the330.view.othersetting.OtherSettingVM
 import com.nagaja.the330.view.point.PointRepo
 import com.nagaja.the330.view.point.PointVM
+import com.nagaja.the330.view.recruimentcompany.RecruitmentCompanyRepo
+import com.nagaja.the330.view.recruimentcompany.RecruitmentCompanyVM
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchRepo
 import com.nagaja.the330.view.recruitment.RecruitmentJobSearchVM
 import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailRepo
@@ -176,6 +178,8 @@ class ViewModelFactory(apiService: ApiService) :
             RecruitJobsDetailVM(RecruitJobsDetailRepo(apiService))
         creators[RecruitJobRegisVM::class.java] =
             RecruitJobRegisVM(RecruitJobRegisRepo(apiService))
+        creators[RecruitmentCompanyVM::class.java] =
+            RecruitmentCompanyVM(RecruitmentCompanyRepo(apiService))
         creators[ReservationVM::class.java] =
             ReservationVM(ReservationRepo(apiService))
         creators[ReservationCompanyVM::class.java] =
@@ -190,8 +194,8 @@ class ViewModelFactory(apiService: ApiService) :
             FAQViewModel(FAQRepo(apiService))
         creators[NotificationVM::class.java] =
             NotificationVM(NotificationRepo(apiService))
-        creators[EventViewModel::class.java] =
-            EventViewModel(EventRepo(apiService))
+        creators[EventVM::class.java] =
+            EventVM(EventRepo(apiService))
         creators[ChatListVM::class.java] =
             ChatListVM(ChatListRepo(apiService))
         creators[ChatDetailVM::class.java] =

@@ -27,6 +27,7 @@ class CompanyModel {
     var fileTemp: FileModel? = null
     var products: MutableList<ProductModel>? = null
     var likedCount: Int? = null
+    var likedByMe: Boolean? = null
     var numberRecommend: Int? = null
     var pointCharge: Int? = null
     var pointRemain: Int? = null

@@ -1,16 +1,21 @@
 package com.nagaja.the330.view.home
 
 import android.util.Log
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
@@ -18,6 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,6 +34,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.nagaja.the330.BuildConfig
@@ -58,6 +67,7 @@ import com.nagaja.the330.view.secondhandmarket.SecondHandMarketFragment
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HomeScreen(accessToken: String, viewController: ViewController?) {
     val context = LocalContext.current
@@ -82,6 +92,10 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
                     viewModel.getCategory(accessToken, null)
                     viewModel.getCompanyRecommendAds(accessToken)
                     registerFCM(viewModel)
+                    viewModel.getBanner(accessToken)
+                    viewModel.getConfigCompanyInfo(accessToken)
+                    viewModel.getPopularAreas(accessToken)
+                    viewModel.getCity(accessToken)
                 }
                 Lifecycle.Event.ON_STOP -> {
 
@@ -97,7 +111,8 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
 
     LayoutTheme330 {
         LogoAndSearch(viewController)
-        SearchFilter()
+        //TODO: Area Selection
+        AreaSelection(viewModel, accessToken)
         Column(
             Modifier
                 .fillMaxWidth()
@@ -106,7 +121,29 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
         ) {
             CategoryMain(viewModel, viewController)
             ExchangeDollar()
-            BannerEvent(viewController = viewController)
+            val pagerState = rememberPagerState(
+                pageCount = viewModel.stateListBanner.size
+            )
+            HorizontalPager(state = pagerState) { page ->
+                GlideImage(
+                    imageModel = "${BuildConfig.BASE_S3}${
+                        viewModel.stateListBanner.getOrNull(page)?.images?.getOrNull(
+                            0
+                        )?.url ?: ""
+                    }",
+                    contentDescription = null,
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp)
+                        .noRippleClickable {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_ON_GOING_EVENTS,
+                                OnGoingEventsFragment.newInstance()
+                            )
+                        }
+                )
+            }
             Row(
                 Modifier
                     .padding(top = 22.dp, bottom = 8.dp)
@@ -128,6 +165,8 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
                 )
             }
             ListCompanyRecommended(viewModel)
+
+            Footer(viewModel)
         }
 
     }
@@ -403,24 +442,6 @@ private fun MoneyValue(
 }
 
 @Composable
-private fun BannerEvent(viewController: ViewController?) {
-    Image(
-        painter = painterResource(R.drawable.banner_ads),
-        contentDescription = null,
-        contentScale = ContentScale.FillWidth,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(180.dp)
-            .noRippleClickable {
-                viewController?.pushFragment(
-                    ScreenId.SCREEN_ON_GOING_EVENTS,
-                    OnGoingEventsFragment.newInstance()
-                )
-            }
-    )
-}
-
-@Composable
 private fun ListCompanyRecommended(viewModel: HomeScreenVM) {
     val listData = viewModel.statelistCompany
     LazyRow(state = rememberLazyListState()) {
@@ -486,6 +507,192 @@ private fun CompanyItemView(obj: CompanyRecommendModel) {
         }
     }
 }
+
+@Composable
+private fun AreaSelection(viewModel: HomeScreenVM, accessToken: String) {
+    Row(
+        Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 8.dp, bottom = 12.dp)
+            .fillMaxWidth()
+    ) {
+        BaseSeletion(
+            modifier = Modifier
+                .padding(end = 5.dp)
+                .weight(1f),
+            list = viewModel.listPopularAreas.map {
+                KeyValueModel(it.id.toString(), it.name?.getOrNull(0)?.name)
+            }.toMutableList(),
+            initValue = KeyValueModel(null, "인기지역"),
+            callback = {
+                viewModel.popularAreaId = it.id?.toInt()
+            }
+        )
+        BaseSeletion(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 5.dp),
+            list = viewModel.listCity.map {
+                KeyValueModel(it.id.toString(), it.name?.getOrNull(0)?.name)
+            }.toMutableList(),
+            initValue = KeyValueModel(null, "시/도"),
+            callback = {
+                it.id?.let { item ->
+                    viewModel.cityId = item.toInt()
+                    viewModel.getDistrict(accessToken, item.toInt())
+                }
+            }
+        )
+        BaseSeletion(
+            modifier = Modifier.weight(1f),
+            list = viewModel.listDistrict.map {
+                KeyValueModel(it.id.toString(), it.name?.getOrNull(0)?.name)
+            }.toMutableList(),
+            initValue = KeyValueModel("null", "구/군"),
+            callback = {
+                viewModel.popularAreaId = it.id?.toInt()
+            }
+        )
+    }
+}
+
+@Composable
+private fun BaseSeletion(
+    modifier: Modifier = Modifier,
+    list: MutableList<KeyValueModel>,
+    initValue: KeyValueModel,
+    callback: ((KeyValueModel) -> Unit)? = null
+) {
+    val options = list
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOptionText by remember { mutableStateOf(initValue) }
+    Row(
+        modifier = modifier
+            .noRippleClickable {
+                expanded = !expanded
+            }
+            .border(
+                width = 1.dp,
+                color = ColorUtils.blue_2177E4_opacity_10,
+                shape = RoundedCornerShape(4.dp)
+            )
+            .height(44.dp)
+            .padding(horizontal = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            selectedOptionText.name ?: "",
+            modifier = Modifier.weight(1f),
+            style = text14_222,
+            textAlign = TextAlign.Start
+        )
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_filter),
+            contentDescription = "",
+            Modifier.rotate(if (expanded) 180f else 0f)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+            }
+        ) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        selectedOptionText = selectionOption
+                        expanded = false
+                        callback?.invoke(selectionOption)
+                    }
+                ) {
+                    Text(text = selectionOption.name ?: "")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Footer(viewModel: HomeScreenVM) {
+    val obj = viewModel.stateCompanyFooter.value
+    var expanded by remember { mutableStateOf(false) }
+    Column(
+        Modifier
+            .padding(top = 60.dp)
+            .fillMaxWidth()
+            .background(ColorUtils.gray_616161)
+            .padding(horizontal = 16.dp, vertical = 20.dp)
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMediumLow
+                )
+            )
+            .noRippleClickable {
+                expanded = !expanded
+            }
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "(주)${obj.companyName}",
+                color = ColorUtils.white_FFFFFF,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                "사업자 정보",
+                color = ColorUtils.white_FFFFFF,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium
+            )
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_down),
+                contentDescription = "",
+                colorFilter = ColorFilter.tint(ColorUtils.white_FFFFFF),
+                modifier = Modifier.size(12.dp, 7.dp),
+            )
+        }
+        if (expanded) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+            ) {
+                Column(Modifier.padding(end = 12.dp)) {
+                    Text("대표이사", style = styleLable, modifier = Modifier.alpha(0.5f))
+                    Text("사업자 등록 번호", style = styleLable, modifier = Modifier.alpha(0.5f))
+                    Text("통신판매업신고", style = styleLable, modifier = Modifier.alpha(0.5f))
+                    Text("주소", style = styleLable, modifier = Modifier.alpha(0.5f))
+                    Text("대표전화", style = styleLable, modifier = Modifier.alpha(0.5f))
+                    Text("이메일", style = styleLable, modifier = Modifier.alpha(0.5f))
+                }
+                Column(Modifier.weight(1f)) {
+                    Text("${obj.ceo}", style = styleLable)
+                    Text("${obj.companyRegisterNumber}", style = styleLable)
+                    Text("${obj.mailOrderBusinessReport}", style = styleLable)
+                    Text("${obj.address}", style = styleLable)
+                    Text("${obj.mainPhone}", style = styleLable)
+                    Text("${obj.email}", style = styleLable)
+                }
+            }
+        }
+
+        Row(Modifier.padding(top = 16.dp)) {
+            Text("이용약관", style = styleLable)
+            Text("개인정보 취급방침", style = styleLable, modifier = Modifier.padding(start = 20.dp))
+        }
+    }
+}
+
+val styleLable = TextStyle(
+    color = ColorUtils.white_FFFFFF,
+    fontSize = 11.sp,
+)
 
 private fun registerFCM(viewModel: HomeScreenVM) {
     FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->

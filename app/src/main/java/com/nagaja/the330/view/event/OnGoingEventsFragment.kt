@@ -3,46 +3,55 @@ package com.nagaja.the330.view.event
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.*
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.bumptech.glide.request.RequestOptions
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
-import com.nagaja.the330.model.EventModel
-import com.nagaja.the330.ui.theme.The330Theme
+import com.nagaja.the330.model.BannerCompanyModel
 import com.nagaja.the330.ui.theme.textBold18
 import com.nagaja.the330.ui.theme.textRegular12
+import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ColorUtils.gray_00000D
 import com.nagaja.the330.utils.ColorUtils.white_FFFFFF
+import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.view.Header
-import com.skydoves.landscapist.glide.GlideImage
+import com.nagaja.the330.view.LayoutTheme330
 
 class OnGoingEventsFragment : BaseFragment() {
-    private lateinit var viewModel: EventViewModel
+    private lateinit var viewModel: EventVM
 
     companion object {
         fun newInstance() = OnGoingEventsFragment()
     }
 
     override fun SetupViewModel() {
-        viewModel = getViewModelProvider(this)[EventViewModel::class.java]
+        viewModel = getViewModelProvider(this)[EventVM::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
@@ -55,7 +64,9 @@ class OnGoingEventsFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        accessToken?.let {  }
+                        accessToken?.let {
+                            viewModel.getEvent(accessToken!!, 0)
+                        }
                     }
                     else -> {}
                 }
@@ -66,24 +77,24 @@ class OnGoingEventsFragment : BaseFragment() {
             }
         }
 
-        The330Theme{
+        LayoutTheme330 {
             Column {
                 Header(stringResource(R.string.title_on_going_events)) {
                     viewController?.popFragment()
                 }
                 Box(
                     Modifier.background(white_FFFFFF)
-                ){
-                    val eventList: List<EventModel> = List(1000) {
-                        EventModel().apply {
-                            id = it
-                            title = "나가자 할로윈 특가! $it"
-                            content = ("이벤트 게시물 내용이 작성되는 페이지 입니다.\n").repeat(4)
-                            viewCount = 100
-                            createdOn = "2021.10.18"
+                ) {
+                    val listData = viewModel.stateListEvent
+                    val lazyListState = rememberLazyListState()
+                    LazyColumn(state = lazyListState) {
+                        items(items = listData) { item ->
+                            ItemEvent(event = item)
                         }
                     }
-                    EventList(list = eventList)
+                    LoadmoreHandler(lazyListState) { page ->
+                        viewModel.getEvent(accessToken!!, page)
+                    }
                 }
             }
         }
@@ -91,16 +102,12 @@ class OnGoingEventsFragment : BaseFragment() {
 }
 
 @Composable
-private fun EventList(list: List<EventModel>) {
-    LazyColumn(state = rememberLazyListState()){
-        items(items = list) { item ->
-            Event(event = item)
-        }
-    }
+private fun EventList(list: SnapshotStateList<BannerCompanyModel>) {
+
 }
 
 @Composable
-private fun Event(event: EventModel) {
+private fun ItemEvent(event: BannerCompanyModel) {
     Column(
         modifier = Modifier
             .background(white_FFFFFF)
@@ -116,7 +123,7 @@ private fun Event(event: EventModel) {
 }
 
 @Composable
-private fun CardContent(event: EventModel) {
+private fun CardContent(event: BannerCompanyModel) {
     var expanded by remember { mutableStateOf(false) }
 
     Row(
@@ -136,25 +143,37 @@ private fun CardContent(event: EventModel) {
                 style = textBold18
             )
             Row(
-                Modifier.padding(top = 5.dp, bottom = 16.dp)
+                Modifier.padding(top = 5.dp, bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = event.createdOn as String,
+                    text = AppDateUtils.changeDateFormat(
+                        AppDateUtils.FORMAT_16,
+                        AppDateUtils.FORMAT_15,
+                        event.createdOn ?: ""
+                    ),
                     style = textRegular12
                 )
-                Text(
-                    text = "·",
-                    style = textRegular12
+                Image(
+                    painter = painterResource(R.drawable.ic_dot),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .size(2.dp),
+                    colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
                 )
                 Text(
-                    text = event.viewCount.toString(),
+                    text = "조회수 ${event.viewCount ?: 0}",
                     style = textRegular12
                 )
             }
             if (expanded) {
                 Column {
                     Text(
-                        text = event.content as String,
+                        text = HtmlCompat.fromHtml(
+                            event.body ?: "",
+                            HtmlCompat.FROM_HTML_MODE_LEGACY
+                        ).toString(),
                         Modifier.padding(bottom = 16.dp)
                     )
                 }
