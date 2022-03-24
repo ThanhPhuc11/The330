@@ -497,4 +497,17 @@ interface ApiService {
     suspend fun getBannerHome(
         @Header("Authorization") token: String
     ): ResponseModel<MutableList<BannerCompanyModel>>
+
+    @GET("event_notices")
+    suspend fun getEvent(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+    ): ResponseModel<MutableList<BannerCompanyModel>>
+
+    @GET("event_notices/detail")
+    suspend fun getEventDetail(
+        @Header("Authorization") token: String,
+        @Query("id") id: Int
+    ): ResponseModel<MutableList<BannerCompanyModel>>
 }

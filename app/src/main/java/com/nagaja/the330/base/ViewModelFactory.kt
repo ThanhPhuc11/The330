@@ -24,7 +24,7 @@ import com.nagaja.the330.view.edit_profile.EditProfileVM
 import com.nagaja.the330.view.editcompany.EditCompanyRepo
 import com.nagaja.the330.view.editcompany.EditCompanyVM
 import com.nagaja.the330.view.event.EventRepo
-import com.nagaja.the330.view.event.EventViewModel
+import com.nagaja.the330.view.event.EventVM
 import com.nagaja.the330.view.faq.FAQRepo
 import com.nagaja.the330.view.faq.FAQViewModel
 import com.nagaja.the330.view.favoritecompany.FavCompanyRepo
@@ -194,8 +194,8 @@ class ViewModelFactory(apiService: ApiService) :
             FAQViewModel(FAQRepo(apiService))
         creators[NotificationVM::class.java] =
             NotificationVM(NotificationRepo(apiService))
-        creators[EventViewModel::class.java] =
-            EventViewModel(EventRepo(apiService))
+        creators[EventVM::class.java] =
+            EventVM(EventRepo(apiService))
         creators[ChatListVM::class.java] =
             ChatListVM(ChatListRepo(apiService))
         creators[ChatDetailVM::class.java] =
