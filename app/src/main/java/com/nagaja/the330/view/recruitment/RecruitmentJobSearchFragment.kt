@@ -142,13 +142,18 @@ class RecruitmentJobSearchFragment : BaseFragment() {
                 },
                 textOption = stringResource(R.string.post_register),
                 clickOption = {
-                    if (viewModel.type == AppConstants.JOB_SEARCH) {
-                        viewModel.checkExistJobSearch(accessToken!!)
-                    } else
-                        viewController?.pushFragment(
-                            ScreenId.SCREEN_RECRUITMENT_JOBSEARCH_REGIS,
-                            RecruitJobRegisFragment.newInstance(viewModel.type)
-                        )
+                    if (userDetailBase?.userType == AppConstants.COMPANY) {
+                        if (viewModel.type == AppConstants.RECRUITMENT) {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_RECRUITMENT_JOBSEARCH_REGIS,
+                                RecruitJobRegisFragment.newInstance(viewModel.type)
+                            )
+                        }
+                    } else {
+                        if (viewModel.type == AppConstants.JOB_SEARCH) {
+                            viewModel.checkExistJobSearch(accessToken!!)
+                        }
+                    }
                 }
             )
             Row(

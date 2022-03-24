@@ -67,8 +67,12 @@ class ReservationRegisVM(
                     handleError(it)
                 }
                 .collect {
-                    callbackSuccess.value = Unit
-                    callbackMakeReservationSuccess.value = true
+                    if (it.raw().isSuccessful && it.raw().code == 200) {
+                        callbackSuccess.value = Unit
+                        callbackMakeReservationSuccess.value = true
+                    } else {
+                        handleError2(it)
+                    }
                 }
         }
     }
