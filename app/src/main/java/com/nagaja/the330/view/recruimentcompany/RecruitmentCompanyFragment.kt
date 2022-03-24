@@ -302,7 +302,7 @@ class RecruitmentCompanyFragment : BaseFragment() {
                 fontWeight = FontWeight.Black
             )
             Text(
-                "mintkim",
+                "${obj.target?.name}",
                 modifier = Modifier.padding(top = 5.dp),
                 color = ColorUtils.gray_9F9F9F,
                 fontSize = 12.sp
