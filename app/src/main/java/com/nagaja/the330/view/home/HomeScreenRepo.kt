@@ -20,4 +20,8 @@ class HomeScreenRepo(private val apiService: ApiService) {
     suspend fun getBanner(token: String) = flow {
         emit(apiService.getBannerHome(token))
     }
+
+    suspend fun getConfigCompanyInfo(token: String) = flow {
+        emit(apiService.getConfigCompanyInfo(token))
+    }
 }

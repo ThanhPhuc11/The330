@@ -297,7 +297,7 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("page") page: Int,
         @Query("size") size: Int,
-        @Query("timeLimit") timeLimit : String,
+        @Query("timeLimit") timeLimit: String,
     ): ResponseModel<MutableList<RecruitmentJobsModel>>
 
     @GET("recruitment_jobs/checkExistJobSearch")
@@ -510,4 +510,9 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("id") id: Int
     ): ResponseModel<MutableList<BannerCompanyModel>>
+
+    @GET("config/info")
+    suspend fun getConfigCompanyInfo(
+        @Header("Authorization") token: String,
+    ): CompanyConfigInfo
 }
