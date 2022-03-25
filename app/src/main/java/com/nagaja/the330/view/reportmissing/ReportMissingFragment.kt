@@ -276,7 +276,7 @@ class ReportMissingFragment : BaseFragment() {
         ) {
             val listCompany = viewModel.stateListDataMissing
             val lazyListState = rememberLazyListState()
-            LazyColumn(state = rememberLazyListState()) {
+            LazyColumn(state = lazyListState) {
                 itemsIndexed(listCompany) { _, obj ->
                     ReportMissingItem(obj) {
                         viewController?.pushFragment(

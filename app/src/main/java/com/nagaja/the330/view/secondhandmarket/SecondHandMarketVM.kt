@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 class SecondHandMarketVM(
     private val repo: SecondHandMarketRepo
 ) : BaseViewModel() {
+    var keyword: String? = null
     var category: String? = null
     var sort: String = "LASTEST"
     var city: String? = null
@@ -70,7 +71,8 @@ class SecondHandMarketVM(
                 secondhandCategoryType = category,
                 page = page,
                 size = 20,
-                sort = sort
+                sort = sort,
+                all = keyword
             )
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }

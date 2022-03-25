@@ -33,7 +33,7 @@ import com.nagaja.the330.utils.*
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailFragment
 import com.nagaja.the330.view.recruitmentregis.RecruitJobRegisFragment
-import com.nagaja.the330.view.searchmain.ItemRercuitmentJobs
+import com.nagaja.the330.view.searchmain.ItemRecruitmentJobs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -227,7 +227,7 @@ class RecruitmentJobSearchFragment : BaseFragment() {
             val lazyListState = rememberLazyListState()
             LazyColumn(state = lazyListState) {
                 itemsIndexed(listCompany) { _, obj ->
-                    ItemRercuitmentJobs(obj) {
+                    ItemRecruitmentJobs(obj) {
                         viewController?.pushFragment(
                             ScreenId.SCREEN_RECRUITMENT_JOBSEARCH_DETAIL,
                             RecruitJobsDetailFragment.newInstance(obj.id!!)
@@ -270,7 +270,7 @@ class RecruitmentJobSearchFragment : BaseFragment() {
             val lazyListState = rememberLazyListState()
             LazyColumn(state = lazyListState) {
                 itemsIndexed(listCompany) { _, obj ->
-                    ItemRercuitmentJobs(obj) {
+                    ItemRecruitmentJobs(obj) {
                         viewController?.pushFragment(
                             ScreenId.SCREEN_RECRUITMENT_JOBSEARCH_DETAIL,
                             RecruitJobsDetailFragment.newInstance(obj.id!!)

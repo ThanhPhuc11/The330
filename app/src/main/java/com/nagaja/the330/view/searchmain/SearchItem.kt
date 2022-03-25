@@ -190,7 +190,7 @@ fun ItemFreeNotice(obj: FreeNoticeModel, onClick: () -> Unit) {
 }
 
 @Composable
-fun ItemRercuitmentJobs(obj: RecruitmentJobsModel, onClick: () -> Unit) {
+fun ItemRecruitmentJobs(obj: RecruitmentJobsModel, onClick: () -> Unit) {
     Column(
         Modifier
             .background(ColorUtils.white_FFFFFF)

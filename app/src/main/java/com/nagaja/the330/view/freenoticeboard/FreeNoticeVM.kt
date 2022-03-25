@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 class FreeNoticeVM(
     private val repo: FreeNoticeRepo
 ) : BaseViewModel() {
+    var keyword: String? = null
     var listData = mutableListOf<FreeNoticeModel>()
     var stateListData = mutableStateListOf<FreeNoticeModel>()
 
@@ -29,7 +30,7 @@ class FreeNoticeVM(
                 page = page,
                 size = 20,
                 sort = sort,
-                null
+                keyword
             )
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }

@@ -18,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -110,7 +109,7 @@ class SearchMainFragment : BaseFragment() {
             HeaderSearch(
                 clickBack = { viewController?.popFragment() },
                 clickSearch = {
-                    viewModel.keyword = it.ifEmpty { null }
+                    viewModel.keyword.value = it.ifEmpty { null }
                 }
             )
             Text(
@@ -152,13 +151,12 @@ class SearchMainFragment : BaseFragment() {
                     .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    "‘우앵우앵’에 대한 검색 결과가 없습니다.",
-                    color = ColorUtils.black_000000,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
+//                Text(
+//                    "‘우앵우앵’에 대한 검색 결과가 없습니다.",
+//                    color = ColorUtils.black_000000,
+//                    fontSize = 14.sp,
+//                    fontWeight = FontWeight.Bold
+//                )
 
                 HorizontalPager(state = pagerState) { page ->
                     when (page) {
@@ -321,8 +319,9 @@ class SearchMainFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        viewModelCompany.keyword = viewModel.keyword.value
                         accessToken?.let {
-                            viewModel.findCompany(it, 0)
+                            viewModelCompany.findCompany(it, 0)
                         }
                     }
                     else -> {}
@@ -331,6 +330,13 @@ class SearchMainFragment : BaseFragment() {
             owner.lifecycle.addObserver(observer)
             onDispose {
                 owner.lifecycle.removeObserver(observer)
+            }
+        }
+
+        LaunchedEffect(viewModel.keyword.value) {
+            viewModelCompany.keyword = viewModel.keyword.value
+            accessToken?.let {
+                viewModelCompany.findCompany(it, 0)
             }
         }
         Column(Modifier.fillMaxSize()) {
@@ -387,7 +393,7 @@ class SearchMainFragment : BaseFragment() {
                                         }
                                     }
 
-                                    viewModel.findCompany(accessToken!!, 0)
+                                    viewModelCompany.findCompany(accessToken!!, 0)
                                     itemFilterSelected.value = selectionOption
                                     expandedFilter = false
                                     showMessDEBUG(selectionOption.id ?: "null")
@@ -438,10 +444,23 @@ class SearchMainFragment : BaseFragment() {
                 }
             }
 
-            Box(Modifier.padding(horizontal = 16.dp)) {
+            Box(
+                Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                if (viewModelCompany.stateListData.isNullOrEmpty()) {
+                    Text(
+                        "‘${viewModelCompany.keyword}’에 대한 검색 결과가 없습니다.",
+                        color = ColorUtils.black_000000,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 val listData = viewModelCompany.stateListData
                 val lazyListState = rememberLazyListState()
-                LazyColumn(state = lazyListState) {
+                LazyColumn(state = lazyListState, modifier = Modifier.fillMaxSize()) {
                     itemsIndexed(listData) { index, obj ->
                         ItemCompany(obj) {
                             viewController?.pushFragment(
@@ -454,7 +473,7 @@ class SearchMainFragment : BaseFragment() {
                 }
 
                 LoadmoreHandler(lazyListState) { page ->
-                    accessToken?.let { viewModel.findCompany(it, page) }
+                    accessToken?.let { viewModelCompany.findCompany(it, page) }
                 }
             }
         }
@@ -468,6 +487,7 @@ class SearchMainFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        viewModelFreeNotice.keyword = viewModel.keyword.value
                         accessToken?.let { viewModelFreeNotice.getFreeNoticeBoard(it, 0) }
                     }
                     else -> {}
@@ -479,12 +499,18 @@ class SearchMainFragment : BaseFragment() {
             }
         }
 
+        LaunchedEffect(viewModel.keyword.value) {
+            viewModelFreeNotice.keyword = viewModel.keyword.value
+            accessToken?.let {
+                viewModelFreeNotice.getFreeNoticeBoard(it, 0)
+            }
+        }
+
         Column(Modifier.fillMaxSize()) {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 14.dp)
+                    .padding(16.dp)
             ) {
                 Spacer(modifier = Modifier.weight(1f))
                 val listSort = remember {
@@ -539,33 +565,44 @@ class SearchMainFragment : BaseFragment() {
             )
             val news = viewModelFreeNotice.stateListData
 
-            val lazyListState = rememberLazyListState()
-            LazyColumn(
-                state = lazyListState,
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                if (viewModelFreeNotice.stateListData.isNullOrEmpty())
+                    Text(
+                        "‘${viewModelFreeNotice.keyword}’에 대한 검색 결과가 없습니다.",
+                        color = ColorUtils.black_000000,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                val lazyListState = rememberLazyListState()
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxSize()
 //                    verticalArrangement = Arrangement.spacedBy(1.dp)
-            ) {
-                itemsIndexed(news) { index, obj ->
-                    if (obj.status == "DEACTIVATED") {
-                        ItemDisable()
-                    } else {
-                        ItemFreeNotice(obj) {
-                            if (obj.notice != true) {
-                                viewController?.pushFragment(
-                                    ScreenId.SCREEN_FREE_NOTICE_DETAIL,
-                                    FreeNoticeDetailFragment.newInstance(obj.id!!)
-                                )
+                ) {
+                    itemsIndexed(news) { index, obj ->
+                        if (obj.status == "DEACTIVATED") {
+                            ItemDisable()
+                        } else {
+                            ItemFreeNotice(obj) {
+                                if (obj.notice != true) {
+                                    viewController?.pushFragment(
+                                        ScreenId.SCREEN_FREE_NOTICE_DETAIL,
+                                        FreeNoticeDetailFragment.newInstance(obj.id!!)
+                                    )
+                                }
                             }
                         }
+                        Divider(
+                            color = ColorUtils.black_000000_opacity_5,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
                     }
-                    Divider(
-                        color = ColorUtils.black_000000_opacity_5,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
                 }
-            }
 
-            LoadmoreHandler(lazyListState) { page ->
-                viewModelFreeNotice.getFreeNoticeBoard(accessToken!!, page)
+                LoadmoreHandler(lazyListState) { page ->
+                    viewModelFreeNotice.getFreeNoticeBoard(accessToken!!, page)
+                }
             }
         }
     }
@@ -700,6 +737,7 @@ class SearchMainFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
 //                        viewModel.type = AppConstants.RECRUITMENT
+                        viewModelRecruitJobs.keyword = viewModel.keyword.value
                         viewModelRecruitJobs.getRecruitmentList(
                             accessToken!!,
                             0,
@@ -714,6 +752,14 @@ class SearchMainFragment : BaseFragment() {
                 owner.lifecycle.removeObserver(observer)
             }
         }
+        LaunchedEffect(viewModel.keyword.value) {
+            viewModelRecruitJobs.keyword = viewModel.keyword.value
+            viewModelRecruitJobs.getRecruitmentList(
+                accessToken!!,
+                0,
+                AppConstants.RECRUITMENT
+            )
+        }
         Column(
             Modifier
                 .fillMaxHeight()
@@ -721,24 +767,33 @@ class SearchMainFragment : BaseFragment() {
         ) {
             val listCompany = viewModelRecruitJobs.stateListDataRecruitment
             val lazyListState = rememberLazyListState()
-            LazyColumn(state = lazyListState) {
-                itemsIndexed(listCompany) { _, obj ->
-                    ItemRercuitmentJobs(obj) {
-                        viewController?.pushFragment(
-                            ScreenId.SCREEN_RECRUITMENT_JOBSEARCH_DETAIL,
-                            RecruitJobsDetailFragment.newInstance(obj.id!!)
-                        )
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                if (viewModelRecruitJobs.stateListDataRecruitment.isNullOrEmpty())
+                    Text(
+                        "‘${viewModelRecruitJobs.keyword}’에 대한 검색 결과가 없습니다.",
+                        color = ColorUtils.black_000000,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                LazyColumn(state = lazyListState, modifier = Modifier.fillMaxSize()) {
+                    itemsIndexed(listCompany) { _, obj ->
+                        ItemRecruitmentJobs(obj) {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_RECRUITMENT_JOBSEARCH_DETAIL,
+                                RecruitJobsDetailFragment.newInstance(obj.id!!)
+                            )
+                        }
+                        Divider(color = ColorUtils.black_000000_opacity_5)
                     }
-                    Divider(color = ColorUtils.black_000000_opacity_5)
                 }
-            }
 
-            LoadmoreHandler(lazyListState) { page ->
-                viewModelRecruitJobs.getRecruitmentList(
-                    accessToken!!,
-                    page,
-                    AppConstants.RECRUITMENT
-                )
+                LoadmoreHandler(lazyListState) { page ->
+                    viewModelRecruitJobs.getRecruitmentList(
+                        accessToken!!,
+                        page,
+                        AppConstants.RECRUITMENT
+                    )
+                }
             }
         }
     }
@@ -750,7 +805,7 @@ class SearchMainFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-//                        viewModel.type = AppConstants.JOB_SEARCH
+                        viewModelRecruitJobs.keyword = viewModel.keyword.value
                         viewModelRecruitJobs.getRecruitmentList(
                             accessToken!!,
                             0,
@@ -765,28 +820,46 @@ class SearchMainFragment : BaseFragment() {
                 owner.lifecycle.removeObserver(observer)
             }
         }
+        LaunchedEffect(viewModel.keyword.value) {
+            viewModelRecruitJobs.keyword = viewModel.keyword.value
+            viewModelRecruitJobs.getRecruitmentList(
+                accessToken!!,
+                0,
+                AppConstants.JOB_SEARCH
+            )
+        }
         Column(
             Modifier
                 .fillMaxHeight()
                 .padding(horizontal = 16.dp)
         ) {
-            val listCompany = viewModelRecruitJobs.stateListDataJobs
-            val lazyListState = rememberLazyListState()
-            LazyColumn(state = lazyListState) {
-                itemsIndexed(listCompany) { _, obj ->
-                    ItemRercuitmentJobs(obj) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                if (viewModelRecruitJobs.stateListDataJobs.isNullOrEmpty())
+                    Text(
+                        "‘${viewModelRecruitJobs.keyword}’에 대한 검색 결과가 없습니다.",
+                        color = ColorUtils.black_000000,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
 
+                val listCompany = viewModelRecruitJobs.stateListDataJobs
+                val lazyListState = rememberLazyListState()
+                LazyColumn(state = lazyListState) {
+                    itemsIndexed(listCompany) { _, obj ->
+                        ItemRecruitmentJobs(obj) {
+
+                        }
+                        Divider(color = ColorUtils.black_000000_opacity_5)
                     }
-                    Divider(color = ColorUtils.black_000000_opacity_5)
                 }
-            }
 
-            LoadmoreHandler(lazyListState) { page ->
-                viewModelRecruitJobs.getRecruitmentList(
-                    accessToken!!,
-                    page,
-                    AppConstants.JOB_SEARCH
-                )
+                LoadmoreHandler(lazyListState) { page ->
+                    viewModelRecruitJobs.getRecruitmentList(
+                        accessToken!!,
+                        page,
+                        AppConstants.JOB_SEARCH
+                    )
+                }
             }
         }
     }
@@ -798,6 +871,7 @@ class SearchMainFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        viewModelSecondhand.keyword = viewModel.keyword.value
                         accessToken?.let {
                             viewModelSecondhand.getCity(it)
                             viewModelSecondhand.getListSecondHandMarket(it, 0)
@@ -810,6 +884,11 @@ class SearchMainFragment : BaseFragment() {
             onDispose {
                 owner.lifecycle.removeObserver(observer)
             }
+        }
+
+        LaunchedEffect(viewModel.keyword.value) {
+            viewModelSecondhand.keyword = viewModel.keyword.value
+            viewModelSecondhand.getListSecondHandMarket(accessToken!!, 0)
         }
         Column(Modifier.fillMaxSize()) {
 
@@ -966,11 +1045,20 @@ class SearchMainFragment : BaseFragment() {
             Box(
                 Modifier
                     .padding(horizontal = 16.dp)
-                    .background(ColorUtils.gray_E7E7E7)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
+                if (viewModelSecondhand.stateListData.isNullOrEmpty())
+                    Text(
+                        "‘${viewModelSecondhand.keyword}’에 대한 검색 결과가 없습니다.",
+                        color = ColorUtils.black_000000,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
                 val listSecondHand = viewModelSecondhand.stateListData
                 val lazyListState = rememberLazyListState()
-                LazyColumn(state = lazyListState) {
+                LazyColumn(state = lazyListState, modifier = Modifier.fillMaxSize()) {
                     itemsIndexed(listSecondHand) { index, obj ->
                         ItemSecondHand(obj) {
                             viewController?.pushFragment(
@@ -978,6 +1066,7 @@ class SearchMainFragment : BaseFragment() {
                                 SecondHandDetailFragment.newInstance(obj.id!!)
                             )
                         }
+                        Divider(color = ColorUtils.gray_E1E1E1)
                     }
                 }
 
@@ -1095,9 +1184,7 @@ class SearchMainFragment : BaseFragment() {
     @OptIn(ExperimentalPagerApi::class)
     @Composable
     private fun ReportMissingTab() {
-        val context = LocalContext.current
         val owner = LocalLifecycleOwner.current
-//        val stateOptions = remember { mutableStateOf(options) }
         DisposableEffect(owner) {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
@@ -1177,6 +1264,7 @@ class SearchMainFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        viewModelReportMissing.keyword = viewModel.keyword.value
                         viewModelReportMissing.getReportMissingList(
                             accessToken!!,
                             0,
@@ -1191,14 +1279,31 @@ class SearchMainFragment : BaseFragment() {
                 owner.lifecycle.removeObserver(observer)
             }
         }
-        Column(
+        LaunchedEffect(viewModel.keyword.value) {
+            viewModelReportMissing.keyword = viewModel.keyword.value
+            viewModelReportMissing.getReportMissingList(
+                accessToken!!,
+                0,
+                AppConstants.REPORT
+            )
+        }
+        Box(
             Modifier
-                .fillMaxHeight()
-                .padding(horizontal = 16.dp)
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            contentAlignment = Alignment.Center
         ) {
+            if (viewModelReportMissing.stateListDataReport.isNullOrEmpty())
+                Text(
+                    "‘${viewModelReportMissing.keyword}’에 대한 검색 결과가 없습니다.",
+                    color = ColorUtils.black_000000,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
             val listCompany = viewModelReportMissing.stateListDataReport
             val lazyListState = rememberLazyListState()
-            LazyColumn(state = lazyListState) {
+            LazyColumn(state = lazyListState, modifier = Modifier.fillMaxSize()) {
                 itemsIndexed(listCompany) { _, obj ->
                     ReportMissingItem(obj) {
                         viewController?.pushFragment(
@@ -1227,6 +1332,7 @@ class SearchMainFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        viewModelReportMissing.keyword = viewModel.keyword.value
                         viewModelReportMissing.getReportMissingList(
                             accessToken!!,
                             0,
@@ -1241,14 +1347,31 @@ class SearchMainFragment : BaseFragment() {
                 owner.lifecycle.removeObserver(observer)
             }
         }
-        Column(
+        LaunchedEffect(viewModel.keyword.value) {
+            viewModelReportMissing.keyword = viewModel.keyword.value
+            viewModelReportMissing.getReportMissingList(
+                accessToken!!,
+                0,
+                AppConstants.MISSING
+            )
+        }
+        Box(
             Modifier
-                .fillMaxHeight()
-                .padding(horizontal = 16.dp)
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            contentAlignment = Alignment.Center
         ) {
+            if (viewModelReportMissing.stateListDataMissing.isNullOrEmpty())
+                Text(
+                    "‘${viewModelReportMissing.keyword}’에 대한 검색 결과가 없습니다.",
+                    color = ColorUtils.black_000000,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
             val listCompany = viewModelReportMissing.stateListDataMissing
             val lazyListState = rememberLazyListState()
-            LazyColumn(state = rememberLazyListState()) {
+            LazyColumn(state = lazyListState, modifier = Modifier.fillMaxSize()) {
                 itemsIndexed(listCompany) { _, obj ->
                     ReportMissingItem(obj) {
                         viewController?.pushFragment(
