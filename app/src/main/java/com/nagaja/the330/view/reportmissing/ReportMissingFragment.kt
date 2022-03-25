@@ -44,6 +44,7 @@ import com.nagaja.the330.utils.*
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailFragment
 import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisFragment
+import com.nagaja.the330.view.searchmain.ReportMissingItem
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -235,7 +236,12 @@ class ReportMissingFragment : BaseFragment() {
             val lazyListState = rememberLazyListState()
             LazyColumn(state = lazyListState) {
                 itemsIndexed(listCompany) { _, obj ->
-                    ReportMissingItem(obj)
+                    ReportMissingItem(obj) {
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_REPORT_MISSING_DETAIL,
+                            ReportMissingDetailFragment.newInstance(obj.id!!)
+                        )
+                    }
                     Divider(color = ColorUtils.black_000000_opacity_5)
                 }
             }
@@ -272,7 +278,12 @@ class ReportMissingFragment : BaseFragment() {
             val lazyListState = rememberLazyListState()
             LazyColumn(state = rememberLazyListState()) {
                 itemsIndexed(listCompany) { _, obj ->
-                    ReportMissingItem(obj)
+                    ReportMissingItem(obj) {
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_REPORT_MISSING_DETAIL,
+                            ReportMissingDetailFragment.newInstance(obj.id!!)
+                        )
+                    }
                     Divider(color = ColorUtils.black_000000_opacity_5)
                 }
             }
@@ -329,115 +340,6 @@ class ReportMissingFragment : BaseFragment() {
                         Text(text = selectionOption.name!!)
                     }
                 }
-            }
-        }
-    }
-
-    @Composable
-    private fun ReportMissingItem(obj: ReportMissingModel) {
-        Column(
-            Modifier
-                .background(ColorUtils.white_FFFFFF)
-                .fillMaxWidth()
-                .padding(vertical = 16.dp)
-                .padding(top = 16.dp)
-                .noRippleClickable {
-                    viewController?.pushFragment(
-                        ScreenId.SCREEN_REPORT_MISSING_DETAIL,
-                        ReportMissingDetailFragment.newInstance(obj.id!!)
-                    )
-                }
-        ) {
-            Row {
-                GlideImage(
-                    imageModel = "${BuildConfig.BASE_S3}${obj.images?.getOrNull(0)?.url ?: ""}",
-                    Modifier
-                        .size(96.dp)
-                        .clip(shape = RoundedCornerShape(4.dp)),
-                    placeHolder = painterResource(R.drawable.ic_default_nagaja),
-                    error = painterResource(R.drawable.ic_default_nagaja),
-                )
-                Column(
-                    Modifier
-                        .padding(start = 12.dp)
-                        .height(96.dp)
-                ) {
-                    Text(
-                        obj.title ?: "",
-                        modifier = Modifier.padding(top = 1.dp),
-                        color = ColorUtils.black_000000,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight(700)
-                    )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            stringResource(R.string.views).plus(" ${obj.viewCount ?: 0}"),
-                            color = ColorUtils.gray_9F9F9F,
-                            fontSize = 12.sp,
-                        )
-                        Image(
-                            painter = painterResource(R.drawable.ic_dot),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(horizontal = 4.dp)
-                                .size(2.dp),
-                            colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
-                        )
-                        Text(
-                            stringResource(R.string.comment).plus(" ${obj.commentCount ?: 0}"),
-                            color = ColorUtils.gray_9F9F9F,
-                            fontSize = 12.sp,
-                        )
-                    }
-                    Box(
-                        Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.BottomStart
-                    ) {
-                        Text(
-                            obj.body ?: "",
-                            style = text14_62,
-                            textAlign = TextAlign.Start,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier
-                    .padding(top = 6.dp)
-                    .fillMaxWidth(),
-            ) {
-                Text(
-                    AppDateUtils.changeDateFormat(
-                        AppDateUtils.FORMAT_16,
-                        AppDateUtils.FORMAT_15,
-                        obj.createdOn ?: ""
-                    ),
-                    color = ColorUtils.gray_9F9F9F,
-                    fontSize = 12.sp,
-                )
-                Image(
-                    painter = painterResource(R.drawable.ic_dot),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .size(2.dp),
-                    colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
-                )
-                val name = if (obj.writer?.type == "COMPANY") {
-                    obj.writer?.companyRequest?.name?.getOrNull(0)?.name
-                        ?: ""
-                } else {
-                    obj.writer?.name ?: ""
-                }
-                Text(
-                    name,
-                    color = ColorUtils.gray_9F9F9F,
-                    fontSize = 12.sp,
-                )
             }
         }
     }

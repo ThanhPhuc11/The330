@@ -21,14 +21,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
-import com.nagaja.the330.model.CompanyModel
-import com.nagaja.the330.model.FreeNoticeModel
-import com.nagaja.the330.model.RecruitmentJobsModel
+import com.nagaja.the330.data.GetDummyData
+import com.nagaja.the330.model.*
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailFragment
+import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailFragment
 import com.nagaja.the330.view.text14_222
 import com.nagaja.the330.view.text14_62
 import com.skydoves.landscapist.glide.GlideImage
@@ -190,7 +190,7 @@ fun ItemFreeNotice(obj: FreeNoticeModel, onClick: () -> Unit) {
 }
 
 @Composable
-fun ItemRecuitmentJobs(obj: RecruitmentJobsModel, onClick: () -> Unit) {
+fun ItemRercuitmentJobs(obj: RecruitmentJobsModel, onClick: () -> Unit) {
     Column(
         Modifier
             .background(ColorUtils.white_FFFFFF)
@@ -277,5 +277,201 @@ fun ItemRecuitmentJobs(obj: RecruitmentJobsModel, onClick: () -> Unit) {
                 fontSize = 12.sp,
             )
         }
+    }
+}
+
+@Composable
+fun ItemSecondHand(obj: SecondHandModel, onClick: () -> Unit) {
+    Column(
+        Modifier
+            .padding(bottom = 1.dp)
+            .fillMaxWidth()
+            .background(ColorUtils.white_FFFFFF)
+            .padding(vertical = 20.dp)
+            .noRippleClickable {
+                onClick.invoke()
+            }
+    ) {
+        Row {
+            GlideImage(
+                imageModel = "${BuildConfig.BASE_S3}${obj.images?.getOrNull(0)?.url ?: ""}",
+                Modifier
+                    .size(96.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                placeHolder = painterResource(R.drawable.ic_default_nagaja),
+                error = painterResource(R.drawable.ic_default_nagaja)
+            )
+            Column(
+                Modifier
+                    .padding(start = 12.dp)
+                    .weight(1f)
+                    .height(96.dp)
+            ) {
+                Text(
+                    "[${obj.type}] ${obj.title}",
+                    color = ColorUtils.black_000000,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2
+                )
+                Row {
+                    Text(
+                        AppDateUtils.changeDateFormat(
+                            AppDateUtils.FORMAT_16,
+                            AppDateUtils.FORMAT_15,
+                            obj.createdOn ?: ""
+                        ),
+                        color = ColorUtils.gray_9F9F9F,
+                        fontSize = 12.sp,
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.ic_dot),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .size(2.dp),
+                        colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
+                    )
+                    Text(
+                        stringResource(R.string.views).plus(" ${obj.viewCount ?: 0}"),
+                        color = ColorUtils.gray_9F9F9F,
+                        fontSize = 12.sp,
+                    )
+                }
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Text(
+                        price(obj),
+                        color = ColorUtils.black_000000,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
+        Text(
+            obj.body ?: "",
+            style = text14_62,
+            modifier = Modifier.padding(top = 16.dp),
+            textAlign = TextAlign.Start
+        )
+    }
+}
+
+@Composable
+fun ReportMissingItem(obj: ReportMissingModel, onClick: () -> Unit) {
+    Column(
+        Modifier
+            .background(ColorUtils.white_FFFFFF)
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
+            .padding(top = 16.dp)
+            .noRippleClickable {
+
+            }
+    ) {
+        Row {
+            GlideImage(
+                imageModel = "${BuildConfig.BASE_S3}${obj.images?.getOrNull(0)?.url ?: ""}",
+                Modifier
+                    .size(96.dp)
+                    .clip(shape = RoundedCornerShape(4.dp)),
+                placeHolder = painterResource(R.drawable.ic_default_nagaja),
+                error = painterResource(R.drawable.ic_default_nagaja),
+            )
+            Column(
+                Modifier
+                    .padding(start = 12.dp)
+                    .height(96.dp)
+            ) {
+                Text(
+                    obj.title ?: "",
+                    modifier = Modifier.padding(top = 1.dp),
+                    color = ColorUtils.black_000000,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight(700)
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        stringResource(R.string.views).plus(" ${obj.viewCount ?: 0}"),
+                        color = ColorUtils.gray_9F9F9F,
+                        fontSize = 12.sp,
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.ic_dot),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .size(2.dp),
+                        colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
+                    )
+                    Text(
+                        stringResource(R.string.comment).plus(" ${obj.commentCount ?: 0}"),
+                        color = ColorUtils.gray_9F9F9F,
+                        fontSize = 12.sp,
+                    )
+                }
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.BottomStart
+                ) {
+                    Text(
+                        obj.body ?: "",
+                        style = text14_62,
+                        textAlign = TextAlign.Start,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier
+                .padding(top = 6.dp)
+                .fillMaxWidth(),
+        ) {
+            Text(
+                AppDateUtils.changeDateFormat(
+                    AppDateUtils.FORMAT_16,
+                    AppDateUtils.FORMAT_15,
+                    obj.createdOn ?: ""
+                ),
+                color = ColorUtils.gray_9F9F9F,
+                fontSize = 12.sp,
+            )
+            Image(
+                painter = painterResource(R.drawable.ic_dot),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .size(2.dp),
+                colorFilter = ColorFilter.tint(ColorUtils.gray_9F9F9F)
+            )
+            val name = if (obj.writer?.type == "COMPANY") {
+                obj.writer?.companyRequest?.name?.getOrNull(0)?.name
+                    ?: ""
+            } else {
+                obj.writer?.name ?: ""
+            }
+            Text(
+                name,
+                color = ColorUtils.gray_9F9F9F,
+                fontSize = 12.sp,
+            )
+        }
+    }
+}
+
+private fun price(secondhand: SecondHandModel): String {
+    return if ((secondhand.dollar ?: 0.0) > 0) {
+        GetDummyData.getMoneyType()[1].name!!.plus(" ").plus(secondhand.dollar)
+    } else {
+        GetDummyData.getMoneyType()[0].name!!.plus(" ").plus(secondhand.peso)
     }
 }
