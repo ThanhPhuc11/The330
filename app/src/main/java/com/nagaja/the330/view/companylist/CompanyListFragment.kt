@@ -110,6 +110,10 @@ class CompanyListFragment : BaseFragment() {
                 clickBack = {
                     viewController?.popFragment()
                 },
+                clickSearch = {
+                    viewModel.keyword = it
+                    viewModel.findCompany(accessToken!!, 0)
+                }
             )
             Text(
                 stringResource(R.string.company_list),

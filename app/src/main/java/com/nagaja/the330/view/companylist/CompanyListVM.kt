@@ -26,8 +26,8 @@ class CompanyListVM(
     fun findCompany(
         token: String,
         page: Int,
-        cityId: Int? = null,
-        districtId: Int? = null,
+        latitude: Float? = null,
+        longitude: Float? = null,
     ) {
         viewModelScope.launch {
             repo.findCompany(
@@ -38,8 +38,8 @@ class CompanyListVM(
                 filter,
                 cType,
                 authentication,
-                cityId,
-                districtId,
+                latitude,
+                longitude,
                 keyword
             )
                 .onStart { callbackStart.value = Unit }

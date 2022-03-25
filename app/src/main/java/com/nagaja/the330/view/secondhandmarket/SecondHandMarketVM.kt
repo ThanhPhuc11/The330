@@ -66,8 +66,10 @@ class SecondHandMarketVM(
         viewModelScope.launch {
             repo.secondHandMarket(
                 token = token,
-                cityId = city?.toInt(),
-                districtId = district?.toInt(),
+//                cityId = city?.toInt(),
+//                districtId = district?.toInt(),
+                latitude = null,
+                longitude = null,
                 secondhandCategoryType = category,
                 page = page,
                 size = 20,

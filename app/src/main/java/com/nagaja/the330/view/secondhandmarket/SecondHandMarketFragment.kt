@@ -33,6 +33,7 @@ import com.nagaja.the330.utils.LoadmoreHandler
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.searchmain.ItemSecondHand
+import com.nagaja.the330.view.searchmain.SearchMainFragment
 import com.nagaja.the330.view.secondhanddetail.SecondHandDetailFragment
 import com.nagaja.the330.view.secondhandregis.SecondHandRegisFragment
 
@@ -81,6 +82,13 @@ class SecondHandMarketFragment : BaseFragment() {
                 },
                 clickSearch = {
                     showMessDEBUG(it)
+//                    viewController?.pushFragment(
+//                        ScreenId.SCREEN_SEARCH_MAIN,
+//                        SearchMainFragment.newInstance()
+//                    )
+                    viewModel.keyword = it
+                    viewModel.getListSecondHandMarket(accessToken!!, 0)
+
                 }
             )
 

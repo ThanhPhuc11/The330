@@ -18,7 +18,7 @@ class CompanyModel {
     var serviceTypes: MutableList<String>? = null
     var openHour: Int? = null
     var closeHour: Int? = null
-    var reservationTime: List<Int>? = null
+    var reservationTime: MutableList<Int>? = null
     var reservationNumber: Int? = null
     var paymentMethod: String? = null
     var ctype: String? = null

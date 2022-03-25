@@ -16,9 +16,11 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -157,7 +159,12 @@ class SearchMainFragment : BaseFragment() {
 //                    fontSize = 14.sp,
 //                    fontWeight = FontWeight.Bold
 //                )
-
+                LaunchedEffect(pagerState.currentPage) {
+                    listTitleSearch.onEach {
+                        it.isSelected = false
+                    }
+                    listTitleSearch[pagerState.currentPage] = listTitleSearch[pagerState.currentPage].copy(isSelected = true)
+                }
                 HorizontalPager(state = pagerState) { page ->
                     when (page) {
                         0 -> {
@@ -234,6 +241,7 @@ class SearchMainFragment : BaseFragment() {
             }
     }
 
+    @OptIn(ExperimentalComposeUiApi::class)
     @Preview
     @Composable
     fun HeaderSearch(
@@ -241,6 +249,7 @@ class SearchMainFragment : BaseFragment() {
         clickSearch: ((String) -> Unit)? = null,
     ) {
         val stateEdtInput = remember { mutableStateOf(TextFieldValue("")) }
+        val keyboardController = LocalSoftwareKeyboardController.current
         Row(
             modifier = Modifier
                 .background(ColorUtils.white_FFFFFF)
@@ -266,7 +275,7 @@ class SearchMainFragment : BaseFragment() {
                         color = ColorUtils.blue_2177E4_opacity_10,
                         shape = RoundedCornerShape(4.dp)
                     )
-                    .padding(horizontal = 5.dp),
+                    .padding(horizontal = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BasicTextField(
@@ -279,6 +288,7 @@ class SearchMainFragment : BaseFragment() {
                     singleLine = true,
                     keyboardActions = KeyboardActions(onSearch = {
                         clickSearch?.invoke(stateEdtInput.value.text)
+                        keyboardController?.hide()
                     }),
                     textStyle = TextStyle(
                         color = ColorUtils.black_000000

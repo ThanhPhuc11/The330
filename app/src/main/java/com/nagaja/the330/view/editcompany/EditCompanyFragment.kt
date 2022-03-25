@@ -1,9 +1,11 @@
 package com.nagaja.the330.view.editcompany
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
@@ -53,6 +55,7 @@ import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompany.ShareApplyCompanyVM
 import com.nagaja.the330.view.applycompanyproduct.ProductCompanyFragment
+import com.nagaja.the330.view.editcompanyproduct.EditProductCompanyFragment
 import com.skydoves.landscapist.glide.GlideImage
 import java.io.File
 
@@ -73,12 +76,9 @@ class EditCompanyFragment : BaseFragment() {
         shareViewModel = ViewModelProvider(this)[ShareApplyCompanyVM::class.java]
         viewController = (activity as MainActivity).viewController
 
-//        viewModel.callbackMakeSuccess.observe(viewLifecycleOwner) {
-//            viewController?.pushFragment(
-//                ScreenId.SCREEN_APPLY_COMPANY_RESULT,
-//                ApplyResultFragment.newInstance()
-//            )
-//        }
+        viewModel.callbackEditSuccess.observe(viewLifecycleOwner) {
+            viewController?.popFragment()
+        }
         viewModel.callbackStart.observe(viewLifecycleOwner) {
             showLoading()
         }
@@ -119,6 +119,7 @@ class EditCompanyFragment : BaseFragment() {
                 owner.lifecycle.removeObserver(observer)
             }
         }
+        val fileName = remember { mutableStateOf("") }
         LaunchedEffect(viewModel.companyDetail.value) {
             val obj = viewModel.companyDetail.value
             viewModel.selectedOptionCategory.value = CategoryModel(ctype = obj.ctype)
@@ -148,11 +149,24 @@ class EditCompanyFragment : BaseFragment() {
             viewModel.textStateOpenTime.value = obj.openHour ?: 0
             viewModel.textStateCloseTime.value = obj.closeHour ?: 0
 
-            viewModel.reservationTime = obj.reservationTime?.toMutableList()
+//            viewModel.reservationTime = obj.reservationTime?.toMutableList()
 
             viewModel.textStateNumReservation.value =
                 TextFieldValue((obj.reservationNumber ?: 0).toString())
             viewModel.textStatePaymethod.value = TextFieldValue(obj.paymentMethod ?: "")
+            fileName.value = obj.file.toString()
+            viewModel.fileName
+            viewModel.serviceType.onEachIndexed {index, it->
+                obj.serviceTypes?.onEach { iz->
+                    if (it.id == iz) {
+                        viewModel.serviceType[index] = it.copy(isSelected = true)
+                    }
+                }
+            }
+            obj.reservationTime?.onEach {
+                viewModel.stateListTime[it] = viewModel.stateListTime[it].copy(isSelected = true)
+                viewModel.reservationTime!!.add(it)
+            }
         }
 
         LayoutTheme330 {
@@ -334,7 +348,7 @@ class EditCompanyFragment : BaseFragment() {
                         .padding(top = 8.dp)
                         .padding(horizontal = 16.dp)
                 )
-                val fileName = remember { mutableStateOf("") }
+
                 callbackAttachFile = { uri ->
                     val file = File(
                         RealPathUtil.getPath(
@@ -421,7 +435,7 @@ class EditCompanyFragment : BaseFragment() {
                             .fillMaxHeight()
                             .background(ColorUtils.blue_2177E4)
                             .noRippleClickable {
-                                viewModel.makeCompany(accessToken!!)
+                                viewModel.editCompany(accessToken!!)
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -440,14 +454,14 @@ class EditCompanyFragment : BaseFragment() {
                             .fillMaxHeight()
                             .background(ColorUtils.gray_222222)
                             .noRippleClickable {
-                                if (viewModel.isValidate()) {
-                                    shareViewModel.companyInfoState.value =
-                                        viewModel.saveCompanyTransfer()
-                                    viewController?.pushFragment(
-                                        ScreenId.SCREEN_APPLY_COMPANY_PRODUCT_INFO,
-                                        ProductCompanyFragment.newInstance()
-                                    )
-                                }
+//                                if (viewModel.isValidate()) {
+//                                    shareViewModel.companyInfoState.value =
+//                                        viewModel.saveCompanyTransfer()
+//                                    viewController?.pushFragment(
+//                                        ScreenId.SCREEN_APPLY_COMPANY_PRODUCT_INFO,
+//                                        EditProductCompanyFragment.newInstance()
+//                                    )
+//                                }
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -664,11 +678,10 @@ class EditCompanyFragment : BaseFragment() {
                 list = viewModel.listPopularAreas.map {
                     KeyValueModel(it.id.toString(), it.name?.getOrNull(0)?.name)
                 }.toMutableList(),
-                initValue = KeyValueModel(null, "인기지역"),
-                callback = {
-                    viewModel.popularAreaId = it.id?.toInt()
-                }
-            )
+                initValue = KeyValueModel(null, "인기지역")
+            ) {
+                viewModel.popularAreaId = it.id?.toInt()
+            }
             BaseSeletion(
                 modifier = Modifier
                     .weight(1f)
@@ -676,24 +689,22 @@ class EditCompanyFragment : BaseFragment() {
                 list = viewModel.listCity.map {
                     KeyValueModel(it.id.toString(), it.name?.getOrNull(0)?.name)
                 }.toMutableList(),
-                initValue = KeyValueModel(null, "시/도"),
-                callback = {
-                    it.id?.let { item ->
-                        viewModel.cityId = item.toInt()
-                        viewModel.getDistrict(accessToken!!, item.toInt())
-                    }
+                initValue = KeyValueModel(null, "시/도")
+            ) {
+                it.id?.let { item ->
+                    viewModel.cityId = item.toInt()
+                    viewModel.getDistrict(accessToken!!, item.toInt())
                 }
-            )
+            }
             BaseSeletion(
                 modifier = Modifier.weight(1f),
                 list = viewModel.listDistrict.map {
                     KeyValueModel(it.id.toString(), it.name?.getOrNull(0)?.name)
                 }.toMutableList(),
-                initValue = KeyValueModel("null", "구/군"),
-                callback = {
-                    viewModel.popularAreaId = it.id?.toInt()
-                }
-            )
+                initValue = KeyValueModel("null", "구/군")
+            ) {
+                viewModel.popularAreaId = it.id?.toInt()
+            }
         }
     }
 
@@ -702,11 +713,17 @@ class EditCompanyFragment : BaseFragment() {
         modifier: Modifier = Modifier,
         list: MutableList<KeyValueModel>,
         initValue: KeyValueModel,
+        setValue: MutableState<KeyValueModel> = mutableStateOf(initValue),
         callback: ((KeyValueModel) -> Unit)? = null
     ) {
         val options = list
         var expanded by remember { mutableStateOf(false) }
         var selectedOptionText by remember { mutableStateOf(initValue) }
+
+        LaunchedEffect(setValue.value) {
+            selectedOptionText = setValue.value
+            Log.e("Side", setValue.value.id ?: "")
+        }
         Row(
             modifier = modifier
 //                .padding(top = 6.dp, start = 16.dp)
@@ -962,6 +979,7 @@ class EditCompanyFragment : BaseFragment() {
         }
     }
 
+    @SuppressLint("UnrememberedMutableState")
     @Preview
     @Composable
     private fun OpenTimeUI() {
@@ -976,10 +994,17 @@ class EditCompanyFragment : BaseFragment() {
                 fontWeight = FontWeight.Bold
             )
             Row(Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                val mapTime1h = GetDummyData.getTime1Hour().associate { it.id to it.name }
                 BaseSeletion(
                     modifier = Modifier.width(110.dp),
                     list = GetDummyData.getTime1Hour(),
-                    initValue = KeyValueModel("null", "오픈")
+                    initValue = KeyValueModel("null", "오픈"),
+                    setValue = mutableStateOf(
+                        KeyValueModel(
+                            viewModel.textStateOpenTime.value.toString(),
+                            mapTime1h[viewModel.textStateOpenTime.value.toString()]
+                        )
+                    )
                 ) {
                     viewModel.textStateOpenTime.value = it.id!!.toInt()
                 }
@@ -987,7 +1012,13 @@ class EditCompanyFragment : BaseFragment() {
                 BaseSeletion(
                     modifier = Modifier.width(110.dp),
                     list = GetDummyData.getTime1Hour(),
-                    initValue = KeyValueModel("null", "마감")
+                    initValue = KeyValueModel("null", "마감"),
+                    setValue = mutableStateOf(
+                        KeyValueModel(
+                            viewModel.textStateOpenTime.value.toString(),
+                            mapTime1h[viewModel.textStateCloseTime.value.toString()]
+                        )
+                    )
                 ) {
                     viewModel.textStateCloseTime.value = it.id!!.toInt()
                 }
@@ -1012,57 +1043,19 @@ class EditCompanyFragment : BaseFragment() {
                 modifier = Modifier.padding(top = 8.dp)
             )
 
-            val listTime =
-                remember {
-                    mutableStateListOf(
-                        TimeReservation("00:00"), TimeReservation("00:30"),
-                        TimeReservation("01:00"), TimeReservation("01:30"),
-                        TimeReservation("02:00"), TimeReservation("02:30"),
-                        TimeReservation("03:00"), TimeReservation("03:30"),
-                        TimeReservation("04:00"), TimeReservation("04:30"),
-                        TimeReservation("05:00"), TimeReservation("05:30"),
-                        TimeReservation("06:00"), TimeReservation("06:30"),
-                        TimeReservation("07:00"), TimeReservation("07:30"),
-                        TimeReservation("08:00"), TimeReservation("08:30"),
-                        TimeReservation("09:00"), TimeReservation("09:30"),
-                        TimeReservation("10:00"), TimeReservation("10:30"),
-                        TimeReservation("11:00"), TimeReservation("11:30"),
-                        TimeReservation("12:00"), TimeReservation("12:30"),
-                        TimeReservation("13:00"), TimeReservation("13:30"),
-                        TimeReservation("14:00"), TimeReservation("14:30"),
-                        TimeReservation("15:00"), TimeReservation("15:30"),
-                        TimeReservation("16:00"), TimeReservation("16:30"),
-                        TimeReservation("17:00"), TimeReservation("17:30"),
-                        TimeReservation("18:00"), TimeReservation("18:30"),
-                        TimeReservation("19:00"), TimeReservation("19:30"),
-                        TimeReservation("20:00"), TimeReservation("20:30"),
-                        TimeReservation("21:00"), TimeReservation("21:30"),
-                        TimeReservation("22:00"), TimeReservation("22:30"),
-                        TimeReservation("23:00"), TimeReservation("23:30"),
-                    )
-                }
             LaunchedEffect(viewModel.reservationTime) {
                 viewModel.reservationTime?.forEach { obj ->
-                    val temp = TimeReservation(listTime[obj].time, true)
-                    listTime.removeAt(obj)
-                    listTime.add(temp)
+                    val temp = TimeReservation(viewModel.stateListTime[obj].time, true)
+                    viewModel.stateListTime.removeAt(obj)
+                    viewModel.stateListTime.add(temp)
                 }
             }
 
             onClickChoose = { index ->
+                val listTime = viewModel.stateListTime
                 if (index >= 0) {
-                    val temp = listTime[index].apply {
-                        isSelected = !isSelected
-                    }
-                    listTime.removeAt(index)
-                    listTime.add(index, temp)
-
-                    viewModel.reservationTime!!.clear()
-                    listTime.forEachIndexed { index1, obj ->
-                        if (obj.isSelected) {
-                            viewModel.reservationTime!!.add(index1)
-                        }
-                    }
+                    listTime[index] = listTime[index].copy(isSelected = !listTime[index].isSelected)
+                    viewModel.reservationTime!!.add(index)
                 }
             }
             Box(
@@ -1080,7 +1073,7 @@ class EditCompanyFragment : BaseFragment() {
                     horizontalArrangement = Arrangement.spacedBy(5.dp),
 //                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    itemsIndexed(listTime) { index, time ->
+                    itemsIndexed(viewModel.stateListTime) { index, time ->
                         ItemTime(index, time)
                     }
                 }

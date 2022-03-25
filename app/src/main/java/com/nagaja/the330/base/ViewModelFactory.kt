@@ -23,6 +23,8 @@ import com.nagaja.the330.view.edit_profile.EditProfileRepo
 import com.nagaja.the330.view.edit_profile.EditProfileVM
 import com.nagaja.the330.view.editcompany.EditCompanyRepo
 import com.nagaja.the330.view.editcompany.EditCompanyVM
+import com.nagaja.the330.view.editcompanyproduct.EditProductCompanyRepo
+import com.nagaja.the330.view.editcompanyproduct.EditProductCompanyVM
 import com.nagaja.the330.view.event.EventRepo
 import com.nagaja.the330.view.event.EventVM
 import com.nagaja.the330.view.faq.FAQRepo
@@ -204,6 +206,8 @@ class ViewModelFactory(apiService: ApiService) :
             CommentVM(CommentRepo(apiService))
         creators[EditCompanyVM::class.java] =
             EditCompanyVM(EditCompanyRepo(apiService))
+        creators[EditProductCompanyVM::class.java] =
+            EditProductCompanyVM(EditProductCompanyRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

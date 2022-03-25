@@ -12,11 +12,11 @@ class CompanyListRepo(private val apiService: ApiService) {
         serviceTypes: MutableList<String>?,
         cType: String?,
         authentication: Boolean?,
-        cityId: Int?,
-        district: Int?,
+        latitude: Float?,
+        longitude: Float?,
         all: String?
     ) = flow {
-        emit(apiService.findCompany(token, page, size, sort, serviceTypes, cType, authentication, cityId, district, all))
+        emit(apiService.findCompany(token, page, size, sort, serviceTypes, cType, authentication, latitude, longitude, all))
     }
 
     suspend fun getBanner(token: String, cType: String) = flow {

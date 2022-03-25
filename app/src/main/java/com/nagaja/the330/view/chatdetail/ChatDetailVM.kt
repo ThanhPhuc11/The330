@@ -78,7 +78,7 @@ class ChatDetailVM(
 
     fun getChatDetail(token: String, roomId: Int, chatMesId: Int? = null) {
         viewModelScope.launch {
-            repo.getChatDetail(token, roomId, chatMesId, 5)
+            repo.getChatDetail(token, roomId, chatMesId, 50)
                 .onStart {
                     callbackStart.value = Unit
                 }

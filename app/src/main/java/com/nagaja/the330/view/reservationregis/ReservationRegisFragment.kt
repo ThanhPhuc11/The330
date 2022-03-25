@@ -285,7 +285,7 @@ class ReservationRegisFragment : BaseFragment() {
                         ReservationTime { index, time ->
                             stateTime.value = time
                             viewModel.time = index
-//                            showTime.value = false
+                            showTime.value = false
                         }
                     }
                     Divider(color = ColorUtils.gray_E1E1E1)
@@ -447,7 +447,7 @@ class ReservationRegisFragment : BaseFragment() {
 //                    }
 //                    listTime.removeAt(index)
 //                    listTime.add(index, temp)
-//                    onClick?.invoke(index, listTime[index].time)
+                    onClick?.invoke(index, listTime[index].time)
                     val indexOldSelected = listTime.indexOfFirst { it.status == 2 }
                     if (indexOldSelected >= 0)
                         listTime[indexOldSelected] = listTime[indexOldSelected].copy(status = 1)
