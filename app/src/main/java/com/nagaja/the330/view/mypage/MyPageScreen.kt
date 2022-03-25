@@ -36,6 +36,7 @@ import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompany.ApplyCompanyFragment
+import com.nagaja.the330.view.applycompanyresult.ApplyResultFragment
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
 import com.nagaja.the330.view.favoritecompany.FavCompanyFragment
 import com.nagaja.the330.view.othersetting.OtherSettingFragment
@@ -138,12 +139,19 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
                     .padding(16.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
+                val userDetail = viewModel.userDetailState.value
                 Button(
                     onClick = {
-                        viewController?.pushFragment(
-                            ScreenId.SCREEN_APPLY_COMPANY,
-                            ApplyCompanyFragment.newInstance()
-                        )
+                        if (userDetail?.companyRequest == null)
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_APPLY_COMPANY,
+                                ApplyCompanyFragment.newInstance()
+                            )
+//                        else
+//                            viewController?.pushFragment(
+//                                ScreenId.SCREEN_APPLY_COMPANY_RESULT,
+//                                ApplyResultFragment.newInstance()
+//                            )
                     },
                     modifier = Modifier
                         .width(96.dp)
@@ -151,7 +159,7 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
                     colors = ButtonDefaults.buttonColors(backgroundColor = ColorUtils.gray_222222)
                 ) {
                     Text(
-                        stringResource(R.string.apply_company_member),
+                        if (userDetail?.companyRequest == null) stringResource(R.string.apply_company_member) else "등록 결과",
                         color = ColorUtils.white_FFFFFF,
                         fontSize = 12.sp
                     )
