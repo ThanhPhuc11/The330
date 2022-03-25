@@ -14,8 +14,8 @@ class SecondHandMarketRepo(private val apiService: ApiService) {
 
     suspend fun secondHandMarket(
         token: String,
-        cityId: Int?,
-        districtId: Int?,
+        latitude: Float?,
+        longitude: Float?,
         secondhandCategoryType: String?,
         page: Int,
         size: Int,
@@ -25,8 +25,8 @@ class SecondHandMarketRepo(private val apiService: ApiService) {
         emit(
             apiService.secondHandMarket(
                 token = token,
-                cityId = cityId,
-                districtId = districtId,
+                latitude = latitude,
+                longitude = longitude,
                 secondhandCategoryType = secondhandCategoryType,
                 page = page,
                 size = size,

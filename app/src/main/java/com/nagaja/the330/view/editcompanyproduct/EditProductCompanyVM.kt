@@ -1,0 +1,139 @@
+package com.nagaja.the330.view.editcompanyproduct
+
+import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.lifecycle.viewModelScope
+import com.nagaja.the330.base.BaseViewModel
+import com.nagaja.the330.model.CompanyModel
+import com.nagaja.the330.model.FileModel
+import com.nagaja.the330.model.NameModel
+import com.nagaja.the330.model.ProductModel
+import com.nagaja.the330.utils.AppConstants
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+
+
+class EditProductCompanyVM(
+    private val repo: EditProductCompanyRepo
+) : BaseViewModel() {
+    val companyModel = mutableStateOf(CompanyModel())
+
+    val listImageProduct = mutableStateListOf<FileModel>()
+
+    //info company
+    val textStateNameEng = mutableStateOf(TextFieldValue(""))
+    val textStateNamePhi = mutableStateOf(TextFieldValue(""))
+    val textStateNameKr = mutableStateOf(TextFieldValue(""))
+    val textStateNameCN = mutableStateOf(TextFieldValue(""))
+    val textStateNameJP = mutableStateOf(TextFieldValue(""))
+
+    val textStatePeso = mutableStateOf(TextFieldValue(""))
+    val textStateDollar = mutableStateOf(TextFieldValue(""))
+    val textStateWon = mutableStateOf(TextFieldValue(""))
+
+    val textStateDesEng = mutableStateOf(TextFieldValue(""))
+    val textStateDesPhi = mutableStateOf(TextFieldValue(""))
+    val textStateDesKr = mutableStateOf(TextFieldValue(""))
+    val textStateDesCN = mutableStateOf(TextFieldValue(""))
+    val textStateDesJP = mutableStateOf(TextFieldValue(""))
+
+    var fileName = ""
+    var filePath = ""
+
+
+    fun editCompany(token: String) {
+        if (textStateNameEng.value.text.isBlank() ||
+            textStateDesEng.value.text.isBlank() ||
+            textStatePeso.value.text.isBlank() ||
+            textStateDollar.value.text.isBlank()
+        ) return
+        val productModel = ProductModel().apply {
+            images = listImageProduct.onEachIndexed { index, obj ->
+                obj.priority = index
+            }
+            name = mutableListOf<NameModel>().apply {
+                add(NameModel(name = textStateNameEng.value.text, lang = AppConstants.Lang.EN))
+                add(NameModel(name = textStateNamePhi.value.text, lang = AppConstants.Lang.PH))
+                add(NameModel(name = textStateNameKr.value.text, lang = AppConstants.Lang.KR))
+                add(NameModel(name = textStateNameCN.value.text, lang = AppConstants.Lang.CN))
+                add(NameModel(name = textStateNameJP.value.text, lang = AppConstants.Lang.JP))
+            }
+            description = mutableListOf<NameModel>().apply {
+                add(NameModel(name = textStateDesEng.value.text, lang = AppConstants.Lang.EN))
+                add(NameModel(name = textStateDesPhi.value.text, lang = AppConstants.Lang.PH))
+                add(NameModel(name = textStateDesKr.value.text, lang = AppConstants.Lang.KR))
+                add(NameModel(name = textStateDesCN.value.text, lang = AppConstants.Lang.CN))
+                add(NameModel(name = textStateDesJP.value.text, lang = AppConstants.Lang.JP))
+            }
+
+            peso = textStatePeso.value.text.toDouble()
+            dollar = textStateDollar.value.text.toDouble()
+            if (textStateWon.value.text.isNotEmpty()) {
+                won = textStateWon.value.text.toDouble()
+            }
+        }
+
+        this.companyModel.value.apply {
+            products = mutableListOf<ProductModel>().apply {
+                add(productModel)
+            }
+        }
+        viewModelScope.launch {
+            repo.editCompany(token, companyModel.value)
+                .onStart { }
+                .onCompletion { }
+                .catch { }
+                .collect {
+                    if (it.images != null && it.images!!.size > 0)
+                        it.images?.onEach { fileModel ->
+                            companyModel.value.images!!.forEach { fileLocal ->
+                                if (fileModel.url?.contains(fileLocal.fileName!!) == true) {
+                                    uploadImageTest(fileModel.url ?: "", fileLocal.url!!)
+                                }
+                            }
+                        }
+
+                    if (it.products != null && it.products!!.size > 0)
+                        it.products!![0].images!!.onEach { fileModel ->
+                            companyModel.value.products!![0].images!!.forEach { fileLocal ->
+                                if (fileModel.url?.contains(fileLocal.fileName!!) == true) {
+                                    uploadImageTest(fileModel.url ?: "", fileLocal.url!!)
+                                }
+                            }
+                        }
+
+                    it.file?.url?.let { it1 -> uploadImageTest(it1, companyModel.value.fileTemp?.url!!) }
+                }
+        }
+    }
+
+    fun uploadImageTest(url: String, path: String) {
+        val requestFile: RequestBody =
+            File(path).asRequestBody("application/octet-stream".toMediaTypeOrNull())
+
+        viewModelScope.launch {
+            repo.uploadImage(url, requestFile)
+                .onStart { }
+                .onCompletion { }
+                .catch {
+                    Log.e("Catch", this.toString())
+                }
+                .collect {
+                    if (it.raw().isSuccessful && it.raw().code == 200) {
+                        Log.e("Success", "upload success")
+                    } else {
+                        Log.e("Fail", "upload fail")
+                    }
+                }
+        }
+    }
+}

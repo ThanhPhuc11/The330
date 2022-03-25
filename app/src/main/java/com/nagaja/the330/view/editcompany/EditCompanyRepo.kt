@@ -14,8 +14,8 @@ class EditCompanyRepo(private val apiService: ApiService) {
         emit(apiService.getCategory(token, group))
     }
 
-    suspend fun makeCompany(token: String, body: CompanyModel) = flow {
-        emit(apiService.makeCompany(token, body))
+    suspend fun editCompany(token: String, body: CompanyModel) = flow {
+        emit(apiService.editCompany(token, body))
     }
 
     suspend fun uploadImage(url: String, body: RequestBody) = flow {

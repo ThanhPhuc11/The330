@@ -146,6 +146,12 @@ interface ApiService {
         @Body body: CompanyModel
     ): AppyCompanyResponse
 
+    @PATCH("company_requests")
+    suspend fun editCompany(
+        @Header("Authorization") token: String,
+        @Body body: CompanyModel
+    ): AppyCompanyResponse
+
     @PUT
     suspend fun uploadImage(
         @Url fullUrl: String?,
@@ -193,8 +199,8 @@ interface ApiService {
         @Query("page") page: Int,
         @Query("size") size: Int,
         @Query("sort") sort: String,
-        @Query("cityId") cityId: Int?,
-        @Query("districtId") districtId: Int?,
+        @Query("latitude") latitude: Float?,
+        @Query("longitude") longitude: Float?,
         @Query("secondhandCategoryType") secondhandCategoryType: String?,
         @Query("all") all: String?,
     ): ResponseModel<MutableList<SecondHandModel>>
@@ -393,8 +399,8 @@ interface ApiService {
         @Query("serviceTypes") serviceTypes: MutableList<String>?,
         @Query("cType") cType: String?,
         @Query("authentication") authentication: Boolean?,
-        @Query("cityId") cityId: Int?,
-        @Query("districtId") districtId: Int?,
+        @Query("latitude") latitude: Float?,
+        @Query("longitude") longitude: Float?,
         @Query("all") all: String?
     ): ResponseModel<MutableList<CompanyModel>>
 

@@ -79,7 +79,7 @@ class EditCompanyVM(
     var totalFileUpload = 0
     var fileUploaded = 0
 
-    val callbackMakeSuccess = MutableLiveData<Unit>()
+    val callbackEditSuccess = MutableLiveData<Unit>()
 
     fun getCategory(token: String) {
         viewModelScope.launch {
@@ -143,7 +143,7 @@ class EditCompanyVM(
             textStateName.value.text.isBlank() ||
             textStateOpenTime.value < 0 ||
             textStateCloseTime.value < 0 ||
-            fileName.isEmpty() ||
+//            fileName.isEmpty() ||
             (serviceType[1].isSelected && reservationTime.isNullOrEmpty()) ||
             (serviceType[1].isSelected && textStateNumReservation.value.text.isBlank())
         ) {
@@ -155,6 +155,7 @@ class EditCompanyVM(
 
     fun saveCompanyTransfer(): CompanyModel {
         return CompanyModel().apply {
+            id = companyDetail.value.id
             ctype = selectedOptionCategory.value.ctype
             images = listImageRepresentative.onEachIndexed { index, obj ->
                 obj.priority = index
@@ -197,21 +198,25 @@ class EditCompanyVM(
             reservationNumber = textStateNumReservation.value.text.ifBlank { null }?.toInt()
             paymentMethod = textStatePaymethod.value.text.ifBlank { null }
 
-            file = fileName
+            file = fileName.ifEmpty { null }
             fileTemp = FileModel(url = filePath)
         }
     }
 
-    fun makeCompany(token: String) {
+    fun editCompany(token: String) {
         if (!isValidate()) return
         val companyModel = saveCompanyTransfer()
         viewModelScope.launch {
-            repo.makeCompany(token, companyModel)
+            repo.editCompany(token, companyModel)
                 .onStart { }
                 .onCompletion { }
                 .catch { }
                 .collect {
-                    totalFileUpload = listImageRepresentative.size + 1
+                    totalFileUpload =
+                        listImageRepresentative.size + if (fileName.isEmpty()) 0 else 1
+                    if (totalFileUpload == 0) {
+                        callbackEditSuccess.value = Unit
+                    }
                     if (it.images != null && it.images!!.size > 0)
                         it.images?.onEach { fileModel ->
                             listImageRepresentative.forEach { fileLocal ->
@@ -245,7 +250,7 @@ class EditCompanyVM(
                         Log.e("Fail", path)
                     }
                     if (fileUploaded == totalFileUpload) {
-                        callbackMakeSuccess.value = Unit
+                        callbackEditSuccess.value = Unit
                     }
                 }
         }
@@ -270,4 +275,31 @@ class EditCompanyVM(
                 }
         }
     }
+
+    val stateListTime = mutableStateListOf(
+        TimeReservation("00:00"), TimeReservation("00:30"),
+        TimeReservation("01:00"), TimeReservation("01:30"),
+        TimeReservation("02:00"), TimeReservation("02:30"),
+        TimeReservation("03:00"), TimeReservation("03:30"),
+        TimeReservation("04:00"), TimeReservation("04:30"),
+        TimeReservation("05:00"), TimeReservation("05:30"),
+        TimeReservation("06:00"), TimeReservation("06:30"),
+        TimeReservation("07:00"), TimeReservation("07:30"),
+        TimeReservation("08:00"), TimeReservation("08:30"),
+        TimeReservation("09:00"), TimeReservation("09:30"),
+        TimeReservation("10:00"), TimeReservation("10:30"),
+        TimeReservation("11:00"), TimeReservation("11:30"),
+        TimeReservation("12:00"), TimeReservation("12:30"),
+        TimeReservation("13:00"), TimeReservation("13:30"),
+        TimeReservation("14:00"), TimeReservation("14:30"),
+        TimeReservation("15:00"), TimeReservation("15:30"),
+        TimeReservation("16:00"), TimeReservation("16:30"),
+        TimeReservation("17:00"), TimeReservation("17:30"),
+        TimeReservation("18:00"), TimeReservation("18:30"),
+        TimeReservation("19:00"), TimeReservation("19:30"),
+        TimeReservation("20:00"), TimeReservation("20:30"),
+        TimeReservation("21:00"), TimeReservation("21:30"),
+        TimeReservation("22:00"), TimeReservation("22:30"),
+        TimeReservation("23:00"), TimeReservation("23:30"),
+    )
 }
