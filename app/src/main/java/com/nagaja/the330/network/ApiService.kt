@@ -196,6 +196,7 @@ interface ApiService {
         @Query("cityId") cityId: Int?,
         @Query("districtId") districtId: Int?,
         @Query("secondhandCategoryType") secondhandCategoryType: String?,
+        @Query("all") all: String?,
     ): ResponseModel<MutableList<SecondHandModel>>
 
     @GET("secondhand_posts/in_my_page")

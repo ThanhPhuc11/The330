@@ -19,7 +19,8 @@ class SecondHandMarketRepo(private val apiService: ApiService) {
         secondhandCategoryType: String?,
         page: Int,
         size: Int,
-        sort: String
+        sort: String,
+        all: String?
     ) = flow {
         emit(
             apiService.secondHandMarket(
@@ -29,7 +30,8 @@ class SecondHandMarketRepo(private val apiService: ApiService) {
                 secondhandCategoryType = secondhandCategoryType,
                 page = page,
                 size = size,
-                sort = sort
+                sort = sort,
+                all = all
             )
         )
     }

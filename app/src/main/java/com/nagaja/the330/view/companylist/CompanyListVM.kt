@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 class CompanyListVM(
     private val repo: CompanyListRepo
 ) : BaseViewModel() {
+    var keyword: String? = null
     var sort: String = "NAGAJA_RECOMMEND_ORDER"
     var filter: MutableList<String>? = null
     var cType: String? = null
@@ -27,7 +28,6 @@ class CompanyListVM(
         page: Int,
         cityId: Int? = null,
         districtId: Int? = null,
-        all: String? = null
     ) {
         viewModelScope.launch {
             repo.findCompany(
@@ -40,7 +40,7 @@ class CompanyListVM(
                 authentication,
                 cityId,
                 districtId,
-                all
+                keyword
             )
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }

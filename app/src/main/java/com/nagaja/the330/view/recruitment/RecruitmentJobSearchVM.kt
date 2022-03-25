@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 class RecruitmentJobSearchVM(
     private val repo: RecruitmentJobSearchRepo
 ) : BaseViewModel() {
+    var keyword: String? = null
     var sort = "LASTEST"
     var type = AppConstants.RECRUITMENT
     var listDataRecruitment = mutableListOf<RecruitmentJobsModel>()
@@ -38,7 +39,7 @@ class RecruitmentJobSearchVM(
                 size = 20,
                 sort = sort,
                 type = type,
-                null
+                keyword
             )
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }
