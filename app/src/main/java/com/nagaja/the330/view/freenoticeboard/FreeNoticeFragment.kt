@@ -97,6 +97,8 @@ class FreeNoticeFragment : BaseFragment() {
                 },
                 clickSearch = {
                     showMessDEBUG(it)
+                    viewModel.keyword = it
+                    viewModel.getFreeNoticeBoard(accessToken!!, 0)
                 },
                 textOption = stringResource(R.string.post_register),
                 clickOption = {
