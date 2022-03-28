@@ -9,6 +9,10 @@ class LocalNewsModel {
     @Expose
     var body: String? = null
 
+    @SerializedName("images")
+    @Expose
+    var images: MutableList<FileModel>? = null
+
     @SerializedName("commentCount")
     @Expose
     var commentCount: Int? = null
