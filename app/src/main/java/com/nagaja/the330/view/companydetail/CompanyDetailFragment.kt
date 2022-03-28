@@ -365,6 +365,7 @@ class CompanyDetailFragment : BaseFragment() {
             Modifier
                 .padding(horizontal = 19.dp)
                 .padding(top = 37.dp)
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
             RowDataInfo("업체명", obj.name?.getOrNull(0)?.name ?: "")
@@ -425,6 +426,7 @@ class CompanyDetailFragment : BaseFragment() {
             state = rememberLazyListState(),
             modifier = Modifier
                 .padding(horizontal = 16.dp)
+                .fillMaxSize()
         ) {
             itemsIndexed(listCompany) { _, obj ->
                 ItemProduct(obj)

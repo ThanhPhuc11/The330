@@ -19,7 +19,7 @@ class SecondHandDetailRepo(private val apiService: ApiService) {
         emit(apiService.viewDetailSecondhandPost(token, id))
     }
 
-    suspend fun editSecondhandPost(token: String, body: SecondHandModel) = flow {
+    suspend fun editSecondhandPost(token: String, body: MutableList<SecondHandModel>) = flow {
         emit(apiService.editSecondhandPost(token, body))
     }
 }

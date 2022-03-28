@@ -106,8 +106,8 @@ object GetDummyData {
         return mutableListOf<KeyValueModel>().apply {
             add(KeyValueModel("LASTEST", context.getString(R.string.lastest_order)))
             add(KeyValueModel("NEAREST", context.getString(R.string.close_net)))
-            add(KeyValueModel("PRICE_DESC", context.getString(R.string.low_price_net)))
-            add(KeyValueModel("PRICE_ASC", context.getString(R.string.high_price)))
+            add(KeyValueModel("PRICE_DESC", context.getString(R.string.high_price)))
+            add(KeyValueModel("PRICE_ASC", context.getString(R.string.low_price_net)))
         }
     }
 

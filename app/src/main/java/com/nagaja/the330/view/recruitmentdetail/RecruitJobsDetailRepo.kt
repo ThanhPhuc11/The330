@@ -9,7 +9,7 @@ class RecruitJobsDetailRepo(private val apiService: ApiService) {
         emit(apiService.getRecruitJobsDetail(token, id))
     }
 
-    suspend fun editPostRecruitJobs(token: String, body: RecruitmentJobsModel) = flow {
+    suspend fun editPostRecruitJobs(token: String, body: MutableList<RecruitmentJobsModel>) = flow {
         emit(apiService.editPostRecruitJobs(token, body))
     }
 

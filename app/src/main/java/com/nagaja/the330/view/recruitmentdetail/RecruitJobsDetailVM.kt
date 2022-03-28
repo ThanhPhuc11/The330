@@ -41,9 +41,11 @@ class RecruitJobsDetailVM(
 
     fun cancelPostRecruitJobs(token: String) {
         viewModelScope.launch {
-            repo.editPostRecruitJobs(token, RecruitmentJobsModel().apply {
-                id = recruitJobsModel.value.id
-                status = "DELETED"
+            repo.editPostRecruitJobs(token, mutableListOf<RecruitmentJobsModel>().apply {
+                add(RecruitmentJobsModel().apply {
+                    id = recruitJobsModel.value.id
+                    status = "DELETED"
+                })
             })
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }

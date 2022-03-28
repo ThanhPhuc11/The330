@@ -36,6 +36,7 @@ class FreeNoticeRegisVM(
     val callbackPostSuccess = MutableLiveData<Int>()
 
     fun makePostNotice(token: String) {
+        if (stateEdtTitle.value.text.isEmpty() || stateEdtBody.value.text.isEmpty()) return
         val body = FreeNoticePostRequest().apply {
             title = stateEdtTitle.value.text
             body = stateEdtBody.value.text
@@ -47,8 +48,8 @@ class FreeNoticeRegisVM(
         viewModelScope.launch {
             repo.makePostNotice(token, body)
                 .onStart { callbackStart.value = Unit }
-                .onCompletion {  }
-                .catch { handleError(it)}
+                .onCompletion { }
+                .catch { handleError(it) }
                 .collect {
                     callbackSuccess.value = Unit
                     justSuccessId = it.id

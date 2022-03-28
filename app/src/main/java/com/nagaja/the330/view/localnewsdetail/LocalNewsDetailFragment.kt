@@ -152,7 +152,11 @@ class LocalNewsDetailFragment : BaseFragment() {
                     val configuration = LocalConfiguration.current
                     val screenWidth = configuration.screenWidthDp
                     GlideImage(
-                        imageModel = "${BuildConfig.BASE_S3}${""}",
+                        imageModel = "${BuildConfig.BASE_S3}${
+                            viewModel.localNewsModel.value.images?.getOrNull(
+                                0
+                            )?.url ?: ""
+                        }",
                         modifier = Modifier
                             .fillMaxWidth()
                             .height((200 * screenWidth / 343).dp)
@@ -184,7 +188,7 @@ class LocalNewsDetailFragment : BaseFragment() {
                     stateSelectedId.value = it
                 }
 
-                LoadmoreHandler(lazyListState) { page->
+                LoadmoreHandler(lazyListState) { page ->
                     commentViewModel.getCommentsById(
                         accessToken!!,
                         page,

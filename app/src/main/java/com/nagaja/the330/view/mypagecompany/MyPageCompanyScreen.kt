@@ -147,12 +147,10 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
                     getUserDetailFromDataStore(context)
+                    viewModel.getUserDetails(accessToken)
                     viewModel.cbUpdateUserDataStore.observe(owner) {
                         DataStorePref(context).setUserDetail(it)
                     }
-                }
-                Lifecycle.Event.ON_START -> {
-                    viewModel.getUserDetails(accessToken)
                 }
                 Lifecycle.Event.ON_STOP -> {
 

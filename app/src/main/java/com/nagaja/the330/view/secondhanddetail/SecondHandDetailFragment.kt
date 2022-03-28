@@ -26,6 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
@@ -39,6 +42,7 @@ import com.nagaja.the330.view.Header
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.chatdetail.ChatDetailFragment
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.recruitmentdetail.ImageDetailSliderFragment
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -76,6 +80,7 @@ class SecondHandDetailFragment : BaseFragment() {
         }
     }
 
+    @OptIn(ExperimentalPagerApi::class)
     @Preview
     @Composable
     override fun UIData() {
@@ -110,18 +115,31 @@ class SecondHandDetailFragment : BaseFragment() {
                 ) {
                     val configuration = LocalConfiguration.current
                     val screenWidth = configuration.screenWidthDp.dp
-                    GlideImage(
-                        imageModel = "${BuildConfig.BASE_S3}${
-                            viewModel.secondhandDetail.value.images?.getOrNull(
-                                0
-                            )?.url
-                        }",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(screenWidth),
-                        placeHolder = painterResource(R.drawable.ic_default_nagaja),
-                        error = painterResource(R.drawable.ic_default_nagaja)
+                    val pagerState = rememberPagerState(
+                        pageCount = viewModel.secondhandDetail.value.images?.size ?: 0
                     )
+                    HorizontalPager(state = pagerState) { page ->
+                        GlideImage(
+                            imageModel = "${BuildConfig.BASE_S3}${
+                                viewModel.secondhandDetail.value.images?.getOrNull(
+                                    page
+                                )?.url
+                            }",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(screenWidth)
+                                .noRippleClickable {
+                                    viewModel.secondhandDetail.value.images?.let {
+                                        viewController?.pushFragment(
+                                            ScreenId.SCREEN_FIND_ID,
+                                            ImageDetailSliderFragment.newInstance(it)
+                                        )
+                                    }
+                                },
+                            placeHolder = painterResource(R.drawable.ic_default_nagaja),
+                            error = painterResource(R.drawable.ic_default_nagaja)
+                        )
+                    }
 
                     Divider(
                         color = ColorUtils.gray_E1E1E1,
