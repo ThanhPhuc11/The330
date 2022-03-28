@@ -321,7 +321,7 @@ interface ApiService {
     @PATCH("recruitment_jobs")
     suspend fun editPostRecruitJobs(
         @Header("Authorization") token: String,
-        @Body body: RecruitmentJobsModel
+        @Body body: MutableList<RecruitmentJobsModel>
     ): SecondHandPostResponse
 
     @GET("recruitment_jobs/employmentConfirm/check")

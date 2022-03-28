@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,11 +43,8 @@ import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
-import com.nagaja.the330.view.Header
-import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.*
 import com.nagaja.the330.view.chatdetail.ChatDetailFragment
-import com.nagaja.the330.view.noRippleClickable
-import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -238,6 +236,38 @@ class RecruitJobsDetailFragment : BaseFragment() {
                     .height(52.dp)
             ) {
                 if (userDetail.value.id == viewModel.recruitJobsModel.value.writer?.id) {
+                    val stateShowPopupCancel = remember { mutableStateOf(false) }
+                    val stateShowPopupConfirmEmployee = remember { mutableStateOf(false) }
+                    if (stateShowPopupCancel.value) {
+                        Dialog2Button(
+                            state = stateShowPopupCancel,
+                            title = "",
+                            content = "구직을 취소하시겠습니까?",
+                            leftText = "취소",
+                            rightText = "확인",
+                            onClick = {
+                                if (it) {
+                                    viewModel.cancelPostRecruitJobs(accessToken!!)
+                                }
+                            }
+                        )
+                    }
+
+                    if (stateShowPopupConfirmEmployee.value) {
+                        Dialog2Button(
+                            state = stateShowPopupCancel,
+                            title = "",
+                            content = "입사를 결정하셨나요?",
+                            leftText = "취소",
+                            rightText = "확인",
+                            onClick = {
+                                if (it) {
+                                    viewModel.confirmRecruit(accessToken!!)
+                                }
+                            }
+                        )
+                    }
+
                     ButtonFunction(
                         Modifier.weight(1f),
                         "수정",
@@ -255,17 +285,18 @@ class RecruitJobsDetailFragment : BaseFragment() {
                         ColorUtils.white_FFFFFF
                     ) {
                         showMessDEBUG("CANCEL")
-                        viewModel.cancelPostRecruitJobs(accessToken!!)
+                        stateShowPopupCancel.value = true
+//                        viewModel.cancelPostRecruitJobs(accessToken!!)
                     }
                     ButtonFunction(
                         Modifier.weight(1f),
-                        "수정",
+                        "입사확정",
                         ColorUtils.blue_2177E4,
                         ColorUtils.blue_2177E4,
                         ColorUtils.white_FFFFFF
                     ) {
                         showMessDEBUG("CONFIRMATION_OF_EMPLOYMENT")
-                        viewModel.confirmRecruit(accessToken!!)
+                        stateShowPopupConfirmEmployee.value = true
                     }
                 } else {
                     ButtonFunction(
