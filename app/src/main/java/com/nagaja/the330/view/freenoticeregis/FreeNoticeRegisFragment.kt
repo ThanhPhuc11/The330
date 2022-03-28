@@ -121,7 +121,8 @@ class FreeNoticeRegisFragment : BaseFragment() {
                 TextFieldCustom(
                     modifier = Modifier.padding(16.dp),
                     hint = stringResource(R.string.enter_title_for_your_post),
-                    textStateId = viewModel.stateEdtTitle
+                    textStateId = viewModel.stateEdtTitle,
+                    maxLength = 30
                 )
                 Text(
                     stringResource(R.string.company_basic_information),
