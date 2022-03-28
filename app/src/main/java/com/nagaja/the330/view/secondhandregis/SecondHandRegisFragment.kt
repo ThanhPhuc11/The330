@@ -208,7 +208,7 @@ class SecondHandRegisFragment : BaseFragment() {
                     count.value = listImage.size
                 }
                 RepresentativeImage(count) {
-                    if (count.value == 5) return@RepresentativeImage
+                    if (count.value == 10) return@RepresentativeImage
                     checkPermissBeforeAttachFile(this@SecondHandRegisFragment.requireContext()) {
                         val intent = Intent(Intent.ACTION_PICK).apply {
                             setDataAndType(

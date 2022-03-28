@@ -15,7 +15,7 @@ class EventVM(private val repo: EventRepo) : BaseViewModel() {
 
     fun getEvent(token: String, page: Int) {
         viewModelScope.launch {
-            repo.getEvent(token, page, 10)
+            repo.getEvent(token, page, 20)
                 .onStart { }
                 .onCompletion { }
                 .catch { }

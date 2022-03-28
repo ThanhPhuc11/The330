@@ -424,7 +424,7 @@ class ChatDetailFragment : BaseFragment() {
                 }
                 Row(Modifier.width(200.dp)) {
                     Text(
-                        "읽음",
+                        "전송됨",
                         color = ColorUtils.gray_9E9E9E,
                         fontSize = 12.sp,
                         modifier = Modifier.weight(1f)

@@ -184,7 +184,7 @@ interface ApiService {
     @PATCH("secondhand_posts")
     suspend fun editSecondhandPost(
         @Header("Authorization") token: String,
-        @Body body: SecondHandModel
+        @Body body: MutableList<SecondHandModel>
     ): SecondHandPostResponse
 
     @POST("secondhand_posts/viewDetail")
