@@ -53,6 +53,7 @@ import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.LayoutTheme330
+import com.nagaja.the330.view.companydetail.CompanyDetailFragment
 import com.nagaja.the330.view.companylist.CompanyListFragment
 import com.nagaja.the330.view.event.OnGoingEventsFragment
 import com.nagaja.the330.view.faq.FAQsFragment
@@ -164,7 +165,7 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
                     fontWeight = FontWeight.Black
                 )
             }
-            ListCompanyRecommended(viewModel)
+            ListCompanyRecommended(viewModel, viewController)
 
             Footer(viewModel)
         }
@@ -212,76 +213,6 @@ private fun LogoAndSearch(viewController: ViewController?) {
                 color = ColorUtils.gray_626262,
                 fontSize = 14.sp
             )
-        }
-    }
-}
-
-@Composable
-private fun SearchFilter() {
-    Row(
-        Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-    ) {
-        BoxSearch(
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 7.dp),
-            options = GetDummyData.getCoutryAdrressSignup()
-        )
-        BoxSearch(
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 7.dp),
-            options = GetDummyData.getCoutryAdrressSignup()
-        )
-        BoxSearch(modifier = Modifier.weight(1f), options = GetDummyData.getCoutryAdrressSignup())
-    }
-}
-
-@Composable
-private fun BoxSearch(modifier: Modifier = Modifier, options: MutableList<KeyValueModel>) {
-    var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(options[0]) }
-    Row(
-        modifier = modifier
-            .noRippleClickable {
-                expanded = !expanded
-            }
-            .border(
-                width = 1.dp,
-                color = ColorUtils.blue_2177E4_opacity_10,
-                shape = RoundedCornerShape(4.dp)
-            )
-            .height(44.dp)
-            .padding(horizontal = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            selectedOptionText.name!!,
-            style = text14_222,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Start
-        )
-        Image(
-            painter = painterResource(R.drawable.ic_arrow_filter),
-            contentDescription = "",
-            Modifier.rotate(if (expanded) 180f else 0f)
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = {
-                expanded = false
-            }
-        ) {
-            options.forEach { selectionOption ->
-                DropdownMenuItem(
-                    onClick = {
-                        selectedOptionText = selectionOption
-                        expanded = false
-                    }
-                ) {
-                    Text(text = selectionOption.name!!)
-                }
-            }
         }
     }
 }
@@ -442,21 +373,29 @@ private fun MoneyValue(
 }
 
 @Composable
-private fun ListCompanyRecommended(viewModel: HomeScreenVM) {
+private fun ListCompanyRecommended(viewModel: HomeScreenVM, viewController: ViewController?) {
     val listData = viewModel.statelistCompany
     LazyRow(state = rememberLazyListState()) {
         items(listData) { obj ->
-            CompanyItemView(obj)
+            CompanyItemView(obj) {
+                viewController?.pushFragment(
+                    ScreenId.SCREEN_COMPANY_DETAIL,
+                    CompanyDetailFragment.newInstance(obj.id!!)
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun CompanyItemView(obj: CompanyRecommendModel) {
+private fun CompanyItemView(obj: CompanyRecommendModel, onClick: () -> Unit) {
     Column(
         Modifier
             .padding(bottom = 6.dp, start = 16.dp, end = 4.dp)
             .background(ColorUtils.white_FFFFFF)
+            .noRippleClickable {
+                onClick.invoke()
+            }
     ) {
         Box(
             Modifier
