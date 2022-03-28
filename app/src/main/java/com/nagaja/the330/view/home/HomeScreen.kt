@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,7 +42,6 @@ import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.R
 import com.nagaja.the330.base.ViewController
 import com.nagaja.the330.base.ViewModelFactory
-import com.nagaja.the330.data.GetDummyData
 import com.nagaja.the330.model.CategoryModel
 import com.nagaja.the330.model.CompanyRecommendModel
 import com.nagaja.the330.model.KeyValueModel
@@ -52,6 +50,7 @@ import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
+import com.nagaja.the330.view.HeaderSearch
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.companydetail.CompanyDetailFragment
 import com.nagaja.the330.view.companylist.CompanyListFragment
@@ -178,42 +177,25 @@ private fun LogoAndSearch(viewController: ViewController?) {
     Row(
         Modifier
             .padding(top = 7.dp, bottom = 3.dp)
-            .padding(horizontal = 16.dp, vertical = 6.dp),
+            .padding(vertical = 6.dp)
+            .padding(start = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_splash_png),
             contentDescription = "",
             colorFilter = ColorFilter.tint(ColorUtils.blue_2177E4),
-            modifier = Modifier.height(18.dp)
+            modifier = Modifier.height(18.dp).padding(end = 18.dp)
         )
-        Row(
-            Modifier
-                .padding(start = 18.dp)
-                .height(32.dp)
-                .weight(1f)
-//                .clip(RoundedCornerShape(4.dp))
-                .background(ColorUtils.blue_2177E4_opacity_5, RoundedCornerShape(4.dp))
-                .border(1.dp, ColorUtils.blue_2177E4_opacity_10, RoundedCornerShape(4.dp))
-                .noRippleClickable {
-                    viewController?.pushFragment(
-                        ScreenId.SCREEN_SEARCH_MAIN,
-                        SearchMainFragment.newInstance()
-                    )
-                },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_search),
-                contentDescription = "",
-                Modifier.padding(horizontal = 10.dp)
-            )
-            Text(
-                "검색어를 입력해 보세요.",
-                color = ColorUtils.gray_626262,
-                fontSize = 14.sp
-            )
-        }
+        HeaderSearch(
+            hideBack = true,
+            clickSearch = {
+                viewController?.pushFragment(
+                    ScreenId.SCREEN_SEARCH_MAIN,
+                    SearchMainFragment.newInstance(it)
+                )
+            }
+        )
     }
 }
 

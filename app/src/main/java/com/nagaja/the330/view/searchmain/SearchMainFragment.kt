@@ -1,5 +1,6 @@
 package com.nagaja.the330.view.searchmain
 
+import android.os.Bundle
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -72,7 +73,11 @@ class SearchMainFragment : BaseFragment() {
     private lateinit var viewModelReportMissing: ReportMissingVM
 
     companion object {
-        fun newInstance() = SearchMainFragment()
+        fun newInstance(keyword: String) = SearchMainFragment().apply {
+            arguments = Bundle().apply {
+                putString(AppConstants.EXTRA_KEY1, keyword)
+            }
+        }
     }
 
     override fun SetupViewModel() {
@@ -98,6 +103,7 @@ class SearchMainFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
                         listTitleSearch[0].isSelected = true
+                        viewModel.keyword.value = requireArguments().getString(AppConstants.EXTRA_KEY1, "")
                     }
                     else -> {}
                 }
@@ -112,7 +118,8 @@ class SearchMainFragment : BaseFragment() {
                 clickBack = { viewController?.popFragment() },
                 clickSearch = {
                     viewModel.keyword.value = it.ifEmpty { null }
-                }
+                },
+                init = TextFieldValue(requireArguments().getString(AppConstants.EXTRA_KEY1, ""))
             )
             Text(
                 "검색 결과 총 0개",
@@ -247,8 +254,9 @@ class SearchMainFragment : BaseFragment() {
     fun HeaderSearch(
         clickBack: (() -> Unit)? = null,
         clickSearch: ((String) -> Unit)? = null,
+        init: TextFieldValue = TextFieldValue("")
     ) {
-        val stateEdtInput = remember { mutableStateOf(TextFieldValue("")) }
+        val stateEdtInput = remember { mutableStateOf(init) }
         val keyboardController = LocalSoftwareKeyboardController.current
         Row(
             modifier = Modifier

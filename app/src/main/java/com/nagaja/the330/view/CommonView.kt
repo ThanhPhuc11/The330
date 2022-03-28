@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
@@ -23,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -124,15 +126,18 @@ fun HeaderOption(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Preview(showBackground = true)
 @Composable
 fun HeaderSearch(
     clickBack: (() -> Unit)? = null,
+    hideBack: Boolean = false,
     clickSearch: ((String) -> Unit)? = null,
     textOption: String? = null,
     clickOption: (() -> Unit)? = null
 ) {
     val stateEdtInput = remember { mutableStateOf(TextFieldValue("")) }
+    val keyboardController = LocalSoftwareKeyboardController.current
     Row(
         modifier = Modifier
             .background(ColorUtils.white_FFFFFF)
@@ -140,13 +145,15 @@ fun HeaderSearch(
             .height(44.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(R.drawable.ic_back),
-            contentDescription = "",
-            Modifier
-                .padding(horizontal = 19.dp)
-                .noRippleClickable { clickBack?.invoke() }
-        )
+        if (!hideBack) {
+            Image(
+                painter = painterResource(R.drawable.ic_back),
+                contentDescription = "",
+                Modifier
+                    .padding(horizontal = 19.dp)
+                    .noRippleClickable { clickBack?.invoke() }
+            )
+        }
         Row(
             Modifier
                 .padding(end = 16.dp)
@@ -181,6 +188,7 @@ fun HeaderSearch(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = {
                     clickSearch?.invoke(stateEdtInput.value.text)
+                    keyboardController?.hide()
                 }),
                 textStyle = TextStyle(
                     color = ColorUtils.black_000000
@@ -719,7 +727,11 @@ fun TabSelected(
 }
 
 @Composable
-fun HandleSortUI(context: Context, ft: MutableList<KeyValueModel>, onClick: (KeyValueModel) -> Unit) {
+fun HandleSortUI(
+    context: Context,
+    ft: MutableList<KeyValueModel>,
+    onClick: (KeyValueModel) -> Unit
+) {
     val filters = remember { ft }
     var expanded by remember { mutableStateOf(false) }
     val itemSelected = remember { mutableStateOf(filters[0]) }
