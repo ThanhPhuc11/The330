@@ -47,6 +47,9 @@ class RegularFragment : BaseFragment() {
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[RegularVM::class.java]
         viewController = (activity as MainActivity).viewController
+        backSystemHandler {
+            viewController?.popFragment()
+        }
     }
 
     @OptIn(ExperimentalPagerApi::class)

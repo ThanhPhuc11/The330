@@ -73,6 +73,9 @@ class SecondHandMypageFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
                         stateOptions.value = GetDummyData.getSortFavoriteCompany(context)
+                        backSystemHandler {
+                            viewController?.popFragment()
+                        }
                     }
                     Lifecycle.Event.ON_STOP -> {}
                     else -> {}

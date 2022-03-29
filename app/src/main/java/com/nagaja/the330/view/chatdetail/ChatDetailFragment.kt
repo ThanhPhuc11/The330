@@ -159,6 +159,10 @@ class ChatDetailFragment : BaseFragment() {
                                 }
                             }
                         }
+
+                        backSystemHandler {
+                            viewController?.popFragment()
+                        }
                     }
                     else -> {}
                 }

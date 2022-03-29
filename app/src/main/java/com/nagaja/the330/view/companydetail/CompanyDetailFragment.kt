@@ -134,7 +134,9 @@ class CompanyDetailFragment : BaseFragment() {
                     val configuration = LocalConfiguration.current
                     val screenWidth = configuration.screenWidthDp
                     GlideImage(
-                        imageModel = "",
+                        imageModel = "${BuildConfig.BASE_S3}${
+                            viewModel.companyDetail.value.images?.getOrNull(0)?.url
+                        }",
                         contentDescription = "",
                         placeHolder = painterResource(R.drawable.ic_default_nagaja),
                         error = painterResource(R.drawable.ic_default_nagaja),

@@ -165,7 +165,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
         }
     }
     LayoutTheme330 {
-        Header(title = stringResource(R.string.mypage_tab), clickBack = null)
+        HeaderNoBack(title = stringResource(R.string.mypage_tab))
         Column(
             Modifier
                 .weight(1f)

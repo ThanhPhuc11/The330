@@ -113,9 +113,7 @@ fun ReservationCompanyScreen(accessToken: String, viewController: ViewController
     }
     val pagerState = rememberPagerState(pageCount = 2)
     LayoutTheme330 {
-        Header(stringResource(R.string.option_reservation_status)) {
-//            viewController?.popFragment()
-        }
+        HeaderNoBack(stringResource(R.string.option_reservation_status))
         //TODO: TabSelect
         Row(
             Modifier

@@ -34,7 +34,7 @@ import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.*
-import com.nagaja.the330.view.Header
+import com.nagaja.the330.view.HeaderNoBack
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.chatdetail.ChatDetailFragment
 import com.nagaja.the330.view.noRippleClickable
@@ -91,7 +91,7 @@ fun ChatListScreen(accessToken: String, viewController: ViewController?, user: U
     }
 
     LayoutTheme330 {
-        Header("상담현황")
+        HeaderNoBack("상담현황")
         Row(
             Modifier
                 .fillMaxWidth()
