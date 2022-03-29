@@ -49,6 +49,7 @@ import com.nagaja.the330.view.localnewsdetail.LocalNewsDetailRepo
 import com.nagaja.the330.view.localnewsdetail.LocalNewsDetailVM
 import com.nagaja.the330.view.login.LoginRepository
 import com.nagaja.the330.view.login.LoginViewModel
+import com.nagaja.the330.view.main.MainVM
 import com.nagaja.the330.view.mypage.MyPageScreenRepo
 import com.nagaja.the330.view.mypage.MyPageScreenVM
 import com.nagaja.the330.view.mypagecompany.MyPageCompanyScreenRepo
@@ -122,6 +123,7 @@ class ViewModelFactory(apiService: ApiService) :
             ResetPwVM(ResetPwRepo(apiService))
         creators[SignupInfoVM::class.java] =
             SignupInfoVM(SignupInfoRepo(apiService))
+        creators[MainVM::class.java] = MainVM()
         creators[HomeScreenVM::class.java] =
             HomeScreenVM(HomeScreenRepo(apiService))
         creators[SearchMainVM::class.java] =

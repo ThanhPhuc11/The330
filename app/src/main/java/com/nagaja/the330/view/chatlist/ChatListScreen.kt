@@ -41,6 +41,8 @@ import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_62
 import com.skydoves.landscapist.glide.GlideImage
 
+var onClickUpdateList: (() -> Unit)? = null
+
 @Composable
 fun ChatListScreen(accessToken: String, viewController: ViewController?, user: UserDetail) {
     val context = LocalContext.current
@@ -69,6 +71,12 @@ fun ChatListScreen(accessToken: String, viewController: ViewController?, user: U
                         accessToken,
                         0
                     )
+                    onClickUpdateList = {
+                        viewModel.getChatList(
+                            accessToken,
+                            0
+                        )
+                    }
                 }
                 Lifecycle.Event.ON_STOP -> {
 
@@ -354,20 +362,20 @@ fun ConsultationItem(obj: RoomDetailModel, onClick: () -> Unit) {
             textAlign = TextAlign.Start
         )
         Text(
-            "{${
+            "${
                 AppDateUtils.changeDateFormat(
                     AppDateUtils.FORMAT_7,
                     AppDateUtils.FORMAT_23,
                     obj.createdOn ?: ""
                 )
-            }(최초 대화일시)}\n" +
-                    "{${
+            }(최초 대화일시)\n" +
+                    "${
                         AppDateUtils.changeDateFormat(
                             AppDateUtils.FORMAT_7,
                             AppDateUtils.FORMAT_23,
                             obj.createdOn ?: ""
                         )
-                    }(최종 대화일시)}",
+                    }(최종 대화일시)",
             modifier = Modifier.padding(top = 5.dp),
             color = ColorUtils.gray_9F9F9F,
             fontSize = 12.sp
