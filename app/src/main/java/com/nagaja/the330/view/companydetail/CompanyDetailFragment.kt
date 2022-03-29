@@ -122,36 +122,99 @@ class CompanyDetailFragment : BaseFragment() {
                     viewController?.popFragment()
                 }
             )
-            Column(
+            Box(
                 Modifier
-                    .verticalScroll(rememberScrollState())
                     .weight(1f)
-            ) {
-                val configuration = LocalConfiguration.current
-                val screenWidth = configuration.screenWidthDp
-                GlideImage(
-                    imageModel = "",
-                    contentDescription = "",
-                    placeHolder = painterResource(R.drawable.ic_default_nagaja),
-                    error = painterResource(R.drawable.ic_default_nagaja),
-                    requestOptions = {
-                        RequestOptions()
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .centerInside()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height((screenWidth * 282 / 375).dp)
-                )
+                    .fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
+                Column(
+                    Modifier
+                        .verticalScroll(rememberScrollState())
+                        .fillMaxHeight()
+                ) {
+                    val configuration = LocalConfiguration.current
+                    val screenWidth = configuration.screenWidthDp
+                    GlideImage(
+                        imageModel = "",
+                        contentDescription = "",
+                        placeHolder = painterResource(R.drawable.ic_default_nagaja),
+                        error = painterResource(R.drawable.ic_default_nagaja),
+                        requestOptions = {
+                            RequestOptions()
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .centerInside()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height((screenWidth * 282 / 375).dp)
+                    )
 
-                Text(
-                    viewModel.companyDetail.value.name?.getOrNull(0)?.name ?: "",
-                    color = ColorUtils.gray_222222,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
+                    Text(
+                        viewModel.companyDetail.value.name?.getOrNull(0)?.name ?: "",
+                        color = ColorUtils.gray_222222,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(top = 13.dp)
+                            .padding(horizontal = 16.dp)
+                    )
+                    Row(Modifier.padding(horizontal = 16.dp, vertical = 25.dp)) {
+                        ButtonLike(
+                            "추천",
+                            if (viewModel.isRecommend.value) R.drawable.ic_recommend else R.drawable.ic_recommend_empty,
+                            viewModel.companyDetail.value.numberRecommend ?: 0
+                        ) {
+                            accessToken?.let { viewModel.recommendOrNot(it) }
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        ButtonLike(
+                            "단골",
+                            if (viewModel.isLike.value) R.drawable.ic_heard else R.drawable.ic_heart_empty,
+                            viewModel.companyDetail.value.likedCount ?: 0
+                        ) {
+                            accessToken?.let { viewModel.likeOrNot(it) }
+                        }
+                    }
+
+                    Row(
+                        Modifier
+                            .padding(top = 16.dp)
+                            .fillMaxWidth()
+                            .height(49.dp),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        TabSelected(
+                            modifier = Modifier.weight(1f),
+                            text = stringResource(R.string.basic_information),
+                            isSelected = pagerState.currentPage == 0
+                        ) {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                pagerState.scrollToPage(0)
+                            }
+                        }
+                        Box(
+                            Modifier
+                                .fillMaxHeight()
+                                .width(1.dp)
+                                .background(ColorUtils.gray_E1E1E1)
+                        )
+                        TabSelected(
+                            modifier = Modifier.weight(1f),
+                            text = stringResource(R.string.jobsearch),
+                            isSelected = pagerState.currentPage == 1
+                        ) {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                pagerState.scrollToPage(1)
+                            }
+                        }
+                    }
+                    SetupPager(pagerState)
+                }
+
+                Image(
+                    painterResource(R.drawable.ic_go_to_chat),
+                    "",
                     modifier = Modifier
-                        .padding(top = 13.dp)
-                        .padding(horizontal = 16.dp)
+                        .padding(20.dp)
                         .noRippleClickable {
                             viewModel.companyDetail.value.user?.id?.let {
                                 viewController?.pushFragment(
@@ -159,59 +222,7 @@ class CompanyDetailFragment : BaseFragment() {
                                     ChatDetailFragment.newInstance(partnerId = it)
                                 )
                             }
-                        }
-                )
-                Row(Modifier.padding(horizontal = 16.dp, vertical = 25.dp)) {
-                    ButtonLike(
-                        "추천",
-                        if (viewModel.isRecommend.value) R.drawable.ic_recommend else R.drawable.ic_recommend_empty,
-                        viewModel.companyDetail.value.numberRecommend ?: 0
-                    ) {
-                        accessToken?.let { viewModel.recommendOrNot(it) }
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    ButtonLike(
-                        "단골",
-                        if (viewModel.isLike.value) R.drawable.ic_heard else R.drawable.ic_heart_empty,
-                        viewModel.companyDetail.value.likedCount ?: 0
-                    ) {
-                        accessToken?.let { viewModel.likeOrNot(it) }
-                    }
-                }
-
-                Row(
-                    Modifier
-                        .padding(top = 16.dp)
-                        .fillMaxWidth()
-                        .height(49.dp),
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    TabSelected(
-                        modifier = Modifier.weight(1f),
-                        text = stringResource(R.string.basic_information),
-                        isSelected = pagerState.currentPage == 0
-                    ) {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            pagerState.scrollToPage(0)
-                        }
-                    }
-                    Box(
-                        Modifier
-                            .fillMaxHeight()
-                            .width(1.dp)
-                            .background(ColorUtils.gray_E1E1E1)
-                    )
-                    TabSelected(
-                        modifier = Modifier.weight(1f),
-                        text = stringResource(R.string.jobsearch),
-                        isSelected = pagerState.currentPage == 1
-                    ) {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            pagerState.scrollToPage(1)
-                        }
-                    }
-                }
-                SetupPager(pagerState)
+                        })
             }
             Row(
                 Modifier

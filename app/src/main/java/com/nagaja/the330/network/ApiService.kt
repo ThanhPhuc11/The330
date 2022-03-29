@@ -494,6 +494,12 @@ interface ApiService {
         @Body body: ItemMessageModel
     ): Response<Unit>
 
+    @DELETE("chat/endChat/{chatRoomId}")
+    suspend fun endChat(
+        @Header("Authorization") token: String,
+        @Path("chatRoomId") chatRoomId: Int
+    ): Response<Unit> //204
+
     @GET("banners/top/getAllActive")
     suspend fun getBannerCompany(
         @Header("Authorization") token: String,

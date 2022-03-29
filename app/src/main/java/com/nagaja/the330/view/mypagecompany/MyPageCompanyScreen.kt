@@ -40,6 +40,7 @@ import com.nagaja.the330.model.UserDetail
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.CommonUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.edit_profile.EditProfileFragment
@@ -208,7 +209,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                 MypageOptionItem(
                     R.drawable.ic_point_opt,
                     stringResource(R.string.option_point),
-                    "잔여: 000,000",
+                    "잔여: ${CommonUtils.priceWithoutDecimal((viewModel.companyDetailState.value.pointRemain ?: 0).toDouble())}",
                     clickPoint
                 )
                 MypageOptionItem(

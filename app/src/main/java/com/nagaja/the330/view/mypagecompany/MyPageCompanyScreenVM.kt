@@ -20,6 +20,9 @@ class MyPageCompanyScreenVM(
     val userDetailState: MutableState<UserDetail?> = mutableStateOf(null)
     var companyDetailState = mutableStateOf(CompanyModel())
 
+    val totalReservation = mutableStateOf(0)
+    val usageReservation = mutableStateOf(0)
+
     val cbUpdateUserDataStore = MutableLiveData<UserDetail>()
     fun getUserDetails(token: String) {
         viewModelScope.launch {
@@ -56,12 +59,21 @@ class MyPageCompanyScreenVM(
                 .collect {
                     callbackSuccess.value = Unit
                     companyDetailState.value = it
+                    reservationOverview(token, id)
                 }
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        Log.e("MYPAGE", "onCleared")
+    fun reservationOverview(token: String, id: Int) {
+        viewModelScope.launch {
+            repo.reservationOverview(token, id, "company")
+                .onStart { callbackStart.value = Unit }
+                .onCompletion { }
+                .catch {
+                    handleError(it)
+                }
+                .collect {
+                }
+        }
     }
 }

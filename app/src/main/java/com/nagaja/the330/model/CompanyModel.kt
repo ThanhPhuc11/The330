@@ -33,6 +33,9 @@ class CompanyModel {
     var pointRemain: Int? = null
     var pointUse: Int? = null
     var usageCount: Int? = null
+    var rejectReason: String? = null
+    var createdOn: String? = null
+    var status: String? = null
     var user: UserDetail? = null
 
     //field for request body

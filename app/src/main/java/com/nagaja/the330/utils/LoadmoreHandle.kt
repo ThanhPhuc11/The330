@@ -67,17 +67,30 @@ fun LoadmoreMessHandler(
         snapshotFlow { onScroll.value }
             .collect {
                 Log.e("OnScroll", "first: $it and total $newTotalItem")
+//                if (newTotalItem < oldTotalItem) {
+//                    currentPage = -1
+//                    oldTotalItem = newTotalItem
+//                }
+//                if (loading && newTotalItem > oldTotalItem) {
+//                    loading = false
+//                    oldTotalItem = newTotalItem
+//                }
+//                if (!loading && (it == 0)) {
+//                    currentPage++
+//                    onLoadMore(currentPage)
+//                    loading = true
+//                }
                 if (newTotalItem < oldTotalItem) {
-                    currentPage = -1
                     oldTotalItem = newTotalItem
                 }
+
                 if (loading && newTotalItem > oldTotalItem) {
                     loading = false
                     oldTotalItem = newTotalItem
                 }
-                if (!loading && (it == 0)) {
-                    currentPage++
-                    onLoadMore(currentPage)
+
+                if (!loading && it == 2) {
+                    onLoadMore(9999)
                     loading = true
                 }
             }

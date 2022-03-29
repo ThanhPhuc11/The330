@@ -147,11 +147,11 @@ fun MyPageScreen(accessToken: String, viewController: ViewController?) {
                                 ScreenId.SCREEN_APPLY_COMPANY,
                                 ApplyCompanyFragment.newInstance()
                             )
-//                        else
-//                            viewController?.pushFragment(
-//                                ScreenId.SCREEN_APPLY_COMPANY_RESULT,
-//                                ApplyResultFragment.newInstance()
-//                            )
+                        else
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_APPLY_COMPANY_RESULT,
+                                ApplyResultFragment.newInstance(false)
+                            )
                     },
                     modifier = Modifier
                         .width(96.dp)

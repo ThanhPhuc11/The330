@@ -2,8 +2,10 @@ package com.nagaja.the330.view.chatdetail
 
 import android.os.Bundle
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -47,6 +49,7 @@ import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.reservationregis.ReservationRegisFragment
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.delay
 
 class ChatDetailFragment : BaseFragment() {
     private lateinit var viewModel: ChatDetailVM
@@ -57,6 +60,8 @@ class ChatDetailFragment : BaseFragment() {
     private var isFirst = true
     private var onAddToBottom: (() -> Unit)? = null
     private lateinit var database: DatabaseReference
+
+    var updateListChat:(() -> Unit)? = null
 
     companion object {
 //        fun newInstance(partnerId: Int? = null, roomId: Int? = null) = ChatDetailFragment().apply {
@@ -85,6 +90,23 @@ class ChatDetailFragment : BaseFragment() {
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[ChatDetailVM::class.java]
         viewController = (activity as MainActivity).viewController
+
+        viewModel.callbackEndChatSuccess.observe(viewLifecycleOwner) {
+            viewController?.popFragment()
+            updateListChat?.invoke()
+        }
+        viewModel.callbackStart.observe(viewLifecycleOwner) {
+            showLoading()
+        }
+        viewModel.callbackSuccess.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.callbackFail.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.showMessCallback.observe(viewLifecycleOwner) {
+            showMess(it)
+        }
 
         database = Firebase.database.reference
     }
@@ -151,9 +173,12 @@ class ChatDetailFragment : BaseFragment() {
                 userDetailBase?.id == viewModel.stateRoomInfo.value.target?.id
             viewModel.stateRoomInfo.value.id?.let {
                 listenRealtime()
+                delay(1000)
+                isFirst = false
                 viewModel.getChatDetail(accessToken!!, it)
             }
         }
+
         LayoutTheme330 {
             Header("") {
                 viewController?.popFragment()
@@ -199,9 +224,9 @@ class ChatDetailFragment : BaseFragment() {
                 ) {
                     itemsIndexed(listMess) { index, obj ->
                         if (obj.userId?.toInt() == userDetailBase?.id || obj.user?.id == userDetailBase?.id) {
-                            ItemMeChat(obj)
+                            ItemMeChat(obj, index)
                         } else {
-                            ItemYouChat(obj)
+                            ItemYouChat(obj, index)
                         }
 //                        ItemCapture()
                     }
@@ -209,6 +234,10 @@ class ChatDetailFragment : BaseFragment() {
                 LaunchedEffect(viewModel.stateBottomItem.value) {
                     lazyListState.animateScrollToItem(viewModel.stateListMess.size)
                 }
+
+//                LaunchedEffect(Unit) {
+//                    lazyListState.stopScroll(MutatePriority.UserInput)
+//                }
 
                 LoadmoreMessHandler(lazyListState) { page ->
                     viewModel.stateRoomInfo.value.id?.let {
@@ -244,6 +273,7 @@ class ChatDetailFragment : BaseFragment() {
                     ColorUtils.gray_222222
                 ) {
                     showMessDEBUG("end chat")
+                    viewModel.endChat(accessToken!!)
                 }
             }
         }
@@ -400,13 +430,13 @@ class ChatDetailFragment : BaseFragment() {
     }
 
     @Composable
-    private fun ItemMeChat(obj: ItemMessageModel) {
+    private fun ItemMeChat(obj: ItemMessageModel, index: Int) {
         Box(
             Modifier
                 .fillMaxWidth()
                 .padding(bottom = 40.dp)
                 .noRippleClickable {
-                    showMessDEBUG(obj.id.toString())
+                    showMessDEBUG(obj.id.toString() + " index: " + "$index")
                 },
             contentAlignment = Alignment.CenterEnd
         ) {
@@ -438,13 +468,13 @@ class ChatDetailFragment : BaseFragment() {
     }
 
     @Composable
-    private fun ItemYouChat(obj: ItemMessageModel) {
+    private fun ItemYouChat(obj: ItemMessageModel, index: Int) {
         Box(
             Modifier
                 .fillMaxWidth()
                 .padding(bottom = 40.dp)
                 .noRippleClickable {
-                    showMessDEBUG(obj.id.toString())
+                    showMessDEBUG(obj.id.toString() + " index: " + "$index")
                 },
             contentAlignment = Alignment.CenterStart
         ) {

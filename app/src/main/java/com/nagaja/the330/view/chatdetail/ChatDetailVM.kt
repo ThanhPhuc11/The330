@@ -2,11 +2,13 @@ package com.nagaja.the330.view.chatdetail
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.ItemMessageModel
 import com.nagaja.the330.model.RoomDetailModel
 import com.nagaja.the330.model.StartChatRequest
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -19,10 +21,13 @@ class ChatDetailVM(
     val stateRoomInfo = mutableStateOf(RoomDetailModel())
 
     val stateListMess = mutableStateListOf<ItemMessageModel>()
+    val listTemp = mutableListOf<ItemMessageModel>()
 
     val stateIsSeller = mutableStateOf(false)
     val stateBottomItem = mutableStateOf(ItemMessageModel())
     var isFirst = true
+
+    val callbackEndChatSuccess = MutableLiveData<Unit>()
 
     fun getUserDetails(token: String) {
         viewModelScope.launch {
@@ -78,7 +83,7 @@ class ChatDetailVM(
 
     fun getChatDetail(token: String, roomId: Int, chatMesId: Int? = null) {
         viewModelScope.launch {
-            repo.getChatDetail(token, roomId, chatMesId, 50)
+            repo.getChatDetail(token, roomId, chatMesId, 200)
                 .onStart {
                     callbackStart.value = Unit
                 }
@@ -114,6 +119,27 @@ class ChatDetailVM(
                 .collect {
                     callbackSuccess.value = Unit
 //                    userDetailState.value = it
+                }
+        }
+    }
+
+    fun endChat(token: String) {
+        viewModelScope.launch {
+            repo.endChat(token, stateRoomInfo.value.id!!)
+                .onStart {
+                    callbackStart.value = Unit
+                }
+                .onCompletion { }
+                .catch {
+                    handleError(it)
+                }
+                .collect {
+                    if (it.raw().isSuccessful && it.raw().code == 204) {
+                        callbackSuccess.value = Unit
+                        callbackEndChatSuccess.value = Unit
+                    } else {
+                        handleError2(it)
+                    }
                 }
         }
     }

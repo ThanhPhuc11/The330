@@ -31,7 +31,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="unspecified"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
