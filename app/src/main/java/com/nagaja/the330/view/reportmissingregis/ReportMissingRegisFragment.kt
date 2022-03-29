@@ -164,6 +164,7 @@ class ReportMissingRegisFragment : BaseFragment() {
                         CoroutineScope(Dispatchers.Main).launch {
                             pagerState.scrollToPage(0)
                         }
+                        viewModel.stateTypeReport.value = "REPORT"
                     }
                     TabSelected(
                         modifier = Modifier.weight(1f),
@@ -173,6 +174,7 @@ class ReportMissingRegisFragment : BaseFragment() {
                         CoroutineScope(Dispatchers.Main).launch {
                             pagerState.scrollToPage(1)
                         }
+                        viewModel.stateTypeReport.value = "MISSING"
                     }
                 }
 

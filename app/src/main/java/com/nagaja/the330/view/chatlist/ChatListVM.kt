@@ -1,6 +1,7 @@
 package com.nagaja.the330.view.chatlist
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.RoomDetailModel
@@ -15,12 +16,13 @@ class ChatListVM(
 ) : BaseViewModel() {
     var sort = ""
     val stateListRoom = mutableStateListOf<RoomDetailModel>()
+    val total = mutableStateOf(0)
     fun getChatList(
         token: String,
         page: Int
     ) {
         viewModelScope.launch {
-            repo.getChatList(token, page, size = 20, "COMPANY_INQUIRY", typeSearchChat = sort)
+            repo.getChatList(token, page, size = 20, null, typeSearchChat = sort)
                 .onStart {
                     callbackStart.value = Unit
                 }
@@ -32,6 +34,7 @@ class ChatListVM(
                     callbackSuccess.value = Unit
                     if (page == 0) {
                         stateListRoom.clear()
+                        total.value = it.totalElements ?: 0
                     }
                     it.content?.let { data ->
                         stateListRoom.addAll(data)
