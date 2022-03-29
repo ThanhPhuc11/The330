@@ -77,6 +77,9 @@ class ReportMissingMyPageFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
                         viewModel.getReportMissingMyPage(accessToken!!, 0)
+                        backSystemHandler {
+                            viewController?.popFragment()
+                        }
                     }
                     Lifecycle.Event.ON_STOP -> {}
                     else -> {}

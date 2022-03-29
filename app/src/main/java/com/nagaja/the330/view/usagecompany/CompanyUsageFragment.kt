@@ -77,6 +77,9 @@ class CompanyUsageFragment : BaseFragment() {
                     Lifecycle.Event.ON_CREATE -> {
                         accessToken?.let {
                         }
+                        backSystemHandler {
+                            viewController?.popFragment()
+                        }
                     }
                     Lifecycle.Event.ON_STOP -> {}
                     else -> {}

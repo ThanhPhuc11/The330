@@ -47,7 +47,7 @@ import com.nagaja.the330.utils.AppConstants
 import com.nagaja.the330.utils.AppDateUtils
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.LoadmoreHandler
-import com.nagaja.the330.view.Header
+import com.nagaja.the330.view.HeaderNoBack
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.text14_62
@@ -96,9 +96,7 @@ fun ReservationScreen(accessToken: String, viewController: ViewController?) {
         }
     }
     LayoutTheme330 {
-        Header(stringResource(R.string.option_reservation_status)) {
-//            viewController?.popFragment()
-        }
+        HeaderNoBack(stringResource(R.string.option_reservation_status))
         Box(
             Modifier
                 .padding(horizontal = 9.dp, vertical = 16.dp)

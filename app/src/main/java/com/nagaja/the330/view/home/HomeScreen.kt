@@ -362,7 +362,7 @@ private fun ListCompanyRecommended(viewModel: HomeScreenVM, viewController: View
             CompanyItemView(obj) {
                 viewController?.pushFragment(
                     ScreenId.SCREEN_COMPANY_DETAIL,
-                    CompanyDetailFragment.newInstance(obj.id!!)
+                    CompanyDetailFragment.newInstance(obj.companyRequest?.id!!)
                 )
             }
         }

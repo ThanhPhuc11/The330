@@ -45,7 +45,9 @@ fun ItemCompany(obj: CompanyModel, onClick: () -> Unit) {
             }
     ) {
         GlideImage(
-            imageModel = "",
+            imageModel = "${BuildConfig.BASE_S3}${
+                obj.images?.getOrNull(0)?.url
+            }",
             Modifier
                 .size(80.dp)
                 .clip(RoundedCornerShape(4.dp)),

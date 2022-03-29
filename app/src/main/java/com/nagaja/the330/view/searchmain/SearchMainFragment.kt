@@ -62,6 +62,9 @@ import com.nagaja.the330.view.secondhandmarket.SecondHandMarketVM
 import com.nagaja.the330.view.secondhandregis.SecondHandRegisFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class SearchMainFragment : BaseFragment() {
@@ -103,7 +106,8 @@ class SearchMainFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
                         listTitleSearch[0].isSelected = true
-                        viewModel.keyword.value = requireArguments().getString(AppConstants.EXTRA_KEY1, "")
+                        viewModel.keyword.value =
+                            requireArguments().getString(AppConstants.EXTRA_KEY1, "")
                     }
                     else -> {}
                 }
@@ -170,7 +174,8 @@ class SearchMainFragment : BaseFragment() {
                     listTitleSearch.onEach {
                         it.isSelected = false
                     }
-                    listTitleSearch[pagerState.currentPage] = listTitleSearch[pagerState.currentPage].copy(isSelected = true)
+                    listTitleSearch[pagerState.currentPage] =
+                        listTitleSearch[pagerState.currentPage].copy(isSelected = true)
                 }
                 HorizontalPager(state = pagerState) { page ->
                     when (page) {
@@ -493,6 +498,28 @@ class SearchMainFragment : BaseFragment() {
                 LoadmoreHandler(lazyListState) { page ->
                     accessToken?.let { viewModelCompany.findCompany(it, page) }
                 }
+
+                val showButtonToTop = remember { mutableStateOf(false) }
+                if (showButtonToTop.value) {
+                    Image(
+                        painterResource(R.drawable.ic_move_up),
+                        "",
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                            .align(alignment = Alignment.BottomEnd)
+                            .noRippleClickable {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    lazyListState.scrollToItem(0, 1)
+                                }
+                            }
+                    )
+                }
+                LaunchedEffect(lazyListState) {
+                    snapshotFlow { lazyListState.firstVisibleItemIndex }
+                        .map { index -> index > 2 }
+                        .distinctUntilChanged()
+                        .collect { showButtonToTop.value = it }
+                }
             }
         }
     }
@@ -620,6 +647,28 @@ class SearchMainFragment : BaseFragment() {
 
                 LoadmoreHandler(lazyListState) { page ->
                     viewModelFreeNotice.getFreeNoticeBoard(accessToken!!, page)
+                }
+
+                val showButtonToTop = remember { mutableStateOf(false) }
+                if (showButtonToTop.value) {
+                    Image(
+                        painterResource(R.drawable.ic_move_up),
+                        "",
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                            .align(alignment = Alignment.BottomEnd)
+                            .noRippleClickable {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    lazyListState.scrollToItem(0, 1)
+                                }
+                            }
+                    )
+                }
+                LaunchedEffect(lazyListState) {
+                    snapshotFlow { lazyListState.firstVisibleItemIndex }
+                        .map { index -> index > 2 }
+                        .distinctUntilChanged()
+                        .collect { showButtonToTop.value = it }
                 }
             }
         }
@@ -812,6 +861,28 @@ class SearchMainFragment : BaseFragment() {
                         AppConstants.RECRUITMENT
                     )
                 }
+
+                val showButtonToTop = remember { mutableStateOf(false) }
+                if (showButtonToTop.value) {
+                    Image(
+                        painterResource(R.drawable.ic_move_up),
+                        "",
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                            .align(alignment = Alignment.BottomEnd)
+                            .noRippleClickable {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    lazyListState.scrollToItem(0, 1)
+                                }
+                            }
+                    )
+                }
+                LaunchedEffect(lazyListState) {
+                    snapshotFlow { lazyListState.firstVisibleItemIndex }
+                        .map { index -> index > 2 }
+                        .distinctUntilChanged()
+                        .collect { showButtonToTop.value = it }
+                }
             }
         }
     }
@@ -877,6 +948,28 @@ class SearchMainFragment : BaseFragment() {
                         page,
                         AppConstants.JOB_SEARCH
                     )
+                }
+
+                val showButtonToTop = remember { mutableStateOf(false) }
+                if (showButtonToTop.value) {
+                    Image(
+                        painterResource(R.drawable.ic_move_up),
+                        "",
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                            .align(alignment = Alignment.BottomEnd)
+                            .noRippleClickable {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    lazyListState.scrollToItem(0, 1)
+                                }
+                            }
+                    )
+                }
+                LaunchedEffect(lazyListState) {
+                    snapshotFlow { lazyListState.firstVisibleItemIndex }
+                        .map { index -> index > 2 }
+                        .distinctUntilChanged()
+                        .collect { showButtonToTop.value = it }
                 }
             }
         }
@@ -1090,6 +1183,28 @@ class SearchMainFragment : BaseFragment() {
 
                 LoadmoreHandler(lazyListState) { page ->
                     viewModelSecondhand.getListSecondHandMarket(accessToken!!, page)
+                }
+
+                val showButtonToTop = remember { mutableStateOf(false) }
+                if (showButtonToTop.value) {
+                    Image(
+                        painterResource(R.drawable.ic_move_up),
+                        "",
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                            .align(alignment = Alignment.BottomEnd)
+                            .noRippleClickable {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    lazyListState.scrollToItem(0, 1)
+                                }
+                            }
+                    )
+                }
+                LaunchedEffect(lazyListState) {
+                    snapshotFlow { lazyListState.firstVisibleItemIndex }
+                        .map { index -> index > 2 }
+                        .distinctUntilChanged()
+                        .collect { showButtonToTop.value = it }
                 }
             }
         }
