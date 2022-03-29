@@ -17,8 +17,7 @@ class ChatListVM(
     val stateListRoom = mutableStateListOf<RoomDetailModel>()
     fun getChatList(
         token: String,
-        page: Int,
-        type: String? = null,
+        page: Int
     ) {
         viewModelScope.launch {
             repo.getChatList(token, page, size = 20, "COMPANY_INQUIRY", typeSearchChat = sort)

@@ -172,14 +172,22 @@ fun ChatListScreen(accessToken: String, viewController: ViewController?, user: U
                         ItemGeneralMember(obj) {
                             viewController?.pushFragment(
                                 ScreenId.SCREEN_CHAT_DETAIL,
-                                ChatDetailFragment.newInstance(roomId = obj.id!!)
+                                ChatDetailFragment.newInstance(roomId = obj.id!!).apply {
+                                    updateListChat = {
+                                        viewModel.getChatList(accessToken, 0)
+                                    }
+                                }
                             )
                         }
                     } else {
                         ItemCompanyMember(obj) {
                             viewController?.pushFragment(
                                 ScreenId.SCREEN_CHAT_DETAIL,
-                                ChatDetailFragment.newInstance(roomId = obj.id!!)
+                                ChatDetailFragment.newInstance(roomId = obj.id!!).apply {
+                                    updateListChat = {
+                                        viewModel.getChatList(accessToken, 0)
+                                    }
+                                }
                             )
                         }
                     }
@@ -196,16 +204,18 @@ fun ChatListScreen(accessToken: String, viewController: ViewController?, user: U
 
 @Composable
 private fun ItemCompanyMember(obj: RoomDetailModel, onClick: () -> Unit?) {
+    val isEnd = obj.status == "DELETED"
     Row(
         Modifier
             .fillMaxWidth()
             .padding(16.dp)
             .noRippleClickable {
-                onClick.invoke()
+                if (!isEnd)
+                    onClick.invoke()
             }
     ) {
         GlideImage(
-            imageModel = "${BuildConfig.BASE_S3}${""}",
+            imageModel = "${BuildConfig.BASE_S3}${obj.companyOwner?.images?.getOrNull(0)}",
             Modifier
                 .size(80.dp),
             placeHolder = painterResource(R.drawable.ic_default_nagaja),
@@ -226,7 +236,7 @@ private fun ItemCompanyMember(obj: RoomDetailModel, onClick: () -> Unit?) {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    "상담중",
+                    if (isEnd) "상담 종료" else "상담중",
                     color = ColorUtils.blue_2177E4,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(start = 9.dp)
@@ -253,12 +263,14 @@ private fun ItemCompanyMember(obj: RoomDetailModel, onClick: () -> Unit?) {
 
 @Composable
 private fun ItemGeneralMember(obj: RoomDetailModel, onClick: () -> Unit) {
+    val isEnd = obj.status == "DELETED"
     Row(
         Modifier
             .fillMaxWidth()
             .padding(16.dp)
             .noRippleClickable {
-                onClick.invoke()
+                if (!isEnd)
+                    onClick.invoke()
             }
     ) {
         Column(
@@ -274,7 +286,7 @@ private fun ItemGeneralMember(obj: RoomDetailModel, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    "상담중",
+                    if (isEnd) "상담 종료" else "상담중",
                     color = ColorUtils.blue_2177E4,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(start = 9.dp)
