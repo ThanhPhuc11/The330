@@ -40,6 +40,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
@@ -51,11 +52,8 @@ import com.nagaja.the330.model.TimeReservation
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.NameUtils
 import com.nagaja.the330.utils.RealPathUtil
-import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompany.ShareApplyCompanyVM
-import com.nagaja.the330.view.applycompanyproduct.ProductCompanyFragment
-import com.nagaja.the330.view.editcompanyproduct.EditProductCompanyFragment
 import com.skydoves.landscapist.glide.GlideImage
 import java.io.File
 
@@ -156,8 +154,8 @@ class EditCompanyFragment : BaseFragment() {
             viewModel.textStatePaymethod.value = TextFieldValue(obj.paymentMethod ?: "")
             fileName.value = obj.file.toString()
             viewModel.fileName
-            viewModel.serviceType.onEachIndexed {index, it->
-                obj.serviceTypes?.onEach { iz->
+            viewModel.serviceType.onEachIndexed { index, it ->
+                obj.serviceTypes?.onEach { iz ->
                     if (it.id == iz) {
                         viewModel.serviceType[index] = it.copy(isSelected = true)
                     }
@@ -198,9 +196,7 @@ class EditCompanyFragment : BaseFragment() {
                 )
 
                 Row {
-                    val listImage = remember {
-                        mutableStateListOf<FileModel>()
-                    }
+                    val listImage = viewModel.listImageRepresentative
                     callbackListImage = { uri ->
                         val fileTemp = File(
                             RealPathUtil.getPath(
@@ -208,13 +204,19 @@ class EditCompanyFragment : BaseFragment() {
                                 uri
                             )
                         )
-                        listImage.add(FileModel(url = uri.toString()))
-                        viewModel.listImageRepresentative.add(
+                        listImage.add(
                             FileModel(
+                                uri = uri.toString(),
                                 fileName = NameUtils.setFileName(userDetailBase?.id, fileTemp),
                                 url = fileTemp.path
                             )
                         )
+//                        viewModel.listImageRepresentative.add(
+//                            FileModel(
+//                                fileName = NameUtils.setFileName(userDetailBase?.id, fileTemp),
+//                                url = fileTemp.path
+//                            )
+//                        )
                     }
                     val count = remember { mutableStateOf(listImage.size) }
                     LaunchedEffect(listImage.size) {
@@ -234,7 +236,7 @@ class EditCompanyFragment : BaseFragment() {
                     }
                     onClickRemove = { index ->
                         listImage.removeAt(index)
-                        viewModel.listImageRepresentative.removeAt(index)
+//                        viewModel.listImageRepresentative.removeAt(index)
                     }
                     LazyRow {
                         itemsIndexed(listImage) { index, obj ->
@@ -589,7 +591,7 @@ class EditCompanyFragment : BaseFragment() {
         ) {
             val (content, close) = createRefs()
             GlideImage(
-                imageModel = obj.url,
+                imageModel = if (obj.uri != null) obj.uri else "${BuildConfig.BASE_S3}${obj.url}",
                 contentDescription = "",
                 placeHolder = painterResource(R.drawable.ic_default_nagaja),
                 error = painterResource(R.drawable.ic_default_nagaja),

@@ -8,11 +8,13 @@ class FileModel (
     var priority: Int? = null,
     var suffixUrl: String? = null,
     var url: String? = null,
-    var fileName: String? = null
+    var fileName: String? = null,
+    var uri: String? = null
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readValue(Int::class.java.classLoader) as? Int,
         parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString()
@@ -25,6 +27,7 @@ class FileModel (
         parcel.writeString(suffixUrl)
         parcel.writeString(url)
         parcel.writeString(fileName)
+        parcel.writeString(uri)
     }
 
     override fun describeContents(): Int {
