@@ -147,7 +147,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
-                    getUserDetailFromDataStore(context)
+//                    getUserDetailFromDataStore(context)
                     viewModel.getUserDetails(accessToken)
                     viewModel.cbUpdateUserDataStore.observe(owner) {
                         DataStorePref(context).setUserDetail(it)

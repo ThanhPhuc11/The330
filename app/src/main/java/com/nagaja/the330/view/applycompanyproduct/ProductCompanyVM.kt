@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.CompanyModel
@@ -12,7 +13,6 @@ import com.nagaja.the330.model.NameModel
 import com.nagaja.the330.model.ProductModel
 import com.nagaja.the330.utils.AppConstants
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -28,6 +28,8 @@ class ProductCompanyVM(
     private lateinit var companyModel: CompanyModel
 
     val listImageProduct = mutableStateListOf<FileModel>()
+    val mapTotalImage = mutableMapOf<String, FileModel>()
+    val listProductValidate = mutableStateListOf<ProductModel>()
 
     //info company
     val textStateNameEng = mutableStateOf(TextFieldValue(""))
@@ -49,36 +51,73 @@ class ProductCompanyVM(
     var fileName = ""
     var filePath = ""
 
+    var totalFileUpload = 0
+    var fileUploaded = 0
+    val callbackMakeSuccess = MutableLiveData<Unit>()
+
+    fun addProductToList() {
+        if (textStateNameEng.value.text.isBlank() ||
+            textStateDesEng.value.text.isBlank() ||
+            textStatePeso.value.text.isBlank() ||
+            textStateDollar.value.text.isBlank()
+        ) {
+            showMessCallback.value = "A field required not fill"
+            return
+        }
+        val listTemp = mutableListOf<FileModel>().apply { addAll(listImageProduct) }
+        val obj = ProductModel().apply {
+            images = listTemp.onEachIndexed { index, obj ->
+                obj.priority = index
+            }
+            name = mutableListOf<NameModel>().apply {
+                add(NameModel(name = textStateNameEng.value.text, lang = AppConstants.Lang.EN))
+                add(NameModel(name = textStateNamePhi.value.text, lang = AppConstants.Lang.PH))
+                add(NameModel(name = textStateNameKr.value.text, lang = AppConstants.Lang.KR))
+                add(NameModel(name = textStateNameCN.value.text, lang = AppConstants.Lang.CN))
+                add(NameModel(name = textStateNameJP.value.text, lang = AppConstants.Lang.JP))
+            }
+            description = mutableListOf<NameModel>().apply {
+                add(NameModel(name = textStateDesEng.value.text, lang = AppConstants.Lang.EN))
+                add(NameModel(name = textStateDesPhi.value.text, lang = AppConstants.Lang.PH))
+                add(NameModel(name = textStateDesKr.value.text, lang = AppConstants.Lang.KR))
+                add(NameModel(name = textStateDesCN.value.text, lang = AppConstants.Lang.CN))
+                add(NameModel(name = textStateDesJP.value.text, lang = AppConstants.Lang.JP))
+            }
+
+            peso = textStatePeso.value.text.toDouble()
+            dollar = textStateDollar.value.text.toDouble()
+            if (textStateWon.value.text.isNotEmpty()) {
+                won = textStateWon.value.text.toDouble()
+            }
+        }
+        listProductValidate.add(obj)
+        refreshInput()
+    }
+
+    private fun refreshInput() {
+        listImageProduct.clear()
+
+        textStateNameEng.value = TextFieldValue("")
+        textStateNamePhi.value = TextFieldValue("")
+        textStateNameKr.value = TextFieldValue("")
+        textStateNameCN.value = TextFieldValue("")
+        textStateNameJP.value = TextFieldValue("")
+
+        textStatePeso.value = TextFieldValue("")
+        textStateDollar.value = TextFieldValue("")
+        textStateWon.value = TextFieldValue("")
+
+        textStateDesEng.value = TextFieldValue("")
+        textStateDesPhi.value = TextFieldValue("")
+        textStateDesKr.value = TextFieldValue("")
+        textStateDesCN.value = TextFieldValue("")
+        textStateDesJP.value = TextFieldValue("")
+
+        fileName = ""
+    }
+
 
     fun makeCompany(token: String, companyModel: CompanyModel) {
-//        val companyModel = CompanyModel().apply {
-//            name = mutableListOf<NameAreaModel>().apply {
-//                add(NameAreaModel(name = textStateNameEng.value.text, lang = AppConstants.Lang.EN))
-//                add(NameAreaModel(name = textStateNamePhi.value.text, lang = AppConstants.Lang.PH))
-//                add(NameAreaModel(name = textStateNameKr.value.text, lang = AppConstants.Lang.KR))
-//                add(NameAreaModel(name = textStateNameCN.value.text, lang = AppConstants.Lang.CN))
-//                add(NameAreaModel(name = textStateNameJP.value.text, lang = AppConstants.Lang.JP))
-//            }
-//            address = textStateAdress.value.text
-//            description = mutableListOf<NameAreaModel>().apply {
-//                add(NameAreaModel(name = textStateDesEng.value.text, lang = AppConstants.Lang.EN))
-//                add(NameAreaModel(name = textStateDesPhi.value.text, lang = AppConstants.Lang.PH))
-//                add(NameAreaModel(name = textStateDesKr.value.text, lang = AppConstants.Lang.KR))
-//                add(NameAreaModel(name = textStateDesCN.value.text, lang = AppConstants.Lang.CN))
-//                add(NameAreaModel(name = textStateDesJP.value.text, lang = AppConstants.Lang.JP))
-//            }
-//            chargeName = textStateName.value.text
-//            chargePhone = textStatePhone.value.text
-//            chargeEmail = textStateMailAddress.value.text
-//            chargeFacebook = textStateFb.value.text
-//            chargeKakao = textStateKakao.value.text
-//            chargeLine = textStateLine.value.text
-//
-//            openHour = textStateOpenTime.value
-//            closeHour = textStateCloseTime.value
-//
-//            file = fileName
-//        }
         if (textStateNameEng.value.text.isBlank() ||
             textStateDesEng.value.text.isBlank() ||
             textStatePeso.value.text.isBlank() ||
@@ -109,18 +148,26 @@ class ProductCompanyVM(
                 won = textStateWon.value.text.toDouble()
             }
         }
+        listProductValidate.add(productModel)
         this.companyModel = companyModel
         this.companyModel.apply {
-            products = mutableListOf<ProductModel>().apply {
-                add(productModel)
+            products = listProductValidate.onEachIndexed { index, obj ->
+                obj.priority = index
             }
         }
         viewModelScope.launch {
             repo.makeCompany(token, companyModel)
-                .onStart { }
+                .onStart { callbackStart.value = Unit }
                 .onCompletion { }
-                .catch { }
+                .catch { handleError(it) }
                 .collect {
+                    callbackSuccess.value = Unit
+                    it.products!!.forEach { it2 ->
+                        it2.images!!.forEach { _ ->
+                            totalFileUpload++
+                        }
+                    }
+                    totalFileUpload += it.images!!.size + 1
                     if (it.images != null && it.images!!.size > 0)
                         it.images?.onEach { fileModel ->
                             companyModel.images!!.forEach { fileLocal ->
@@ -131,11 +178,11 @@ class ProductCompanyVM(
                         }
 
                     if (it.products != null && it.products!!.size > 0)
-                        it.products!![0].images!!.onEach { fileModel ->
-                            companyModel.products!![0].images!!.forEach { fileLocal ->
-                                if (fileModel.url?.contains(fileLocal.fileName!!) == true) {
-                                    uploadImageTest(fileModel.url ?: "", fileLocal.url!!)
-                                }
+                        it.products!!.forEach { productModel ->
+                            productModel.images!!.forEach { fileModel ->
+                                val key = fileModel.suffixUrl!!.split("/").last()
+                                uploadImageTest(fileModel.url ?: "", mapTotalImage[key]?.url!!)
+                                Log.e("key", fileModel.suffixUrl!!)
                             }
                         }
 
@@ -144,22 +191,31 @@ class ProductCompanyVM(
         }
     }
 
-    fun uploadImageTest(url: String, path: String) {
+    private fun uploadImageTest(url: String, path: String) {
         val requestFile: RequestBody =
             File(path).asRequestBody("application/octet-stream".toMediaTypeOrNull())
 
         viewModelScope.launch {
             repo.uploadImage(url, requestFile)
-                .onStart { }
+                .onStart { callbackStart.value = Unit }
                 .onCompletion { }
                 .catch {
                     Log.e("Catch", this.toString())
+                    fileUploaded++
+                    if (fileUploaded == totalFileUpload) {
+                        callbackMakeSuccess.value = Unit
+                    }
                 }
                 .collect {
+                    callbackStart.value = Unit
+                    fileUploaded++
                     if (it.raw().isSuccessful && it.raw().code == 200) {
                         Log.e("Success", "upload success")
                     } else {
                         Log.e("Fail", "upload fail")
+                    }
+                    if (fileUploaded == totalFileUpload) {
+                        callbackMakeSuccess.value = Unit
                     }
                 }
         }
