@@ -27,19 +27,20 @@ android {
             useSupportLibrary true
         }
 
-        buildConfigField 'String', 'BASE_URL', '"http://54.180.143.188:8084/"'
         buildConfigField 'String', 'BASE_S3', '"https://the330-dev.s3.ap-northeast-2.amazonaws.com/"'
     }
 
     buildTypes {
         release {
             signingConfig signingConfigs.signkeyNagaja
+            buildConfigField 'String', 'BASE_URL', '"http://3.36.130.168:8084/"'
             manifestPlaceholders = [app_name: "@string/app_name"]
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
             signingConfig signingConfigs.signkeyNagaja
+            buildConfigField 'String', 'BASE_URL', '"http://54.180.143.188:8084/"'
             manifestPlaceholders = [app_name: "@string/app_name_dev_version"]
         }
 
