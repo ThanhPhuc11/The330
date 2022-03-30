@@ -83,6 +83,9 @@ class PointFragment : BaseFragment() {
                             accessToken!!,
                             userDetailBase?.companyRequest?.id ?: 0
                         )
+                        backSystemHandler {
+                            viewController?.popFragment()
+                        }
                     }
                     Lifecycle.Event.ON_STOP -> {}
                     else -> {}

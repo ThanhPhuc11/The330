@@ -87,6 +87,24 @@ fun Header(title: String = "title", clickBack: (() -> Unit)? = null) {
 
 @Preview(showBackground = true)
 @Composable
+fun HeaderNoBack(title: String = "title") {
+    Box(
+        modifier = Modifier
+            .background(ColorUtils.white_FFFFFF)
+            .fillMaxWidth()
+            .height(44.dp),
+    ) {
+        Text(
+            title,
+            fontSize = 17.sp,
+            color = ColorUtils.black_000000,
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
 fun HeaderOption(
     title: String = "title",
     clickBack: (() -> Unit)? = null,
@@ -138,6 +156,7 @@ fun HeaderSearch(
 ) {
     val stateEdtInput = remember { mutableStateOf(TextFieldValue("")) }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
     Row(
         modifier = Modifier
             .background(ColorUtils.white_FFFFFF)
@@ -173,9 +192,9 @@ fun HeaderSearch(
                 contentDescription = null,
                 modifier = Modifier
                     .padding(horizontal = 9.dp)
-                    .noRippleClickable {
-                        clickSearch?.invoke(stateEdtInput.value.text)
-                    }
+//                    .noRippleClickable {
+//                        clickSearch?.invoke(stateEdtInput.value.text)
+//                    }
             )
             BasicTextField(
                 value = stateEdtInput.value,
@@ -189,6 +208,7 @@ fun HeaderSearch(
                 keyboardActions = KeyboardActions(onSearch = {
                     clickSearch?.invoke(stateEdtInput.value.text)
                     keyboardController?.hide()
+                    focusManager.clearFocus()
                 }),
                 textStyle = TextStyle(
                     color = ColorUtils.black_000000

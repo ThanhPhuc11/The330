@@ -32,7 +32,9 @@ class OtherSettingFragment : BaseFragment() {
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[OtherSettingVM::class.java]
         viewController = (activity as MainActivity).viewController
-
+        backSystemHandler {
+            viewController?.popFragment()
+        }
         viewModel.callbackLogoutSuccess.observe(viewLifecycleOwner) {
             DataStorePref(requireContext()).setToken(null)
             showMess("로그아웃이 완료되었습니다")

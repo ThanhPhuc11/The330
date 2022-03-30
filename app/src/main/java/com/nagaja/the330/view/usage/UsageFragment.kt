@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
@@ -199,7 +200,9 @@ class UsageFragment : BaseFragment() {
                 .padding(16.dp)
         ) {
             GlideImage(
-                imageModel = "",
+                imageModel = "${BuildConfig.BASE_S3}${
+                    obj.companyOwner?.images?.getOrNull(0)?.url
+                }",
                 Modifier.size(96.dp),
                 placeHolder = painterResource(R.drawable.ic_default_nagaja),
                 error = painterResource(R.drawable.ic_default_nagaja)
