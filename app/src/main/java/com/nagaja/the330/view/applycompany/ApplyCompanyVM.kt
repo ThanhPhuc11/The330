@@ -234,6 +234,10 @@ class ApplyCompanyVM(
                 .onCompletion { }
                 .catch {
                     Log.e("Catch", this.toString() + path)
+                    fileUploaded++
+                    if (fileUploaded == totalFileUpload) {
+                        callbackMakeSuccess.value = Unit
+                    }
                 }
                 .collect {
                     fileUploaded++

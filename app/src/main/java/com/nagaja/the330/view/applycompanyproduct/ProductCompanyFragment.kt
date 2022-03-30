@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
@@ -38,12 +39,14 @@ import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.model.FileModel
+import com.nagaja.the330.model.ProductModel
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.NameUtils
 import com.nagaja.the330.utils.RealPathUtil
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompany.ShareApplyCompanyVM
+import com.nagaja.the330.view.applycompanyresult.ApplyResultFragment
 import com.skydoves.landscapist.glide.GlideImage
 import java.io.File
 
@@ -63,6 +66,26 @@ class ProductCompanyFragment : BaseFragment() {
         shareViewModel =
             ViewModelProvider(activity?.supportFragmentManager?.findFragmentByTag(ScreenId.SCREEN_APPLY_COMPANY)!!)[ShareApplyCompanyVM::class.java]
         viewController = (activity as MainActivity).viewController
+
+        viewModel.callbackMakeSuccess.observe(viewLifecycleOwner) {
+            hideLoading()
+            viewController?.pushFragment(
+                ScreenId.SCREEN_APPLY_COMPANY_RESULT,
+                ApplyResultFragment.newInstance()
+            )
+        }
+        viewModel.callbackStart.observe(viewLifecycleOwner) {
+            showLoading()
+        }
+        viewModel.callbackSuccess.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.callbackFail.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.showMessCallback.observe(viewLifecycleOwner) {
+            showMess(it)
+        }
     }
 
     @Preview
@@ -108,7 +131,10 @@ class ProductCompanyFragment : BaseFragment() {
                         Modifier
                             .width(76.dp)
                             .height(32.dp)
-                            .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp)),
+                            .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp))
+                            .noRippleClickable {
+                                viewModel.addProductToList()
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -127,7 +153,7 @@ class ProductCompanyFragment : BaseFragment() {
                 )
 
                 Row {
-                    val listImage = remember { mutableStateListOf<FileModel>() }
+                    val listImage = viewModel.listImageProduct
                     val count = remember { mutableStateOf(listImage.size) }
                     callbackListImage = { uri ->
                         val fileTemp = File(
@@ -136,13 +162,15 @@ class ProductCompanyFragment : BaseFragment() {
                                 uri
                             )
                         )
-                        listImage.add(FileModel(url = uri.toString()))
-                        viewModel.listImageProduct.add(
-                            FileModel(
-                                fileName = NameUtils.setFileName(userDetailBase?.id, fileTemp),
-                                url = fileTemp.path
-                            )
+                        val fileNameTemp = NameUtils.setFileName(userDetailBase?.id, fileTemp)
+                        val fileModelTemp = FileModel(
+                            uri = uri.toString(),
+                            fileName = fileNameTemp,
+                            url = fileTemp.path
                         )
+                        listImage.add(fileModelTemp)
+                        viewModel.mapTotalImage[fileNameTemp] = fileModelTemp
+//                        Log.e("VCL_IMAGE", fileNameTemp)
                     }
                     LaunchedEffect(listImage.size) {
                         count.value = listImage.size
@@ -161,7 +189,6 @@ class ProductCompanyFragment : BaseFragment() {
                     }
                     onClickRemove = { index ->
                         listImage.removeAt(index)
-                        viewModel.listImageProduct.removeAt(index)
                     }
                     LazyRow {
                         itemsIndexed(listImage) { index, obj ->
@@ -218,6 +245,19 @@ class ProductCompanyFragment : BaseFragment() {
                 )
 
                 ProductDescriptionInput()
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp)
+                )
+                val listProductValidateDraft = viewModel.listProductValidate
+                Column {
+                    listProductValidateDraft.forEachIndexed { index, obj ->
+                        ItemProductValidate(obj) {
+                            listProductValidateDraft.removeAt(index)
+                        }
+                    }
+                }
 
                 //TODO: Button complete
                 Box(
@@ -458,6 +498,48 @@ class ProductCompanyFragment : BaseFragment() {
                 textStateId = textStateId,
                 inputType = KeyboardType.Number
             )
+        }
+    }
+
+    @Composable
+    private fun ItemProductValidate(obj: ProductModel = ProductModel(), onClick: () -> Unit) {
+        Row(
+            Modifier
+                .padding(bottom = 7.dp)
+                .fillMaxWidth()
+                .height(40.dp)
+                .padding(horizontal = 16.dp)
+        ) {
+            Row(
+                Modifier
+                    .padding(end = 10.dp)
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .border(
+                        width = 1.dp,
+                        color = ColorUtils.gray_E1E1E1,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "${obj.name?.getOrNull(0)?.name}",
+                    color = ColorUtils.gray_222222,
+                    fontSize = 12.sp
+                )
+            }
+            Box(
+                Modifier
+                    .size(78.dp, 40.dp)
+                    .background(color = ColorUtils.gray_9F9F9F, shape = RoundedCornerShape(4.dp))
+                    .noRippleClickable {
+                        onClick.invoke()
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text("삭제", color = ColorUtils.white_FFFFFF)
+            }
         }
     }
 }

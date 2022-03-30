@@ -528,4 +528,9 @@ interface ApiService {
     suspend fun getConfigCompanyInfo(
         @Header("Authorization") token: String,
     ): CompanyConfigInfo
+
+    @GET("company_requests/overview")
+    suspend fun getOverviewTotalCaseInMyPageCompany(
+        @Header("Authorization") token: String
+    ): TotalCaseOverviewModel
 }

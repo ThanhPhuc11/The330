@@ -12,11 +12,7 @@ class MyPageCompanyScreenRepo(private val apiService: ApiService) {
         emit(apiService.getCompanyDetail(token, id))
     }
 
-    suspend fun reservationOverview(
-        token: String,
-        userId: Int,
-        role: String
-    ) = flow {
-        emit(apiService.reservationOverview(token, userId = userId, role = role))
+    suspend fun getOverviewTotalCaseInMyPageCompany(token: String) = flow {
+        emit(apiService.getOverviewTotalCaseInMyPageCompany(token))
     }
 }

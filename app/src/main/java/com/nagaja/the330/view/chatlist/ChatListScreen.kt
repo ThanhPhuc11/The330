@@ -235,7 +235,7 @@ private fun ItemCompanyMember(obj: RoomDetailModel, onClick: () -> Unit?) {
             }
     ) {
         GlideImage(
-            imageModel = "${BuildConfig.BASE_S3}${obj.companyOwner?.images?.getOrNull(0)}",
+            imageModel = "${BuildConfig.BASE_S3}${obj.companyOwner?.images?.getOrNull(0)?.url}",
             Modifier
                 .size(80.dp),
             placeHolder = painterResource(R.drawable.ic_default_nagaja),

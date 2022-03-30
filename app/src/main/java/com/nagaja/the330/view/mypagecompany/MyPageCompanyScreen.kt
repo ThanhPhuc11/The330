@@ -147,7 +147,7 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
-                    getUserDetailFromDataStore(context)
+//                    getUserDetailFromDataStore(context)
                     viewModel.getUserDetails(accessToken)
                     viewModel.cbUpdateUserDataStore.observe(owner) {
                         DataStorePref(context).setUserDetail(it)
@@ -209,31 +209,31 @@ fun MyPageCompanyScreen(accessToken: String, viewController: ViewController?) {
                 MypageOptionItem(
                     R.drawable.ic_point_opt,
                     stringResource(R.string.option_point),
-                    "잔여: ${CommonUtils.priceWithoutDecimal((viewModel.companyDetailState.value.pointRemain ?: 0).toDouble())}",
+                    "잔여: ${CommonUtils.priceWithoutDecimal((viewModel.totalPointRemain.value).toDouble())}",
                     clickPoint
                 )
                 MypageOptionItem(
                     R.drawable.ic_consultation_opt,
                     stringResource(R.string.option_consultation_history),
-                    "상담중: 00건",
+                    "상담중: ${CommonUtils.priceWithoutDecimal((viewModel.totalConsultation.value).toDouble())}건",
                     clickConsultation
                 )
                 MypageOptionItem(
                     R.drawable.ic_usage_opt,
                     stringResource(R.string.option_usage_list),
-                    "오늘: 00건",
+                    "오늘: ${CommonUtils.priceWithoutDecimal((viewModel.usageReservation.value).toDouble())}건",
                     clickUsage
                 )
                 MypageOptionItem(
                     R.drawable.ic_reservation_opt,
                     stringResource(R.string.option_reservation_status),
-                    "오늘: 00건",
+                    "오늘: ${CommonUtils.priceWithoutDecimal((viewModel.totalReservation.value).toDouble())}건",
                     clickReservationHistory
                 )
                 MypageOptionItem(
                     R.drawable.ic_favorite,
                     stringResource(R.string.option_favorite_store_list),
-                    "총: 00건",
+                    "총: ${CommonUtils.priceWithoutDecimal((viewModel.totalRegular.value).toDouble())}건",
                     clickRegular
                 )
                 MypageOptionItem(

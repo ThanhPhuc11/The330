@@ -10,7 +10,6 @@ import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.*
 import com.nagaja.the330.utils.AppConstants
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -208,19 +207,20 @@ class EditCompanyVM(
         val companyModel = saveCompanyTransfer()
         viewModelScope.launch {
             repo.editCompany(token, companyModel)
-                .onStart { }
+                .onStart { callbackStart.value = Unit }
                 .onCompletion { }
-                .catch { }
+                .catch { handleError(it) }
                 .collect {
+                    callbackSuccess.value = Unit
                     totalFileUpload =
-                        listImageRepresentative.size + if (fileName.isEmpty()) 0 else 1
+                        (it.images?.size ?: 0) + if (fileName.isEmpty()) 0 else 1
                     if (totalFileUpload == 0) {
                         callbackEditSuccess.value = Unit
                     }
                     if (it.images != null && it.images!!.size > 0)
-                        it.images?.onEach { fileModel ->
+                        it.images?.forEach { fileModel ->
                             listImageRepresentative.forEach { fileLocal ->
-                                if (fileModel.url?.contains(fileLocal.fileName!!) == true) {
+                                if (fileModel.priority == fileLocal.priority) {
                                     uploadImageTest(fileModel.url ?: "", fileLocal.url!!)
                                 }
                             }
@@ -237,12 +237,14 @@ class EditCompanyVM(
 
         viewModelScope.launch {
             repo.uploadImage(url, requestFile)
-                .onStart { }
+                .onStart { callbackStart.value = Unit }
                 .onCompletion { }
                 .catch {
+                    handleError(it)
                     Log.e("Catch", this.toString() + path)
                 }
                 .collect {
+                    callbackSuccess.value = Unit
                     fileUploaded++
                     if (it.raw().isSuccessful && it.raw().code == 200) {
                         Log.e("Success", path)
