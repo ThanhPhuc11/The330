@@ -106,7 +106,7 @@ class SignupInfoFragment : BaseFragment() {
                             getString(R.string.password_do_not_match_please_check_again)
 
                         isSNS = requireArguments().getBoolean(AppConstants.EXTRA_KEY1)
-                        countDownTimer = object : CountDownTimer(300000, 1000) {
+                        countDownTimer = object : CountDownTimer(180000, 1000) {
                             override fun onFinish() {
                                 viewModel.stateBtnSendPhone.value = true
                                 viewModel.stateEnableFocusPhone.value = true

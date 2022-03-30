@@ -61,7 +61,7 @@ class EditProductCompanyFragment : BaseFragment() {
     override fun SetupViewModel() {
         viewModel = getViewModelProvider(this)[EditProductCompanyVM::class.java]
         shareViewModel =
-            ViewModelProvider(activity?.supportFragmentManager?.findFragmentByTag(ScreenId.SCREEN_APPLY_COMPANY)!!)[ShareApplyCompanyVM::class.java]
+            ViewModelProvider(activity?.supportFragmentManager?.findFragmentByTag(ScreenId.SCREEN_EDIT_COMPANY)!!)[ShareApplyCompanyVM::class.java]
         viewController = (activity as MainActivity).viewController
     }
 
