@@ -15,6 +15,10 @@ class EditProductCompanyRepo(private val apiService: ApiService) {
         emit(apiService.editCompany(token, body))
     }
 
+    suspend fun checkValidateAdminName(token: String, adminName: String) = flow {
+        emit(apiService.checkValidateAdminName(token, adminName))
+    }
+
     suspend fun uploadImage(url: String, body: RequestBody) = flow {
         emit(apiService.uploadImage(url, body))
     }

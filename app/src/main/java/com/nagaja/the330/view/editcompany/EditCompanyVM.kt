@@ -88,7 +88,6 @@ class EditCompanyVM(
                 .onCompletion { }
                 .catch { }
                 .collect {
-                    delay(500)
                     it.content?.let { it1 -> listCategoryState.addAll(it1) }
                 }
         }
@@ -154,6 +153,14 @@ class EditCompanyVM(
             return false
         }
         return true
+    }
+
+    fun saveProductCompany(): MutableList<ProductModel>? {
+        return companyDetail.value.products
+    }
+
+    fun saveAdmin(): MutableList<String>? {
+        return companyDetail.value.adminNames
     }
 
     fun saveCompanyTransfer(): CompanyModel {

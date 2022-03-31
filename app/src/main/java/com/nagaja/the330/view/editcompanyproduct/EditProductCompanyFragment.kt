@@ -11,13 +11,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Checkbox
-import androidx.compose.material.CheckboxDefaults
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,14 +33,13 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
 import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.model.FileModel
-import com.nagaja.the330.utils.ColorUtils
-import com.nagaja.the330.utils.NameUtils
-import com.nagaja.the330.utils.RealPathUtil
-import com.nagaja.the330.utils.ScreenId
+import com.nagaja.the330.model.ProductModel
+import com.nagaja.the330.utils.*
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompany.ShareApplyCompanyVM
 import com.skydoves.landscapist.glide.GlideImage
@@ -63,6 +61,25 @@ class EditProductCompanyFragment : BaseFragment() {
         shareViewModel =
             ViewModelProvider(activity?.supportFragmentManager?.findFragmentByTag(ScreenId.SCREEN_EDIT_COMPANY)!!)[ShareApplyCompanyVM::class.java]
         viewController = (activity as MainActivity).viewController
+
+        viewModel.callbackEditSuccess.observe(viewLifecycleOwner) {
+            viewController?.popFragment()
+        }
+        viewModel.callbackCheckNotOk.observe(viewLifecycleOwner) {
+            showMess("존재하지 않는 아이디입니다. 아이디를 다시 확인해주세요.")
+        }
+        viewModel.callbackStart.observe(viewLifecycleOwner) {
+            showLoading()
+        }
+        viewModel.callbackSuccess.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.callbackFail.observe(viewLifecycleOwner) {
+            hideLoading()
+        }
+        viewModel.showMessCallback.observe(viewLifecycleOwner) {
+            showMess(it)
+        }
     }
 
     @Preview
@@ -73,7 +90,9 @@ class EditProductCompanyFragment : BaseFragment() {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        viewModel.companyModel.value = shareViewModel.companyInfoState.value
+                        viewModel.companyId = shareViewModel.companyId
+                        viewModel.listProductValidate.addAll(shareViewModel.productsOfCompany)
+                        viewModel.listAdmin.addAll(shareViewModel.listAdmin)
                         backSystemHandler {
                             viewController?.popFragment()
                         }
@@ -87,10 +106,53 @@ class EditProductCompanyFragment : BaseFragment() {
             }
         }
 
-        LayoutTheme330 {
-            Header(title = stringResource(R.string.apply_company_title)) {
-                viewController?.popFragment()
+        LaunchedEffect(viewModel.listProductValidate.size) {
+            viewModel.currentProductInfo.value =
+                viewModel.listProductValidate.getOrNull(0) ?: ProductModel()
+        }
+        LaunchedEffect(viewModel.currentProductInfo.value) {
+            val obj = viewModel.currentProductInfo.value
+            obj.name?.associate { it -> it.lang to it.name }?.let {
+                viewModel.textStateNameEng.value = TextFieldValue(it["en"] ?: "")
+                viewModel.textStateNamePhi.value = TextFieldValue(it["ph"] ?: "")
+                viewModel.textStateNameKr.value = TextFieldValue(it["kr"] ?: "")
+                viewModel.textStateNameCN.value = TextFieldValue(it["cn"] ?: "")
+                viewModel.textStateNameJP.value = TextFieldValue(it["jp"] ?: "")
             }
+            obj.description?.associate { it -> it.lang to it.name }?.let {
+                viewModel.textStateDesEng.value = TextFieldValue(it["en"] ?: "")
+                viewModel.textStateDesPhi.value = TextFieldValue(it["ph"] ?: "")
+                viewModel.textStateDesKr.value = TextFieldValue(it["kr"] ?: "")
+                viewModel.textStateDesCN.value = TextFieldValue(it["cn"] ?: "")
+                viewModel.textStateDesJP.value = TextFieldValue(it["jp"] ?: "")
+            }
+            obj.peso?.let {
+                viewModel.textStatePeso.value = TextFieldValue(CommonUtils.priceWithoutDecimal(it))
+            }
+            obj.dollar?.let {
+                viewModel.textStateDollar.value =
+                    TextFieldValue(CommonUtils.priceWithoutDecimal(it))
+            }
+            obj.won?.let {
+                viewModel.textStateWon.value = TextFieldValue(CommonUtils.priceWithoutDecimal(it))
+            }
+            obj.images?.let {
+                viewModel.listImageProduct.clear()
+                viewModel.listImageProduct.addAll(it)
+            }
+        }
+
+        LayoutTheme330 {
+            HeaderOption(
+                title = stringResource(R.string.edit_product_info),
+                optionText = stringResource(R.string.add),
+                clickOption = {
+                    viewModel.addProductToList()
+                },
+                clickBack = {
+                    viewController?.popFragment()
+                }
+            )
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 Row(
                     Modifier
@@ -105,17 +167,65 @@ class EditProductCompanyFragment : BaseFragment() {
                         fontSize = 16.sp,
                         modifier = Modifier.weight(1f)
                     )
-                    Box(
+
+                    val listProduct = viewModel.listProductValidate
+                    val expanded = remember { mutableStateOf(false) }
+                    val currentSelect =
+                        remember { mutableStateOf(ProductModel()) }
+                    LaunchedEffect(viewModel.listProductValidate) {
+                        currentSelect.value =
+                            if (listProduct.isNullOrEmpty()) ProductModel() else listProduct[0]
+                    }
+                    Text(
+                        stringResource(R.string.delete),
+                        fontSize = 14.sp,
+                        color = ColorUtils.blue_2177E4,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .noRippleClickable {
+                                viewModel.listProductValidate.remove(viewModel.currentProductInfo.value)
+                            }
+                    )
+                    Row(
                         Modifier
-                            .width(76.dp)
                             .height(32.dp)
-                            .background(ColorUtils.gray_222222, shape = RoundedCornerShape(99.dp)),
-                        contentAlignment = Alignment.Center
+                            .border(
+                                width = 1.dp,
+                                color = ColorUtils.gray_E1E1E1,
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 10.dp)
+                            .noRippleClickable {
+                                expanded.value = true
+                            },
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+
+                        DropdownMenu(
+                            expanded = expanded.value,
+                            onDismissRequest = { expanded.value = false }) {
+                            listProduct.forEach { item ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        if (!viewModel.saveProductCurrent()) return@DropdownMenuItem
+                                        expanded.value = false
+                                        currentSelect.value = item
+                                        viewModel.currentProductInfo.value = item
+                                    }) {
+                                    Text(item.name?.getOrNull(0)?.name ?: "")
+                                }
+                            }
+                        }
                         Text(
-                            stringResource(R.string.add),
-                            color = ColorUtils.white_FFFFFF,
-                            fontSize = 12.sp
+                            currentSelect.value.name?.getOrNull(0)?.name ?: "",
+                            style = text14_222,
+                        )
+                        Image(
+                            painterResource(R.drawable.ic_arrow_down), null,
+                            Modifier
+                                .padding(start = 10.dp)
+                                .rotate(if (expanded.value) 180f else 0f)
+                                .width(10.dp),
                         )
                     }
                 }
@@ -128,7 +238,7 @@ class EditProductCompanyFragment : BaseFragment() {
                 )
 
                 Row {
-                    val listImage = remember { mutableStateListOf<FileModel>() }
+                    val listImage = remember { viewModel.listImageProduct }
                     val count = remember { mutableStateOf(listImage.size) }
                     callbackListImage = { uri ->
                         val fileTemp = File(
@@ -137,13 +247,14 @@ class EditProductCompanyFragment : BaseFragment() {
                                 uri
                             )
                         )
-                        listImage.add(FileModel(url = uri.toString()))
-                        viewModel.listImageProduct.add(
-                            FileModel(
-                                fileName = NameUtils.setFileName(userDetailBase?.id, fileTemp),
-                                url = fileTemp.path
-                            )
+                        val fileNameTemp = NameUtils.setFileName(userDetailBase?.id, fileTemp)
+                        val fileModelTemp = FileModel(
+                            uri = uri.toString(),
+                            fileName = fileNameTemp,
+                            url = fileTemp.path
                         )
+                        listImage.add(fileModelTemp)
+                        viewModel.mapTotalImage[fileNameTemp] = fileModelTemp
                     }
                     LaunchedEffect(listImage.size) {
                         count.value = listImage.size
@@ -162,7 +273,7 @@ class EditProductCompanyFragment : BaseFragment() {
                     }
                     onClickRemove = { index ->
                         listImage.removeAt(index)
-                        viewModel.listImageProduct.removeAt(index)
+//                        viewModel.listImageProduct.removeAt(index)
                     }
                     LazyRow {
                         itemsIndexed(listImage) { index, obj ->
@@ -257,7 +368,7 @@ class EditProductCompanyFragment : BaseFragment() {
                         .size(78.dp, 40.dp)
                         .background(ColorUtils.gray_9F9F9F, RoundedCornerShape(4.dp))
                         .noRippleClickable {
-                            val hasAdmin = viewModel.companyModel.value.adminNames?.size ?: 0
+                            val hasAdmin = viewModel.listAdmin?.size ?: 0
                             if (hasAdmin == 2) return@noRippleClickable
                             stateShowDialogCheckAdd.value = true
                         },
@@ -292,7 +403,7 @@ class EditProductCompanyFragment : BaseFragment() {
 
                 val listDataAdmin = remember { mutableStateListOf<String>() }
                 LaunchedEffect(Unit) {
-                    viewModel.companyModel.value.adminNames?.forEach {
+                    viewModel.listAdmin.forEach {
                         listDataAdmin.add(it)
                     }
                 }
@@ -337,7 +448,7 @@ class EditProductCompanyFragment : BaseFragment() {
                                 rightText = "아니요",
                                 onClick = {
                                     if (!it) {
-                                        viewModel.companyModel.value.adminNames!!.removeLast()
+                                        viewModel.listAdmin.removeLast()
                                         listDataAdmin.removeLast()
                                     }
                                 }
@@ -379,16 +490,24 @@ class EditProductCompanyFragment : BaseFragment() {
                                 .weight(1f)
                                 .fillMaxHeight()
                         )
+                        if (viewModel.stateCheckOk.value) {
+                            viewModel.listAdmin.add(stateInputAdmin.value.text)
+                            listDataAdmin.add(stateInputAdmin.value.text)
+                            stateShowInputAdmin.value = false
+                            stateInputAdmin.value = TextFieldValue("")
+
+                            viewModel.stateCheckOk.value = false
+                        }
                         Box(
                             modifier = Modifier
                                 .padding(start = 9.dp)
                                 .size(78.dp, 40.dp)
                                 .background(ColorUtils.gray_9F9F9F, RoundedCornerShape(4.dp))
                                 .noRippleClickable {
-                                    viewModel.companyModel.value.adminNames!!.add(stateInputAdmin.value.text)
-                                    listDataAdmin.add(stateInputAdmin.value.text)
-                                    stateShowInputAdmin.value = false
-                                    stateInputAdmin.value = TextFieldValue("")
+                                    viewModel.checkValidateAdminName(
+                                        accessToken!!,
+                                        stateInputAdmin.value.text
+                                    )
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -469,7 +588,7 @@ class EditProductCompanyFragment : BaseFragment() {
         ) {
             val (content, close) = createRefs()
             GlideImage(
-                imageModel = obj.url,
+                imageModel = if (obj.uri != null) obj.uri else "${BuildConfig.BASE_S3}${obj.url}",
                 contentDescription = "",
                 placeHolder = painterResource(R.drawable.ic_default_nagaja),
                 error = painterResource(R.drawable.ic_default_nagaja),

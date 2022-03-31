@@ -152,6 +152,12 @@ interface ApiService {
         @Body body: CompanyModel
     ): AppyCompanyResponse
 
+    @GET("company_requests/company_admin_check")
+    suspend fun checkValidateAdminName(
+        @Header("Authorization") token: String,
+        @Query("adminName") adminName: String
+    ): Boolean
+
     @PUT
     suspend fun uploadImage(
         @Url fullUrl: String?,

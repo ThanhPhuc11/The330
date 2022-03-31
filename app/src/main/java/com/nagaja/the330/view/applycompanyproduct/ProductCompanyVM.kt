@@ -200,6 +200,7 @@ class ProductCompanyVM(
                 .onStart { callbackStart.value = Unit }
                 .onCompletion { }
                 .catch {
+                    handleError(it)
                     Log.e("Catch", this.toString())
                     fileUploaded++
                     if (fileUploaded == totalFileUpload) {
