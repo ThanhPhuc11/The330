@@ -373,7 +373,7 @@ fun ReportMissingItem(obj: ReportMissingModel, onClick: () -> Unit) {
             .padding(vertical = 16.dp)
             .padding(top = 16.dp)
             .noRippleClickable {
-
+                onClick.invoke()
             }
     ) {
         Row {
