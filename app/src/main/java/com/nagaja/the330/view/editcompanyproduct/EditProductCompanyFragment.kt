@@ -106,7 +106,7 @@ class EditProductCompanyFragment : BaseFragment() {
             }
         }
 
-        LaunchedEffect(viewModel.listProductValidate.size) {
+        LaunchedEffect(Unit) {
             viewModel.currentProductInfo.value =
                 viewModel.listProductValidate.getOrNull(0) ?: ProductModel()
         }
@@ -184,6 +184,7 @@ class EditProductCompanyFragment : BaseFragment() {
                             .padding(horizontal = 16.dp)
                             .noRippleClickable {
                                 viewModel.listProductValidate.remove(viewModel.currentProductInfo.value)
+                                viewModel.currentProductInfo.value = viewModel.listProductValidate.getOrNull(0)?:ProductModel()
                             }
                     )
                     Row(
