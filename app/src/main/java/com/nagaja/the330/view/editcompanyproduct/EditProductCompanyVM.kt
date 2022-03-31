@@ -13,7 +13,6 @@ import com.nagaja.the330.model.NameModel
 import com.nagaja.the330.model.ProductModel
 import com.nagaja.the330.utils.AppConstants
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -96,8 +95,12 @@ class EditProductCompanyVM(
                 won = textStateWon.value.text.toDouble()
             }
         }
-        listProductValidate.add(obj)
+        val currentIndex = listProductValidate.indexOfFirst { it.id == currentProductInfo.value.id }
+        listProductValidate.removeAt(currentIndex)
+        listProductValidate.add(currentIndex, currentProductInfo.value.copy())
         refreshInput()
+        listProductValidate.add(ProductModel())
+        currentProductInfo.value = ProductModel()
     }
 
     private fun refreshInput() {
@@ -159,7 +162,8 @@ class EditProductCompanyVM(
         }
 
         val currentIndex = listProductValidate.indexOfFirst { it.id == currentProductInfo.value.id }
-        listProductValidate[currentIndex] = currentProductInfo.value.copy()
+        listProductValidate.removeAt(currentIndex)
+        listProductValidate.add(currentIndex, currentProductInfo.value.copy())
         return true
     }
 
@@ -173,6 +177,7 @@ class EditProductCompanyVM(
             }
             adminNames = listAdmin
         }
+        return
         viewModelScope.launch {
             repo.editCompany(token, companyObj)
                 .onStart { callbackStart.value = Unit }
@@ -206,7 +211,7 @@ class EditProductCompanyVM(
         viewModelScope.launch {
             repo.checkValidateAdminName(token, name)
                 .onStart { callbackStart.value = Unit }
-                .onCompletion {  }
+                .onCompletion { }
                 .catch { handleError(it) }
                 .collect {
                     callbackSuccess.value = Unit
