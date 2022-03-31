@@ -213,8 +213,19 @@ class CompanyListFragment : BaseFragment() {
                             expandedSort = false
                         }
                     ) {
+                        Image(
+                            painterResource(R.drawable.ic_close_popup),
+                            "",
+                            modifier = Modifier
+                                .padding(end = 10.dp)
+                                .align(Alignment.End)
+                                .noRippleClickable {
+                                    expandedSort = false
+                                }
+                        )
                         listSort.forEach { selectionOption ->
                             DropdownMenuItem(
+                                contentPadding = PaddingValues(12.dp, 0.dp, 30.dp, 0.dp),
                                 onClick = {
                                     viewModel.sort = selectionOption.id!!
                                     viewModel.findCompany(accessToken!!, 0)
