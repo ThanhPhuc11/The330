@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.*
 import com.nagaja.the330.utils.AppConstants
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -87,6 +88,7 @@ class EditCompanyVM(
                 .onCompletion { }
                 .catch { }
                 .collect {
+                    delay(500)
                     it.content?.let { it1 -> listCategoryState.addAll(it1) }
                 }
         }
@@ -99,6 +101,7 @@ class EditCompanyVM(
                 .onCompletion { }
                 .catch { }
                 .collect {
+                    delay(500)
                     it.content?.let { it1 -> listCity.addAll(it1) }
                 }
         }
@@ -126,6 +129,7 @@ class EditCompanyVM(
                 .onCompletion { }
                 .catch { }
                 .collect {
+                    delay(500)
                     it.content?.let { it1 ->
                         listPopularAreas.clear()
                         listPopularAreas.addAll(it1)
@@ -199,6 +203,9 @@ class EditCompanyVM(
 
             file = fileName.ifEmpty { null }
             fileTemp = FileModel(url = filePath)
+
+            adminNames = companyDetail.value.adminNames
+            products = companyDetail.value.products
         }
     }
 
@@ -272,6 +279,7 @@ class EditCompanyVM(
                     handleError(it)
                 }
                 .collect {
+                    delay(500)
                     callbackSuccess.value = Unit
                     companyDetail.value = it
                 }

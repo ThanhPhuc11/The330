@@ -37,6 +37,7 @@ class CompanyModel {
     var createdOn: String? = null
     var status: String? = null
     var user: UserDetail? = null
+    var adminNames: MutableList<String>? = null
 
     //field for request body
     var popularAreaId: Int? = null

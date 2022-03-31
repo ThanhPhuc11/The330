@@ -95,6 +95,10 @@ class CompanyListFragment : BaseFragment() {
                             viewModel.findCompany(it, 0)
                             viewModel.getBanner(it)
                         }
+
+                        backSystemHandler {
+                            viewController?.popFragment()
+                        }
                     }
                     else -> {}
                 }

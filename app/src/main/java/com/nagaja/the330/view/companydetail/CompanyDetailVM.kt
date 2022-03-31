@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.CompanyModel
 import com.nagaja.the330.utils.AppConstants
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
@@ -34,6 +35,7 @@ class CompanyDetailVM(
                     handleError(it)
                 }
                 .collect {
+                    delay(500)
                     callbackSuccess.value = Unit
                     companyDetail.value = it
                     checkLikeCompany(token)

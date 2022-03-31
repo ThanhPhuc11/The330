@@ -74,6 +74,9 @@ class EditProductCompanyFragment : BaseFragment() {
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
                         viewModel.companyModel.value = shareViewModel.companyInfoState.value
+                        backSystemHandler {
+                            viewController?.popFragment()
+                        }
                     }
                     else -> {}
                 }
@@ -215,12 +218,193 @@ class EditProductCompanyFragment : BaseFragment() {
                         .padding(bottom = 12.dp, top = 20.dp)
                 )
 
+                //TODO: Des Product
                 ProductDescriptionInput()
+
+                //TODO: Add Admin Button
+                Text(
+                    stringResource(R.string.add_admin_id),
+                    color = ColorUtils.gray_222222,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 12.dp, top = 20.dp)
+                )
+
+                val stateShowInputAdmin = remember { mutableStateOf(false) }
+
+                val stateShowDialogCheckAdd = remember { mutableStateOf(false) }
+                if (stateShowDialogCheckAdd.value)
+                    Dialog2Button(
+                        state = stateShowDialogCheckAdd,
+                        title = "",
+                        content = "최대 2개의 아이디 등록이 서비스 제공되며\n" +
+                                "추가 등록시 50p 차감됩니다. \n" +
+                                "아이디를 추가 하시겠습니까?",
+                        leftText = "예",
+                        rightText = "아니요",
+                        onClick = {
+                            if (!it) {
+                                stateShowInputAdmin.value = true
+                            }
+                        }
+                    )
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 12.dp)
+                        .size(78.dp, 40.dp)
+                        .background(ColorUtils.gray_9F9F9F, RoundedCornerShape(4.dp))
+                        .noRippleClickable {
+                            val hasAdmin = viewModel.companyModel.value.adminNames?.size ?: 0
+                            if (hasAdmin == 2) return@noRippleClickable
+                            stateShowDialogCheckAdd.value = true
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        stringResource(R.string.add),
+                        color = ColorUtils.white_FFFFFF,
+                        fontSize = 14.sp
+                    )
+                }
+
+                Text(
+                    "가게 매니저 등 관리자 권한을 부여할 회원의 나가자 아이디를 입력해주세요.\n" +
+                            "기업 정보 수정 기능을 제외한 기업사용자로서 부여된 기능을 제공합니다.\n" +
+                            "등록한 아이디는 삭제 후 재등록시 50P가 소진됩니다. 아이디를 확인 후 정확히 입력해주세요.",
+                    color = ColorUtils.black_000000,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+
+                Text(
+                    "※ 해당 아이디는 로그아웃 후 재로그인을 통해 부여된 권한을 확인\n" +
+                            "할 수 있습니다.",
+                    color = ColorUtils.gray_9F9F9F,
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .padding(horizontal = 16.dp)
+                )
+
+
+                val listDataAdmin = remember { mutableStateListOf<String>() }
+                LaunchedEffect(Unit) {
+                    viewModel.companyModel.value.adminNames?.forEach {
+                        listDataAdmin.add(it)
+                    }
+                }
+
+                //TODO: List Admin
+                if (!listDataAdmin.isNullOrEmpty()) {
+                    Row(
+                        Modifier
+                            .padding(top = 12.dp)
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .height(40.dp)
+                    ) {
+                        Row(
+                            Modifier
+                                .fillMaxHeight()
+                                .weight(1f)
+                                .border(
+                                    width = 1.dp,
+                                    color = ColorUtils.gray_E1E1E1,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .padding(horizontal = 9.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            listDataAdmin.toMutableStateList()
+                                .forEachIndexed { index, adminName ->
+                                    Text(
+                                        "${if (index == 1) ", " else ""}$adminName",
+                                        style = text14_222
+                                    )
+                                }
+                        }
+                        //TODO: Del
+                        val stateShowDialogDel = remember { mutableStateOf(false) }
+                        if (stateShowDialogDel.value) {
+                            Dialog2Button(
+                                state = stateShowDialogDel,
+                                title = "",
+                                content = "아이디: ${listDataAdmin.last()} \n등록된 관리자 아이디를 삭제합니다.",
+                                leftText = "예",
+                                rightText = "아니요",
+                                onClick = {
+                                    if (!it) {
+                                        viewModel.companyModel.value.adminNames!!.removeLast()
+                                        listDataAdmin.removeLast()
+                                    }
+                                }
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .padding(start = 9.dp)
+                                .size(78.dp, 40.dp)
+                                .background(ColorUtils.gray_9F9F9F, RoundedCornerShape(4.dp))
+                                .noRippleClickable {
+                                    stateShowDialogDel.value = true
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                stringResource(R.string.delete),
+                                color = ColorUtils.white_FFFFFF,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
+
+                //TODO: Input Name Admin
+                val stateInputAdmin = remember { mutableStateOf(TextFieldValue("")) }
+                if (stateShowInputAdmin.value) {
+                    Row(
+                        Modifier
+                            .padding(top = 4.dp)
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .height(40.dp)
+                    ) {
+                        TextFieldCustom(
+                            hint = stringResource(R.string.please_enter_id),
+                            textStateId = stateInputAdmin,
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(start = 9.dp)
+                                .size(78.dp, 40.dp)
+                                .background(ColorUtils.gray_9F9F9F, RoundedCornerShape(4.dp))
+                                .noRippleClickable {
+                                    viewModel.companyModel.value.adminNames!!.add(stateInputAdmin.value.text)
+                                    listDataAdmin.add(stateInputAdmin.value.text)
+                                    stateShowInputAdmin.value = false
+                                    stateInputAdmin.value = TextFieldValue("")
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                stringResource(R.string.register),
+                                color = ColorUtils.white_FFFFFF,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
 
                 //TODO: Button complete
                 Box(
                     Modifier
-                        .padding(top = 100.dp)
+                        .padding(top = 150.dp)
                         .fillMaxWidth()
                         .height(52.dp)
                         .background(ColorUtils.blue_2177E4)

@@ -52,8 +52,10 @@ import com.nagaja.the330.model.TimeReservation
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.NameUtils
 import com.nagaja.the330.utils.RealPathUtil
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompany.ShareApplyCompanyVM
+import com.nagaja.the330.view.editcompanyproduct.EditProductCompanyFragment
 import com.skydoves.landscapist.glide.GlideImage
 import java.io.File
 
@@ -105,6 +107,10 @@ class EditCompanyFragment : BaseFragment() {
                         viewModel.getCategory(accessToken!!)
                         viewModel.getPopularAreas(accessToken!!)
                         viewModel.getCity(accessToken!!)
+
+                        backSystemHandler {
+                            viewController?.popFragment()
+                        }
                     }
                     Lifecycle.Event.ON_STOP -> {
 
@@ -456,14 +462,14 @@ class EditCompanyFragment : BaseFragment() {
                             .fillMaxHeight()
                             .background(ColorUtils.gray_222222)
                             .noRippleClickable {
-//                                if (viewModel.isValidate()) {
-//                                    shareViewModel.companyInfoState.value =
-//                                        viewModel.saveCompanyTransfer()
-//                                    viewController?.pushFragment(
-//                                        ScreenId.SCREEN_APPLY_COMPANY_PRODUCT_INFO,
-//                                        EditProductCompanyFragment.newInstance()
-//                                    )
-//                                }
+                                if (viewModel.isValidate()) {
+                                    shareViewModel.companyInfoState.value =
+                                        viewModel.saveCompanyTransfer()
+                                    viewController?.pushFragment(
+                                        ScreenId.SCREEN_APPLY_COMPANY_PRODUCT_INFO,
+                                        EditProductCompanyFragment.newInstance()
+                                    )
+                                }
                             },
                         contentAlignment = Alignment.Center
                     ) {

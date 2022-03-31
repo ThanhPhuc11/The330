@@ -55,6 +55,7 @@ import com.nagaja.the330.view.reservationregis.ReservationRegisFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -105,6 +106,10 @@ class CompanyDetailFragment : BaseFragment() {
                                 it,
                                 requireArguments().getInt(AppConstants.EXTRA_KEY1)
                             )
+                        }
+
+                        backSystemHandler {
+                            viewController?.popFragment()
                         }
                     }
                     else -> {}
