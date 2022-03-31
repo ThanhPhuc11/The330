@@ -49,6 +49,7 @@ import com.nagaja.the330.view.HeaderSearch
 import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.companydetail.CompanyDetailFragment
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.searchmain.SearchMainFragment
 import com.skydoves.landscapist.glide.GlideImage
 
 class CompanyListFragment : BaseFragment() {
@@ -116,7 +117,10 @@ class CompanyListFragment : BaseFragment() {
                 },
                 clickSearch = {
                     viewModel.keyword = it
-                    viewModel.findCompany(accessToken!!, 0)
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_SEARCH_MAIN,
+                        SearchMainFragment.newInstance(it, 0)
+                    )
                 }
             )
             Text(

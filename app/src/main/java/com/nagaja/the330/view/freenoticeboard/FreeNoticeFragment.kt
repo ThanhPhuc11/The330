@@ -41,6 +41,7 @@ import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.freenoticedetail.FreeNoticeDetailFragment
 import com.nagaja.the330.view.freenoticeregis.FreeNoticeRegisFragment
 import com.nagaja.the330.view.noRippleClickable
+import com.nagaja.the330.view.searchmain.SearchMainFragment
 import com.nagaja.the330.view.text14_222
 
 class FreeNoticeFragment : BaseFragment() {
@@ -97,8 +98,10 @@ class FreeNoticeFragment : BaseFragment() {
                 },
                 clickSearch = {
                     showMessDEBUG(it)
-                    viewModel.keyword = it
-                    viewModel.getFreeNoticeBoard(accessToken!!, 0)
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_SEARCH_MAIN,
+                        SearchMainFragment.newInstance(it, 1)
+                    )
                 },
                 textOption = stringResource(R.string.post_register),
                 clickOption = {
