@@ -34,6 +34,7 @@ import com.nagaja.the330.view.*
 import com.nagaja.the330.view.recruitmentdetail.RecruitJobsDetailFragment
 import com.nagaja.the330.view.recruitmentregis.RecruitJobRegisFragment
 import com.nagaja.the330.view.searchmain.ItemRecruitmentJobs
+import com.nagaja.the330.view.searchmain.SearchMainFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -143,6 +144,12 @@ class RecruitmentJobSearchFragment : BaseFragment() {
                             viewModel.checkExistJobSearch(accessToken!!)
                         }
                     }
+                },
+                clickSearch = {
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_SEARCH_MAIN,
+                        SearchMainFragment.newInstance(it, 2)
+                    )
                 }
             )
             Row(

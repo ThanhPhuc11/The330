@@ -52,8 +52,10 @@ import com.nagaja.the330.model.TimeReservation
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.NameUtils
 import com.nagaja.the330.utils.RealPathUtil
+import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.applycompany.ShareApplyCompanyVM
+import com.nagaja.the330.view.editcompanyproduct.EditProductCompanyFragment
 import com.skydoves.landscapist.glide.GlideImage
 import java.io.File
 
@@ -105,6 +107,10 @@ class EditCompanyFragment : BaseFragment() {
                         viewModel.getCategory(accessToken!!)
                         viewModel.getPopularAreas(accessToken!!)
                         viewModel.getCity(accessToken!!)
+
+                        backSystemHandler {
+                            viewController?.popFragment()
+                        }
                     }
                     Lifecycle.Event.ON_STOP -> {
 
@@ -120,7 +126,8 @@ class EditCompanyFragment : BaseFragment() {
         val fileName = remember { mutableStateOf("") }
         LaunchedEffect(viewModel.companyDetail.value) {
             val obj = viewModel.companyDetail.value
-            viewModel.selectedOptionCategory.value = CategoryModel(ctype = obj.ctype)
+            viewModel.selectedOptionCategory.value =
+                viewModel.listCategoryState.firstOrNull { it.ctype == obj.ctype } ?: CategoryModel()
             obj.images?.let { viewModel.listImageRepresentative.addAll(it) }
             obj.name?.associate { it -> it.lang to it.name }?.let {
                 viewModel.textStateNameEng.value = TextFieldValue(it["en"] ?: "")
@@ -456,14 +463,21 @@ class EditCompanyFragment : BaseFragment() {
                             .fillMaxHeight()
                             .background(ColorUtils.gray_222222)
                             .noRippleClickable {
-//                                if (viewModel.isValidate()) {
-//                                    shareViewModel.companyInfoState.value =
-//                                        viewModel.saveCompanyTransfer()
-//                                    viewController?.pushFragment(
-//                                        ScreenId.SCREEN_APPLY_COMPANY_PRODUCT_INFO,
-//                                        EditProductCompanyFragment.newInstance()
-//                                    )
-//                                }
+                                if (viewModel.isValidate()) {
+                                    viewModel
+                                        .saveProductCompany()
+                                        ?.let {
+                                            shareViewModel.productsOfCompany.clear()
+                                            shareViewModel.productsOfCompany.addAll(it) }
+                                    viewModel
+                                        .saveAdmin()
+                                        ?.let { shareViewModel.listAdmin.addAll(it) }
+                                    shareViewModel.companyId = viewModel.companyDetail.value.id!!
+                                    viewController?.pushFragment(
+                                        ScreenId.SCREEN_APPLY_COMPANY_PRODUCT_INFO,
+                                        EditProductCompanyFragment.newInstance()
+                                    )
+                                }
                             },
                         contentAlignment = Alignment.Center
                     ) {

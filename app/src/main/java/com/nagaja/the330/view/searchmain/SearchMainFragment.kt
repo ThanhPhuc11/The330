@@ -62,7 +62,6 @@ import com.nagaja.the330.view.secondhandmarket.SecondHandMarketVM
 import com.nagaja.the330.view.secondhandregis.SecondHandRegisFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -76,9 +75,10 @@ class SearchMainFragment : BaseFragment() {
     private lateinit var viewModelReportMissing: ReportMissingVM
 
     companion object {
-        fun newInstance(keyword: String) = SearchMainFragment().apply {
+        fun newInstance(keyword: String, tab: Int = 0) = SearchMainFragment().apply {
             arguments = Bundle().apply {
                 putString(AppConstants.EXTRA_KEY1, keyword)
+                putInt(AppConstants.EXTRA_KEY2, tab)
             }
         }
     }
@@ -99,13 +99,16 @@ class SearchMainFragment : BaseFragment() {
         val listTitleSearch = GetDummyData.getTitleSearch().map {
             ChooseKeyValue(it.id, it.name, false)
         }.toMutableStateList()
-
+        val pagerState = rememberPagerState(pageCount = 5)
         val owner = LocalLifecycleOwner.current
         DisposableEffect(Unit) {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
-                        listTitleSearch[0].isSelected = true
+                        val tab = requireArguments().getInt(AppConstants.EXTRA_KEY2)
+                        CoroutineScope(Dispatchers.Main).launch {
+                            pagerState.scrollToPage(tab)
+                        }
                         viewModel.keyword.value =
                             requireArguments().getString(AppConstants.EXTRA_KEY1, "")
                     }
@@ -131,7 +134,7 @@ class SearchMainFragment : BaseFragment() {
                 fontSize = 12.sp,
                 modifier = Modifier.padding(16.dp)
             )
-            val pagerState = rememberPagerState(pageCount = 5)
+
             LazyRow(
                 state = rememberLazyListState(),
                 modifier = Modifier

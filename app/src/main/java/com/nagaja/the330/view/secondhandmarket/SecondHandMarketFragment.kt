@@ -87,7 +87,11 @@ class SecondHandMarketFragment : BaseFragment() {
 //                        SearchMainFragment.newInstance()
 //                    )
                     viewModel.keyword = it
-                    viewModel.getListSecondHandMarket(accessToken!!, 0)
+//                    viewModel.getListSecondHandMarket(accessToken!!, 0)
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_SEARCH_MAIN,
+                        SearchMainFragment.newInstance(it, 3)
+                    )
 
                 }
             )

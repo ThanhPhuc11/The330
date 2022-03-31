@@ -45,6 +45,7 @@ import com.nagaja.the330.view.*
 import com.nagaja.the330.view.reportmissingdetail.ReportMissingDetailFragment
 import com.nagaja.the330.view.reportmissingregis.ReportMissingRegisFragment
 import com.nagaja.the330.view.searchmain.ReportMissingItem
+import com.nagaja.the330.view.searchmain.SearchMainFragment
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -112,6 +113,12 @@ class ReportMissingFragment : BaseFragment() {
                     viewController?.pushFragment(
                         ScreenId.SCREEN_REPORT_MISSING_REGIS,
                         ReportMissingRegisFragment.newInstance()
+                    )
+                },
+                clickSearch = {
+                    viewController?.pushFragment(
+                        ScreenId.SCREEN_SEARCH_MAIN,
+                        SearchMainFragment.newInstance(it, 4)
                     )
                 }
             )
