@@ -1,11 +1,15 @@
 package com.nagaja.the330.view.chatdetail
 
+import android.database.ContentObserver
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.provider.MediaStore
+import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -49,7 +53,10 @@ import com.nagaja.the330.view.LayoutTheme330
 import com.nagaja.the330.view.noRippleClickable
 import com.nagaja.the330.view.reservationregis.ReservationRegisFragment
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class ChatDetailFragment : BaseFragment() {
     private lateinit var viewModel: ChatDetailVM
@@ -61,7 +68,7 @@ class ChatDetailFragment : BaseFragment() {
     private var onAddToBottom: (() -> Unit)? = null
     private lateinit var database: DatabaseReference
 
-    var updateListChat:(() -> Unit)? = null
+    var updateListChat: (() -> Unit)? = null
 
     companion object {
 //        fun newInstance(partnerId: Int? = null, roomId: Int? = null) = ChatDetailFragment().apply {
@@ -109,6 +116,12 @@ class ChatDetailFragment : BaseFragment() {
         }
 
         database = Firebase.database.reference
+
+        requireContext().contentResolver.registerContentObserver(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            true,
+            contentObserver
+        )
     }
 
     @Composable
@@ -172,6 +185,20 @@ class ChatDetailFragment : BaseFragment() {
                 owner.lifecycle.removeObserver(observer)
             }
         }
+        LaunchedEffect(viewModel.stateCapture.value) {
+            if (viewModel.stateCapture.value) {
+                //TODO : call api capture
+                viewModel.sendMess(accessToken!!, ItemMessageModel().apply {
+                    type = "CAPTURED"
+                    message = "님이 대화 내용을 캡쳐했습니다."
+                    chatRoomId = viewModel.stateRoomInfo.value.id
+                })
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(1000)
+                    viewModel.stateCapture.value = false
+                }
+            }
+        }
         LaunchedEffect(viewModel.stateRoomInfo.value) {
             viewModel.stateIsSeller.value =
                 userDetailBase?.id == viewModel.stateRoomInfo.value.target?.id
@@ -220,32 +247,39 @@ class ChatDetailFragment : BaseFragment() {
                 val lazyListState = rememberLazyListState()
                 LazyColumn(
                     state = lazyListState,
-                    reverseLayout = false,
+                    reverseLayout = true,
                     modifier = Modifier
                         .fillMaxHeight()
                         .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.Bottom
                 ) {
                     itemsIndexed(listMess) { index, obj ->
-                        if (obj.userId?.toInt() == userDetailBase?.id || obj.user?.id == userDetailBase?.id) {
-                            ItemMeChat(obj, index)
+                        if (obj.type == "CAPTURED") {
+                            ItemCapture(obj)
                         } else {
-                            ItemYouChat(obj, index)
+                            if (obj.userId?.toInt() == userDetailBase?.id || obj.user?.id == userDetailBase?.id) {
+                                ItemMeChat(obj, index)
+                            } else {
+                                ItemYouChat(obj, index)
+                            }
                         }
-//                        ItemCapture()
                     }
                 }
-                LaunchedEffect(viewModel.stateBottomItem.value) {
-                    lazyListState.animateScrollToItem(viewModel.stateListMess.size)
-                }
+//                LaunchedEffect(viewModel.stateBottomItem.value) {
+//                    lazyListState.animateScrollToItem(viewModel.stateListMess.size)
+//                }
 
 //                LaunchedEffect(Unit) {
 //                    lazyListState.stopScroll(MutatePriority.UserInput)
 //                }
 
-                LoadmoreMessHandler(lazyListState) { page ->
+                LoadmoreHandler(lazyListState) { page ->
                     viewModel.stateRoomInfo.value.id?.let {
-                        viewModel.getChatDetail(accessToken!!, it, viewModel.stateListMess[0].id)
+                        viewModel.getChatDetail(
+                            accessToken!!,
+                            it,
+                            viewModel.stateListMess.last().id
+                        )
                     }
                 }
             }
@@ -298,7 +332,11 @@ class ChatDetailFragment : BaseFragment() {
                         fontSize = 16.sp
                     )
                     Text(
-                        "${roomInfo.createdOn}",
+                        AppDateUtils.changeDateFormat(
+                            AppDateUtils.FORMAT_7,
+                            AppDateUtils.FORMAT_19,
+                            roomInfo.createdOn ?: ""
+                        ),
                         color = ColorUtils.gray_9F9F9F,
                         fontSize = 12.sp,
                         modifier = Modifier.padding(top = 2.dp)
@@ -312,7 +350,7 @@ class ChatDetailFragment : BaseFragment() {
                     .padding(horizontal = 16.dp)
             ) {
                 GlideImage(
-                    imageModel = "${BuildConfig.BASE_S3}${roomInfo.companyOwner}",
+                    imageModel = "${BuildConfig.BASE_S3}${roomInfo.companyOwner?.images?.getOrNull(0)?.url}",
                     Modifier
                         .size(96.dp)
                         .clip(RoundedCornerShape(4.dp)),
@@ -326,7 +364,11 @@ class ChatDetailFragment : BaseFragment() {
                         fontSize = 16.sp
                     )
                     Text(
-                        "${roomInfo.createdOn}",
+                        AppDateUtils.changeDateFormat(
+                            AppDateUtils.FORMAT_7,
+                            AppDateUtils.FORMAT_19,
+                            roomInfo.createdOn ?: ""
+                        ),
                         color = ColorUtils.gray_9F9F9F,
                         fontSize = 12.sp,
                         modifier = Modifier.padding(top = 2.dp)
@@ -464,7 +506,11 @@ class ChatDetailFragment : BaseFragment() {
                         modifier = Modifier.weight(1f)
                     )
                     Text(
-                        obj.createdOn ?: "", color = ColorUtils.gray_9E9E9E, fontSize = 12.sp
+                        AppDateUtils.changeDateFormat(
+                            AppDateUtils.FORMAT_7,
+                            AppDateUtils.FORMAT_25,
+                            obj.createdOn ?: ""
+                        ), color = ColorUtils.gray_9E9E9E, fontSize = 12.sp
                     )
                 }
             }
@@ -496,7 +542,11 @@ class ChatDetailFragment : BaseFragment() {
                 }
                 Row(Modifier.width(200.dp)) {
                     Text(
-                        "${obj.createdOn}",
+                        AppDateUtils.changeDateFormat(
+                            AppDateUtils.FORMAT_7,
+                            AppDateUtils.FORMAT_25,
+                            obj.createdOn ?: ""
+                        ),
                         color = ColorUtils.gray_9E9E9E,
                         fontSize = 12.sp,
                         modifier = Modifier.weight(1f)
@@ -507,9 +557,8 @@ class ChatDetailFragment : BaseFragment() {
         }
     }
 
-    @Preview
     @Composable
-    private fun ItemCapture() {
+    private fun ItemCapture(obj: ItemMessageModel) {
         Box(
             Modifier
                 .padding(bottom = 40.dp)
@@ -519,8 +568,17 @@ class ChatDetailFragment : BaseFragment() {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                "YYYY-MM-DD HH:MM\n" +
-                        "{user_id}님이 대화 내용을 캡쳐했습니다.",
+                "${
+                    AppDateUtils.changeDateFormat(
+                        AppDateUtils.FORMAT_7,
+                        AppDateUtils.FORMAT_7,
+                        obj.createdOn ?: ""
+                    )
+                }\n" +
+                        "${
+                            if (obj.isActor == true) viewModel.stateRoomInfo.value.actor?.name
+                            else viewModel.stateRoomInfo.value.companyOwner?.name?.getOrNull(0)?.name
+                        }님이 대화 내용을 캡쳐했습니다.",
                 color = ColorUtils.black_000000,
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center
@@ -540,21 +598,14 @@ class ChatDetailFragment : BaseFragment() {
                 userId = (snapshot.child("userId").value as String?)
                 name = (snapshot.child("name").value as String?)
                 message = (snapshot.child("message").value as String?)
-                createdOn = try {
-                    AppDateUtils.changeDateFormat(
-                        AppDateUtils.FORMAT_7,
-                        AppDateUtils.FORMAT_5,
-                        AppDateUtils.convertTime(snapshot.child("createdOn").value as Long)
-                    )
-                } catch (e: Exception) {
-                    ""
-                }
+                type = ((snapshot).child("type").value as Long?).convertTypeChat()
+                createdOn = AppDateUtils.convertTime(snapshot.child("createdOn").value as Long)
             }
             if (isFirst) {
                 isFirst = false
             } else {
-                viewModel.stateListMess.add(viewModel.stateListMess.size, newMess)
-                viewModel.stateBottomItem.value = newMess
+                viewModel.stateListMess.add(0, newMess)
+//                viewModel.stateBottomItem.value = newMess
             }
         }
 
@@ -570,5 +621,23 @@ class ChatDetailFragment : BaseFragment() {
         override fun onCancelled(error: DatabaseError) {
         }
 
+    }
+
+    fun Long?.convertTypeChat(): String {
+        return if (this != 2L) "INIT"
+        else "CAPTURED"
+    }
+
+    private val contentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+        override fun onChange(selfChange: Boolean, uri: Uri?) {
+            super.onChange(selfChange, uri)
+            Log.e("SCREEN_SHOT", "$selfChange $uri")
+            viewModel.stateCapture.value = true
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        requireContext().contentResolver.unregisterContentObserver(contentObserver)
     }
 }

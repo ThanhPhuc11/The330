@@ -8,9 +8,7 @@ import com.nagaja.the330.base.BaseViewModel
 import com.nagaja.the330.model.ItemMessageModel
 import com.nagaja.the330.model.RoomDetailModel
 import com.nagaja.the330.model.StartChatRequest
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -26,6 +24,7 @@ class ChatDetailVM(
     val stateIsSeller = mutableStateOf(false)
     val stateBottomItem = mutableStateOf(ItemMessageModel())
     var isFirst = true
+    var stateCapture = mutableStateOf(false)
 
     val callbackEndChatSuccess = MutableLiveData<Unit>()
 
@@ -83,7 +82,7 @@ class ChatDetailVM(
 
     fun getChatDetail(token: String, roomId: Int, chatMesId: Int? = null) {
         viewModelScope.launch {
-            repo.getChatDetail(token, roomId, chatMesId, 200)
+            repo.getChatDetail(token, roomId, chatMesId, 10)
                 .onStart {
                     callbackStart.value = Unit
                 }
@@ -94,13 +93,17 @@ class ChatDetailVM(
                 .collect {
                     callbackSuccess.value = Unit
                     it.content?.let { data ->
-                        stateListMess.addAll(0, data)
-                        if (isFirst) {
-                            isFirst = false
-                            if (data.isNotEmpty()) {
-                                stateBottomItem.value = data.last()
-                            }
+                        data.onEachIndexed { index, itemMessageModel ->
+                            itemMessageModel.isActor =
+                                itemMessageModel.user?.id == stateRoomInfo.value.actor?.id
                         }
+                        stateListMess.addAll(data.asReversed())
+//                        if (isFirst) {
+//                            isFirst = false
+//                            if (data.isNotEmpty()) {
+//                                stateBottomItem.value = data.last()
+//                            }
+//                        }
                     }
                 }
         }

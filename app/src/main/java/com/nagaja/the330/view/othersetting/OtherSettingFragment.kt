@@ -9,18 +9,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nagaja.the330.BuildConfig
 import com.nagaja.the330.MainActivity
-import com.nagaja.the330.R
 import com.nagaja.the330.base.BaseFragment
 import com.nagaja.the330.data.DataStorePref
 import com.nagaja.the330.utils.ColorUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.*
 import com.nagaja.the330.view.login.LoginFragment
+import com.nagaja.the330.view.termservice.TermServiceFragment
 
 class OtherSettingFragment : BaseFragment() {
     private lateinit var viewModel: OtherSettingVM
@@ -109,21 +108,42 @@ class OtherSettingFragment : BaseFragment() {
                     "서비스 이용 약관",
                     color = ColorUtils.black_000000,
                     style = text16_black,
-                    modifier = Modifier.padding(top = 20.dp)
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .noRippleClickable {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_TERM_SERVICE,
+                                TermServiceFragment.newInstance("TERM_SERVICE")
+                            )
+                        }
                 )
 
                 Text(
                     "개인정보처리방침",
                     color = ColorUtils.black_000000,
                     style = text16_black,
-                    modifier = Modifier.padding(top = 16.dp)
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .noRippleClickable {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_TERM_SERVICE,
+                                TermServiceFragment.newInstance("PRIVACY_POLICY")
+                            )
+                        }
                 )
 
                 Text(
                     "위치정보 동의 약관",
                     color = ColorUtils.black_000000,
                     style = text16_black,
-                    modifier = Modifier.padding(top = 16.dp)
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .noRippleClickable {
+                            viewController?.pushFragment(
+                                ScreenId.SCREEN_TERM_SERVICE,
+                                TermServiceFragment.newInstance("LOCATION_TERM")
+                            )
+                        }
                 )
 
                 Divider(color = ColorUtils.gray_E1E1E1, modifier = Modifier.padding(top = 20.dp))

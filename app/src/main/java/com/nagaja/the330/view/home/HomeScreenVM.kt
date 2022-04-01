@@ -26,6 +26,7 @@ class HomeScreenVM(
     var districtId: Int? = null
 
     val listCategoryState = mutableStateOf(mutableListOf<CategoryModel>())
+    val stateMoney = mutableStateOf(MoneyExchangeModel())
     val statelistCompany = mutableStateListOf<CompanyRecommendModel>()
     val stateListBanner = mutableStateListOf<BannerCompanyModel>()
     val stateCompanyFooter = mutableStateOf(CompanyConfigInfo())
@@ -38,6 +39,18 @@ class HomeScreenVM(
                 .collect {
                     it.content?.let { it1 -> listCategoryState.value = it1 }
 //                    it.content?.let { it1 -> listCategoryState.addAll(it1) }
+                }
+        }
+    }
+
+    fun getMoneyExchange() {
+        viewModelScope.launch {
+            repo.getMoneyExchange()
+                .onStart { }
+                .onCompletion { }
+                .catch { }
+                .collect {
+                    stateMoney.value = it
                 }
         }
     }

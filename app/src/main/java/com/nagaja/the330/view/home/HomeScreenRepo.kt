@@ -13,6 +13,10 @@ class HomeScreenRepo(private val apiService: ApiService) {
         emit(apiService.getCompanyRecommendAds(token))
     }
 
+    suspend fun getMoneyExchange() = flow {
+        emit(apiService.getMoneyExchange())
+    }
+
     suspend fun registerFCM(token: String, tokenFCM: TokenFCMRequest) = flow {
         emit(apiService.registerFCM(token, tokenFCM))
     }

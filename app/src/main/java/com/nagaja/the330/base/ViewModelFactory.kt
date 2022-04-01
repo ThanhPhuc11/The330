@@ -100,6 +100,8 @@ import com.nagaja.the330.view.secondhandregis.SecondHandRegisRepo
 import com.nagaja.the330.view.secondhandregis.SecondHandRegisVM
 import com.nagaja.the330.view.signupinfo.SignupInfoRepo
 import com.nagaja.the330.view.signupinfo.SignupInfoVM
+import com.nagaja.the330.view.termservice.TermServiceRepo
+import com.nagaja.the330.view.termservice.TermServiceVM
 import com.nagaja.the330.view.verify_otp.VerifyOTPRepo
 import com.nagaja.the330.view.verify_otp.VerifyOTPVM
 
@@ -210,6 +212,8 @@ class ViewModelFactory(apiService: ApiService) :
             EditCompanyVM(EditCompanyRepo(apiService))
         creators[EditProductCompanyVM::class.java] =
             EditProductCompanyVM(EditProductCompanyRepo(apiService))
+        creators[TermServiceVM::class.java] =
+            TermServiceVM(TermServiceRepo(apiService))
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

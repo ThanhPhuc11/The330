@@ -32,4 +32,12 @@ class CompanyConfigInfo {
     @SerializedName("mainPhone")
     @Expose
     var mainPhone: String? = null
+
+    @SerializedName("type")
+    @Expose
+    var type: String? = null
+
+    @SerializedName("value")
+    @Expose
+    var value: String? = null
 }
