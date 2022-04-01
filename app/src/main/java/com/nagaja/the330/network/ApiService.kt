@@ -539,4 +539,7 @@ interface ApiService {
     suspend fun getOverviewTotalCaseInMyPageCompany(
         @Header("Authorization") token: String
     ): TotalCaseOverviewModel
+
+    @GET("money_exchanges")
+    suspend fun getMoneyExchange(): MoneyExchangeModel
 }

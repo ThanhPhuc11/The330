@@ -25,7 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -49,6 +48,7 @@ import com.nagaja.the330.model.TokenFCMRequest
 import com.nagaja.the330.network.ApiService
 import com.nagaja.the330.network.RetrofitBuilder
 import com.nagaja.the330.utils.ColorUtils
+import com.nagaja.the330.utils.CommonUtils
 import com.nagaja.the330.utils.ScreenId
 import com.nagaja.the330.view.HeaderSearch
 import com.nagaja.the330.view.LayoutTheme330
@@ -90,6 +90,7 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
                 Lifecycle.Event.ON_CREATE -> {
                     viewModel.token = accessToken
                     viewModel.getCategory(accessToken, null)
+                    viewModel.getMoneyExchange()
                     viewModel.getCompanyRecommendAds(accessToken)
                     registerFCM(viewModel)
                     viewModel.getBanner(accessToken)
@@ -120,7 +121,7 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
                 .verticalScroll(state = rememberScrollState())
         ) {
             CategoryMain(viewModel, viewController)
-            ExchangeDollar()
+            ExchangeDollar(viewModel)
             val pagerState = rememberPagerState(
                 pageCount = viewModel.stateListBanner.size
             )
@@ -185,7 +186,9 @@ private fun LogoAndSearch(viewController: ViewController?) {
             painter = painterResource(id = R.drawable.ic_splash_png),
             contentDescription = "",
             colorFilter = ColorFilter.tint(ColorUtils.blue_2177E4),
-            modifier = Modifier.height(18.dp).padding(end = 18.dp)
+            modifier = Modifier
+                .height(18.dp)
+                .padding(end = 18.dp)
         )
         HeaderSearch(
             hideBack = true,
@@ -294,9 +297,8 @@ fun IconCategory(obj: CategoryModel, onClick: (String) -> Unit) {
     }
 }
 
-@Preview
 @Composable
-private fun ExchangeDollar() {
+private fun ExchangeDollar(viewModel: HomeScreenVM) {
     Row(
         Modifier
             .padding(horizontal = 16.dp, vertical = 20.dp)
@@ -315,9 +317,24 @@ private fun ExchangeDollar() {
             modifier = Modifier.padding(horizontal = 15.dp)
         )
 
-        MoneyValue(nation = "USD", value = "1", symbol = "$", modifier = Modifier.weight(1f))
-        MoneyValue(nation = "KRW", value = "1,200", symbol = "￦", modifier = Modifier.weight(1f))
-        MoneyValue(nation = "PHP", value = "49.87", symbol = "₱", modifier = Modifier.weight(1f))
+        MoneyValue(
+            nation = "USD",
+            value = CommonUtils.priceWithoutDecimal(viewModel.stateMoney.value.usd ?: 0.0),
+            symbol = "$",
+            modifier = Modifier.weight(1f)
+        )
+        MoneyValue(
+            nation = "KRW",
+            value = CommonUtils.priceWithoutDecimal(viewModel.stateMoney.value.krw ?: 0.0),
+            symbol = "￦",
+            modifier = Modifier.weight(1f)
+        )
+        MoneyValue(
+            nation = "PHP",
+            value = CommonUtils.priceWithoutDecimal(viewModel.stateMoney.value.php ?: 0.0),
+            symbol = "₱",
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
