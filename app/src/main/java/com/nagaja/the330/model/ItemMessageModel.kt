@@ -24,4 +24,6 @@ class ItemMessageModel {
     var chatId: Int? = null
     var id: Int? = null
     var messageId: Long? = null
+
+    var isActor: Boolean? = null
 }
