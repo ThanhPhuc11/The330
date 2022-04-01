@@ -83,7 +83,7 @@ class ChatDetailVM(
 
     fun getChatDetail(token: String, roomId: Int, chatMesId: Int? = null) {
         viewModelScope.launch {
-            repo.getChatDetail(token, roomId, chatMesId, 200)
+            repo.getChatDetail(token, roomId, chatMesId, 10)
                 .onStart {
                     callbackStart.value = Unit
                 }
@@ -94,13 +94,13 @@ class ChatDetailVM(
                 .collect {
                     callbackSuccess.value = Unit
                     it.content?.let { data ->
-                        stateListMess.addAll(0, data)
-                        if (isFirst) {
-                            isFirst = false
-                            if (data.isNotEmpty()) {
-                                stateBottomItem.value = data.last()
-                            }
-                        }
+                        stateListMess.addAll(data.asReversed())
+//                        if (isFirst) {
+//                            isFirst = false
+//                            if (data.isNotEmpty()) {
+//                                stateBottomItem.value = data.last()
+//                            }
+//                        }
                     }
                 }
         }

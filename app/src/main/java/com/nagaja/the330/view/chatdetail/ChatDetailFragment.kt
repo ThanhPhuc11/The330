@@ -2,10 +2,8 @@ package com.nagaja.the330.view.chatdetail
 
 import android.os.Bundle
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -61,7 +59,7 @@ class ChatDetailFragment : BaseFragment() {
     private var onAddToBottom: (() -> Unit)? = null
     private lateinit var database: DatabaseReference
 
-    var updateListChat:(() -> Unit)? = null
+    var updateListChat: (() -> Unit)? = null
 
     companion object {
 //        fun newInstance(partnerId: Int? = null, roomId: Int? = null) = ChatDetailFragment().apply {
@@ -220,7 +218,7 @@ class ChatDetailFragment : BaseFragment() {
                 val lazyListState = rememberLazyListState()
                 LazyColumn(
                     state = lazyListState,
-                    reverseLayout = false,
+                    reverseLayout = true,
                     modifier = Modifier
                         .fillMaxHeight()
                         .padding(horizontal = 16.dp),
@@ -235,17 +233,21 @@ class ChatDetailFragment : BaseFragment() {
 //                        ItemCapture()
                     }
                 }
-                LaunchedEffect(viewModel.stateBottomItem.value) {
-                    lazyListState.animateScrollToItem(viewModel.stateListMess.size)
-                }
+//                LaunchedEffect(viewModel.stateBottomItem.value) {
+//                    lazyListState.animateScrollToItem(viewModel.stateListMess.size)
+//                }
 
 //                LaunchedEffect(Unit) {
 //                    lazyListState.stopScroll(MutatePriority.UserInput)
 //                }
 
-                LoadmoreMessHandler(lazyListState) { page ->
+                LoadmoreHandler(lazyListState) { page ->
                     viewModel.stateRoomInfo.value.id?.let {
-                        viewModel.getChatDetail(accessToken!!, it, viewModel.stateListMess[0].id)
+                        viewModel.getChatDetail(
+                            accessToken!!,
+                            it,
+                            viewModel.stateListMess.last().id
+                        )
                     }
                 }
             }
@@ -464,7 +466,11 @@ class ChatDetailFragment : BaseFragment() {
                         modifier = Modifier.weight(1f)
                     )
                     Text(
-                        obj.createdOn ?: "", color = ColorUtils.gray_9E9E9E, fontSize = 12.sp
+                        AppDateUtils.changeDateFormat(
+                            AppDateUtils.FORMAT_7,
+                            AppDateUtils.FORMAT_25,
+                            obj.createdOn ?: ""
+                        ), color = ColorUtils.gray_9E9E9E, fontSize = 12.sp
                     )
                 }
             }
@@ -496,7 +502,11 @@ class ChatDetailFragment : BaseFragment() {
                 }
                 Row(Modifier.width(200.dp)) {
                     Text(
-                        "${obj.createdOn}",
+                        AppDateUtils.changeDateFormat(
+                            AppDateUtils.FORMAT_7,
+                            AppDateUtils.FORMAT_25,
+                            obj.createdOn ?: ""
+                        ),
                         color = ColorUtils.gray_9E9E9E,
                         fontSize = 12.sp,
                         modifier = Modifier.weight(1f)
@@ -543,7 +553,7 @@ class ChatDetailFragment : BaseFragment() {
                 createdOn = try {
                     AppDateUtils.changeDateFormat(
                         AppDateUtils.FORMAT_7,
-                        AppDateUtils.FORMAT_5,
+                        AppDateUtils.FORMAT_7,
                         AppDateUtils.convertTime(snapshot.child("createdOn").value as Long)
                     )
                 } catch (e: Exception) {
