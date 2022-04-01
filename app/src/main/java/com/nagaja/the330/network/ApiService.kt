@@ -530,6 +530,12 @@ interface ApiService {
         @Query("id") id: Int
     ): ResponseModel<MutableList<BannerCompanyModel>>
 
+    @GET("config")
+    suspend fun getConfigInfo(
+        @Header("Authorization") token: String,
+        @Query("type") type: String
+    ): CompanyConfigInfo
+
     @GET("config/info")
     suspend fun getConfigCompanyInfo(
         @Header("Authorization") token: String,

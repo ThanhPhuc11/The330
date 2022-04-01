@@ -64,6 +64,7 @@ import com.nagaja.the330.view.recruitment.RecruitmentJobSearchFragment
 import com.nagaja.the330.view.reportmissing.ReportMissingFragment
 import com.nagaja.the330.view.searchmain.SearchMainFragment
 import com.nagaja.the330.view.secondhandmarket.SecondHandMarketFragment
+import com.nagaja.the330.view.termservice.TermServiceFragment
 import com.nagaja.the330.view.text14_222
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -167,7 +168,7 @@ fun HomeScreen(accessToken: String, viewController: ViewController?) {
             }
             ListCompanyRecommended(viewModel, viewController)
 
-            Footer(viewModel)
+            Footer(viewModel, viewController)
         }
 
     }
@@ -551,7 +552,7 @@ private fun BaseSeletion(
 }
 
 @Composable
-private fun Footer(viewModel: HomeScreenVM) {
+private fun Footer(viewModel: HomeScreenVM, viewController: ViewController?) {
     val obj = viewModel.stateCompanyFooter.value
     var expanded by remember { mutableStateOf(false) }
     Column(
@@ -621,8 +622,23 @@ private fun Footer(viewModel: HomeScreenVM) {
         }
 
         Row(Modifier.padding(top = 16.dp)) {
-            Text("이용약관", style = styleLable)
-            Text("개인정보 취급방침", style = styleLable, modifier = Modifier.padding(start = 20.dp))
+            Text("이용약관", style = styleLable, modifier = Modifier.noRippleClickable {
+                viewController?.pushFragment(
+                    ScreenId.SCREEN_TERM_SERVICE,
+                    TermServiceFragment.newInstance("TERM_SERVICE")
+                )
+            })
+            Text(
+                "개인정보 취급방침",
+                style = styleLable,
+                modifier = Modifier
+                    .padding(start = 20.dp)
+                    .noRippleClickable {
+                        viewController?.pushFragment(
+                            ScreenId.SCREEN_TERM_SERVICE,
+                            TermServiceFragment.newInstance("PRIVACY_POLICY")
+                        )
+                    })
         }
     }
 }

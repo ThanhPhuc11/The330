@@ -3,6 +3,16 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
 }
+int extractVersionCode() {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        workingDir projectDir
+        executable 'git'
+        args 'rev-list', 'HEAD', '--count'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim().toInteger()
+}
 
 android {
     signingConfigs {
@@ -19,7 +29,7 @@ android {
         applicationId "com.nagaja.the330"
         minSdk 21
         targetSdk 31
-        versionCode 9
+        versionCode extractVersionCode()
         versionName "1.0.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
