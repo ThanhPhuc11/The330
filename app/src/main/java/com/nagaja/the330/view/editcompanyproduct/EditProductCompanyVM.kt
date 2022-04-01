@@ -136,8 +136,10 @@ class EditProductCompanyVM(
         }
 
         currentProductInfo.value.apply {
-            images = listImageProduct.onEachIndexed { index, obj ->
-                obj.priority = index
+            images = mutableListOf<FileModel>().apply {
+                addAll(listImageProduct.onEachIndexed { index, obj ->
+                    obj.priority = index
+                })
             }
             name = mutableListOf<NameModel>().apply {
                 add(NameModel(name = textStateNameEng.value.text, lang = AppConstants.Lang.EN))
@@ -177,7 +179,6 @@ class EditProductCompanyVM(
             }
             adminNames = listAdmin
         }
-        return
         viewModelScope.launch {
             repo.editCompany(token, companyObj)
                 .onStart { callbackStart.value = Unit }
